@@ -1,0 +1,46 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "serve-pwa": "vue-cli-service build && npx http-server dist",
+    "generate": "openapi --input http://localhost:5241/swagger/v1/swagger.json --output ./src/client"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "fuzzysort": "^2.0.3",
+    "openapi-typescript-codegen": "^0.23.0",
+    "register-service-worker": "^1.7.1",
+    "vue": "^2.6.11",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^3.2.0",
+    "vue-virtual-scroller": "^1.1.2",
+    "vuetify": "^2.6.0",
+    "vuex": "^3.4.0",
+    "vuex-persist": "^3.1.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-pwa": "~5.0.8",
+    "@vue/cli-plugin-router": "~5.0.8",
+    "@vue/cli-plugin-typescript": "^5.0.8",
+    "@vue/cli-plugin-vuex": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/eslint-config-typescript": "^8.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-vue": "^7.17.0",
+    "sass": "~1.32.0",
+    "sass-loader": "^10.0.0",
+    "typescript": "~4.1.5",
+    "vue-cli-plugin-vuetify": "~2.5.1",
+    "vue-template-compiler": "^2.6.11",
+    "vuetify-loader": "^1.7.0"
+  }
+}
