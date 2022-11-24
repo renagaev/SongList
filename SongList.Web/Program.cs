@@ -18,7 +18,7 @@ var app = builder.Build();
     await scope.ServiceProvider.GetRequiredService<AppContext>().Database.MigrateAsync();
 }
 
-
+app.UseFileServer();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
