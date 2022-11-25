@@ -24,6 +24,8 @@ jobs:
         with:
           push: true
           tags: ${{ env.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - 
         name: deploy
         uses: appleboy/ssh-action@master
@@ -34,6 +36,5 @@ jobs:
           script: |
             cd songlist
             docker pull ${{ env.image_tag }}
-            docker stop ${{ env.container_name }}
-            docker rm ${{ env.container_name }} 
+            docker stop ${{ env.container_name }} || true && docker rm ${{ env.container_name }} || true
             docker run -d --name ${{ env.container_name }}  --env-file .env -p ${{ secrets.APP_PORT }}:80 ${{ env.image_tag }} 
