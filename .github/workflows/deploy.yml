@@ -22,7 +22,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          tags: songlist:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/songlist:latest
       - 
         name: deploy
         uses: appleboy/ssh-action@master
