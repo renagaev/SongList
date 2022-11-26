@@ -7,4 +7,6 @@ export type Song = {
     title: string;
     tags: Array<string>;
     text: string;
+    number?: number | null;
+    note?: string | null;
 };

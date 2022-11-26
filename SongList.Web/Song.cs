@@ -14,4 +14,5 @@ public class Song
     public string Text { get; set; }
     public int? Number { get; set; }
     public string? Note { get; set; }
+    public string OriginalTitle { get; set; }
 }

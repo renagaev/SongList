@@ -47,15 +47,15 @@ export default new Vuex.Store<State>({
     },
     getters: {
         songs(state) {
-            if (state.selectedTag != null) {
-                return state.songs.filter(x => x.tags.indexOf(state.selectedTag!) != -1)
+            const tag = state.selectedTag
+            if (tag != null) {
+                return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
             if (state.searchText) {
-                const res = Fuzzysort.go(state.searchText, state.songs, {
+                return Fuzzysort.go(state.searchText, state.songs, {
                     key: "prepared",
                     limit: 5
-                }).map(x=> x.obj)
-                return res
+                }).map(x => x.obj)
             } else {
                 return state.songs
             }

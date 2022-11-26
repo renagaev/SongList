@@ -4,7 +4,7 @@
     <v-navigation-drawer v-model="showBar" clipped app>
       <navigation-bar></navigation-bar>
     </v-navigation-drawer>
-    <v-app-bar app clipped-left hide-on-scroll dense>  
+    <v-app-bar app clipped-left dense>  
 
       <v-app-bar-nav-icon @click="showBar=!showBar"></v-app-bar-nav-icon>
 

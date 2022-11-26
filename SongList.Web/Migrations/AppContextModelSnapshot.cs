@@ -36,6 +36,10 @@ namespace SongList.Web.Migrations
                     b.Property<int?>("Number")
                         .HasColumnType("integer");
 
+                    b.Property<string>("OriginalTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Tags")
                         .HasMaxLength(65536)
                         .HasColumnType("jsonb");

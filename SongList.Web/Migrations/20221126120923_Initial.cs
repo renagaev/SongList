@@ -19,7 +19,8 @@ namespace SongList.Web.Migrations
                     Tags = table.Column<string>(type: "jsonb", maxLength: 65536, nullable: true),
                     Text = table.Column<string>(type: "text", nullable: false),
                     Number = table.Column<int>(type: "integer", nullable: true),
-                    Note = table.Column<string>(type: "text", nullable: true)
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    OriginalTitle = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

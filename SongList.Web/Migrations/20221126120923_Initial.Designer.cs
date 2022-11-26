@@ -12,7 +12,7 @@ using SongList.Web;
 namespace SongList.Web.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20221124134507_Initial")]
+    [Migration("20221126120923_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,10 @@ namespace SongList.Web.Migrations
 
                     b.Property<int?>("Number")
                         .HasColumnType("integer");
+
+                    b.Property<string>("OriginalTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Tags")
                         .HasMaxLength(65536)

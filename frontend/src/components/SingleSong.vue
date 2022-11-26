@@ -1,12 +1,12 @@
 ﻿<template>
   <v-container>
-    <div v-text="song.title" class="text-h4"></div>
     <v-chip-group>
       <v-chip color="primary" :ripple="false"
               v-for="tag in song.tags" :key="tag" v-text="tag"
               @click="goToTag(tag)"
       />
     </v-chip-group>
+    <div v-if="song.note" v-text="song.note" class="text-h5"></div>
     <div v-text="song.text" class="text-body-1 words"></div>
   </v-container>
 
@@ -21,12 +21,16 @@ import {Prop} from 'vue-property-decorator';
 @Component
 export default class SingleSong extends Vue {
   @Prop()
-  id?: number
-  song?: Song
+  id!: number
+  song!: Song
+  constructor() {
+    super();
+  }
 
   created(): void {
     this.song = this.$store.getters["song"](this.id)
-    this.$store.commit("setMainTitle", this.song?.title)
+    const song = this.song
+    this.$store.commit("setMainTitle", (song.number ? song.number + '. ' : '') + song.title)
   }
 
   goToTag(tag: string) {
