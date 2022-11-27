@@ -35,7 +35,7 @@ export default class SingleSong extends Vue {
     super();
   }
 
-  canPlay() {
+  get canPlay() {
     return Piano.canPlay(this.song.note)
   }
 
