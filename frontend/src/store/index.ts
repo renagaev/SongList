@@ -30,7 +30,7 @@ export default new Vuex.Store<State>({
     },
     mutations: {
 
-        setMainTitle(state, title: string){
+        setMainTitle(state, title: string) {
             state.title = title
         },
         setTag(state, tag: string) {
@@ -51,14 +51,20 @@ export default new Vuex.Store<State>({
             if (tag != null) {
                 return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
-            if (state.searchText) {
-                return Fuzzysort.go(state.searchText, state.songs, {
-                    key: "prepared",
-                    limit: 5
-                }).map(x => x.obj)
-            } else {
+            const text = state.searchText.trim()
+            if (!text)
                 return state.songs
+            
+            // contains only digits
+            if (/^-?\d+$/.test(text)) {
+                return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
+            
+            return Fuzzysort.go(state.searchText, state.songs, {
+                key: "prepared",
+                limit: 5
+            }).map(x => x.obj)
+
         },
         song: (state) => (id: number) => {
             return state.songs.find(x => x.id == id)

@@ -6,13 +6,13 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import {OpenAPI} from "@/client";
 import VueVirtualScroller from 'vue-virtual-scroller'
-
+import Piano from "@/piano/piano"
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+Piano.init()
 Vue.use(VueVirtualScroller)
 
 Vue.config.productionTip = false
 OpenAPI.BASE = process.env.VUE_APP_API_BASE
-
 new Vue({
   router,
   store,
