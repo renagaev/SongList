@@ -25,7 +25,7 @@ import Component from 'vue-class-component'
 import {SongModel} from "@/store/SongModel";
 import {Prop} from 'vue-property-decorator';
 
-@Component
+@Component({name: "SongList"})
 export default class SongList extends Vue {
 
   $refs!: {
@@ -36,7 +36,7 @@ export default class SongList extends Vue {
   tag?: string
   scrollTop = 0
   lastTag?: string
-
+  
   activated() {
     if (this.lastTag == this.tag) {
       this.$refs.scroll.scrollTop = this.scrollTop

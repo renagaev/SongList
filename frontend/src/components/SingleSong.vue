@@ -7,9 +7,9 @@
       />
     </v-chip-group>
     <v-btn class="mb-3"
-        v-if="canPlay"
-        @click="playNote"
-        rounded>
+           v-if="canPlay"
+           @click="playNote"
+           rounded>
       <v-icon>mdi-music-note</v-icon>
       {{ song.note }}
     </v-btn>
@@ -29,10 +29,9 @@ import Piano from "@/piano/piano";
 export default class SingleSong extends Vue {
   @Prop()
   id!: number
-  song!: Song
 
-  constructor() {
-    super();
+  get song() {
+    return this.$store.state.selectedSong
   }
 
   get canPlay() {
@@ -44,9 +43,7 @@ export default class SingleSong extends Vue {
   }
 
   created(): void {
-    this.song = this.$store.getters["song"](this.id)
-    const song = this.song
-    this.$store.commit("setMainTitle", (song.number ? song.number + '. ' : '') + song.title)
+    this.$store.commit("selectSong", this.id)
   }
 
   goToTag(tag: string) {
