@@ -14,7 +14,8 @@ export interface State {
     title: string,
     selectedTag: string | null,
     songs: SongModel[],
-    searchText: string
+    searchText: string,
+    showBar: boolean
 }
 
 Vue.use(Vuex)
@@ -26,17 +27,20 @@ export default new Vuex.Store<State>({
         title: "Сборник песен",
         selectedTag: null,
         songs: [],
-        searchText: ""
+        searchText: "",
+        showBar: false
     },
     mutations: {
-
+        setShowBar(state, value: boolean) {
+            state.showBar = value
+        },
         setMainTitle(state, title: string) {
             state.title = title
         },
         setTag(state, tag: string) {
             state.selectedTag = tag
             state.searchText = ""
-            if(tag!=null){
+            if (tag != null) {
                 state.title = tag
             }
         },
@@ -57,12 +61,12 @@ export default new Vuex.Store<State>({
             const text = state.searchText.trim()
             if (!text)
                 return state.songs
-            
+
             // contains only digits
             if (/^-?\d+$/.test(text)) {
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
-            
+
             return Fuzzysort.go(state.searchText, state.songs, {
                 key: "prepared",
                 limit: 5
@@ -75,8 +79,8 @@ export default new Vuex.Store<State>({
         tags(state) {
             return new Array(...new Set(state.songs.map(x => x.tags).flat())).sort()
         },
-        title(state){
-            if(state.selectedTag)
+        title(state) {
+            if (state.selectedTag)
                 return state.selectedTag
             return state.title
         }

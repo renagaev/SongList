@@ -1,14 +1,22 @@
 ﻿<template>
-  <div st>
-    <v-app-bar-nav-icon @click="showBar=!showBar"></v-app-bar-nav-icon>
+  <v-app-bar app clipped-left dense>
+
+    <v-app-bar-nav-icon @click="toggleBar"></v-app-bar-nav-icon>
 
     <v-toolbar-title v-if="!isSearch" v-text="title"></v-toolbar-title>
+    <div v-else>
+      <v-text-field solo dense hide-details flat filled light
+                    placeholder="Введите текст"
+                    class="ml-5"
+                    @input="onEdit"
+      />
+    </div>
 
     <v-spacer></v-spacer>
     <v-btn icon @click="isSearch=!isSearch">
       <v-icon>mdi-magnify</v-icon>
     </v-btn>
-  </div>
+  </v-app-bar>
 </template>
 
 <script lang="ts">
@@ -17,12 +25,35 @@ import Component from 'vue-class-component'
 
 @Component
 export default class AppBar extends Vue {
-  isSearch=false
-  showBar=false
-  get title() {
-    return this.$store.state.title
+  isSearch = false
+  showBar = false
+
+
+  toggleBar() {
+    this.$store.commit("setShowBar", !this.$store.state.showBar)
   }
-  
+
+  onEdit(text: string): void {
+    if (this.$route.name != "Home") {
+      this.$router.push({name: "Home"})
+    }
+    this.$store.commit("setSearchText", text)
+  }
+
+
+  get title() {
+    const route = this.$route.name
+    if (route == "Home") {
+      return this.$store.state.selectedTag ?? "Все"
+    }
+    if (route == "SingleSong") {
+      return this.$store.state.title
+    }
+    if (route == "Tags") {
+      return "Категории"
+    }
+    return "unknown"
+  }
 }
 </script>
 

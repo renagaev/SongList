@@ -5,7 +5,6 @@
       :item-size="64"
       key-field="id"
       v-slot="{item}"
-      ref="scroll"
   >
     <div class="item">
       <v-list-item two-line @click="open(item.id)" class="item">
@@ -26,11 +25,7 @@ import {SongModel} from "@/store/SongModel";
 
 @Component
 export default class SongList extends Vue {
-  $refs!: {
-    container: HTMLFormElement
-    scroll: HTMLFormElement
-  }
-
+  
   activated() {
     this.$store.commit("setMainTitle", "Сборник песен")
     document.documentElement.style.overflow = "hidden"
