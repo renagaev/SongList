@@ -8,8 +8,9 @@
       <v-text-field solo dense hide-details flat filled light
                     placeholder="Введите текст"
                     class="ml-5"
-                    @input="onEdit"
+                    v-model="searchText"
                     autofocus
+                    :dark="dark"
       />
     </div>
 
@@ -28,23 +29,32 @@ import Component from 'vue-class-component'
 export default class AppBar extends Vue {
   showBar = false
 
+  get dark(){
+    return this.$vuetify.theme.dark
+  }
   get isSearch() {
     return this.$store.state.showSearch
   }
 
   set isSearch(value: boolean) {
+    if(!value){
+      this.$store.commit("setSearchText", "")
+    }
     this.$store.commit("setShowSearch", value)
   }
 
   toggleBar() {
     this.$store.commit("setShowBar", !this.$store.state.showBar)
   }
-
-  onEdit(text: string): void {
+  
+  get searchText(){
+    return this.$store.state.searchText
+  }
+  set searchText(value: string){
     if (this.$route.name != "Home") {
       this.$router.push({name: "Home"})
     }
-    this.$store.commit("setSearchText", text)
+    this.$store.commit("setSearchText", value)
   }
 
 
