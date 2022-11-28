@@ -49,7 +49,7 @@ export default class App extends Vue {
   }
 
   get title() {
-    return this.$store.state.title
+    return this.$store.getters["title"]
   }
 }
 </script>

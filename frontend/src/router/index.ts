@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import SongList from "@/components/SongList.vue";
 import SingleSong from "@/components/SingleSong.vue";
+import TagList from "@/components/TagList.vue";
 
 Vue.use(VueRouter)
 
@@ -16,11 +17,16 @@ const routes: Array<RouteConfig> = [
         name: 'SingleSong',
         props: true,
         component: SingleSong
+    },
+    {
+        path: '/tags',
+        name: "Tags",
+        component: TagList
     }
 ]
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: process.env.BASE_URL,
     routes,
     scrollBehavior(to, from, savedPosition) {

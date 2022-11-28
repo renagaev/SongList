@@ -36,6 +36,9 @@ export default new Vuex.Store<State>({
         setTag(state, tag: string) {
             state.selectedTag = tag
             state.searchText = ""
+            if(tag!=null){
+                state.title = tag
+            }
         },
         setSongs(state, songs: SongModel[]) {
             state.songs = songs
@@ -71,6 +74,11 @@ export default new Vuex.Store<State>({
         },
         tags(state) {
             return new Array(...new Set(state.songs.map(x => x.tags).flat())).sort()
+        },
+        title(state){
+            if(state.selectedTag)
+                return state.selectedTag
+            return state.title
         }
     },
     actions: {
