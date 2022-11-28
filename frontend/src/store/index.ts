@@ -12,7 +12,6 @@ const vuexLocal = new VuexPersistence({
 export interface State {
     tags: string[],
     title: string,
-    selectedTag: string | null,
     songs: SongModel[],
     searchText: string,
     showBar: boolean
@@ -25,7 +24,6 @@ export default new Vuex.Store<State>({
     state: {
         tags: ["Простые", "Сложные"],
         title: "Сборник песен",
-        selectedTag: null,
         songs: [],
         searchText: "",
         showBar: false
@@ -38,7 +36,6 @@ export default new Vuex.Store<State>({
             state.title = title
         },
         setTag(state, tag: string) {
-            state.selectedTag = tag
             state.searchText = ""
             if (tag != null) {
                 state.title = tag
@@ -49,12 +46,10 @@ export default new Vuex.Store<State>({
         },
         setSearchText(state, text: string) {
             state.searchText = text
-            state.selectedTag = null
         }
     },
     getters: {
-        songs(state) {
-            const tag = state.selectedTag
+        songs: (state) => (tag?: string) => {
             if (tag != null) {
                 return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
@@ -78,11 +73,6 @@ export default new Vuex.Store<State>({
         },
         tags(state) {
             return new Array(...new Set(state.songs.map(x => x.tags).flat())).sort()
-        },
-        title(state) {
-            if (state.selectedTag)
-                return state.selectedTag
-            return state.title
         }
     },
     actions: {

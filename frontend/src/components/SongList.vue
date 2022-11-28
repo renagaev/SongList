@@ -22,10 +22,14 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import {SongModel} from "@/store/SongModel";
+import {Prop} from 'vue-property-decorator';
 
 @Component
 export default class SongList extends Vue {
-  
+
+  @Prop()
+  tag?: string
+
   activated() {
     this.$store.commit("setMainTitle", "Сборник песен")
     document.documentElement.style.overflow = "hidden"
@@ -44,7 +48,7 @@ export default class SongList extends Vue {
 
 
   get songs(): SongModel[] {
-    return this.$store.getters["songs"]
+    return this.$store.getters["songs"](this.tag)
   }
 
   open(id: number) {

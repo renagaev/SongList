@@ -44,7 +44,7 @@ export default class AppBar extends Vue {
   get title() {
     const route = this.$route.name
     if (route == "Home") {
-      return this.$store.state.selectedTag ?? "Все"
+      return this.$route.query.tag ?? "Все"
     }
     if (route == "SingleSong") {
       return this.$store.state.title

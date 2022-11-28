@@ -10,7 +10,10 @@ const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'Home',
-        component: SongList
+        component: SongList,
+        props: route => ({
+            tag: route.query.tag
+        })
     },
     {
         path: '/song/:id',
@@ -33,7 +36,7 @@ const router = new VueRouter({
         if (savedPosition) {
             return savedPosition
         } else {
-            return { x: 0, y:0 }
+            return {x: 0, y: 0}
         }
     },
 })

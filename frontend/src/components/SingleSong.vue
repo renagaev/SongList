@@ -50,8 +50,7 @@ export default class SingleSong extends Vue {
   }
 
   goToTag(tag: string) {
-    this.$store.commit("setTag", tag)
-    this.$router.push("/")
+    this.$router.push({name: "Home", query: {tag: tag}})
   }
 
 }

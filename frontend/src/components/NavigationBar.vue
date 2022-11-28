@@ -40,11 +40,7 @@ export default class NavigationBar extends Vue {
   }
 
   showAllSongs() {
-    this.$store.commit("setTag", null)
-    if(this.$router.currentRoute.name != "Home"){
-      this.$router.push({"name": "Home"})
-    }
-    
+    this.$router.push({"name": "Home"})
   }
 
   goToTags() {
