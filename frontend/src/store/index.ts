@@ -11,10 +11,10 @@ const vuexLocal = new VuexPersistence({
 
 export interface State {
     tags: string[],
-    title: string,
     songs: SongModel[],
     searchText: string,
-    showBar: boolean
+    showBar: boolean,
+    showSearch: boolean
 }
 
 Vue.use(Vuex)
@@ -23,29 +23,23 @@ Vue.use(Vuex)
 export default new Vuex.Store<State>({
     state: {
         tags: ["Простые", "Сложные"],
-        title: "Сборник песен",
         songs: [],
         searchText: "",
-        showBar: false
+        showBar: false,
+        showSearch: false
     },
     mutations: {
         setShowBar(state, value: boolean) {
             state.showBar = value
-        },
-        setMainTitle(state, title: string) {
-            state.title = title
-        },
-        setTag(state, tag: string) {
-            state.searchText = ""
-            if (tag != null) {
-                state.title = tag
-            }
         },
         setSongs(state, songs: SongModel[]) {
             state.songs = songs
         },
         setSearchText(state, text: string) {
             state.searchText = text
+        },
+        setShowSearch(state, value: boolean) {
+            state.showSearch = value
         }
     },
     getters: {

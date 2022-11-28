@@ -25,9 +25,14 @@ import Component from 'vue-class-component'
 
 @Component
 export default class AppBar extends Vue {
-  isSearch = false
   showBar = false
 
+  get isSearch(){
+    return this.$store.state.showSearch
+  }
+  set isSearch(value: boolean){
+    this.$store.commit("setShowSearch", value)
+  }
 
   toggleBar() {
     this.$store.commit("setShowBar", !this.$store.state.showBar)
