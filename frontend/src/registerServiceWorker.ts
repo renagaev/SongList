@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-
-let refreshing = false
+declare let self: ServiceWorkerGlobalScope
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready () {
@@ -21,10 +20,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated () {
-      if(!refreshing){
-        refreshing = true
-        window.location.reload()
-      }
+      self.skipWaiting().then(window.location.reload)
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
