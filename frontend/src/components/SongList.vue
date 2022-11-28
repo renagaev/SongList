@@ -5,6 +5,7 @@
       :item-size="64"
       key-field="id"
       v-slot="{item}"
+      ref="scroll"
   >
     <div class="item">
       <v-list-item two-line @click="open(item.id)" class="item">
@@ -27,15 +28,25 @@ import {Prop} from 'vue-property-decorator';
 @Component
 export default class SongList extends Vue {
 
+  $refs!: {
+    scroll: HTMLFormElement
+  }
+
   @Prop()
   tag?: string
+  scrollTop = 0
+  lastTag?: string
 
   activated() {
-    this.$store.commit("setMainTitle", "Сборник песен")
+    if (this.lastTag == this.tag) {
+      this.$refs.scroll.scrollTop = this.scrollTop
+    }
     document.documentElement.style.overflow = "hidden"
   }
 
   deactivated() {
+    this.scrollTop = this.$refs.scroll.scrollTop
+    this.lastTag = this.tag
     document.documentElement.style.overflow = "auto"
   }
 
