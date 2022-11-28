@@ -9,7 +9,6 @@
             </v-list-item-icon>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
-          <v-divider :key="idx + 'divider'"></v-divider>
         </template>
       </v-list-item-group>
     </v-list>
