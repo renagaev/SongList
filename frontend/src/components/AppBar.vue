@@ -9,6 +9,7 @@
                     placeholder="Введите текст"
                     class="ml-5"
                     @input="onEdit"
+                    autofocus
       />
     </div>
 
@@ -27,10 +28,11 @@ import Component from 'vue-class-component'
 export default class AppBar extends Vue {
   showBar = false
 
-  get isSearch(){
+  get isSearch() {
     return this.$store.state.showSearch
   }
-  set isSearch(value: boolean){
+
+  set isSearch(value: boolean) {
     this.$store.commit("setShowSearch", value)
   }
 
