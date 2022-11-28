@@ -60,6 +60,9 @@ export default class AppBar extends Vue {
     if (route == "Tags") {
       return "Категории"
     }
+    if(route == "Settings"){
+      return "Настройки"
+    }
     return "unknown"
   }
 }

@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import {SongService} from "@/client";
 import Fuzzysort from 'fuzzysort'
-import {SongModel} from './SongModel'
+import {Settings, SongModel} from './models'
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage
@@ -15,7 +15,8 @@ export interface State {
     searchText: string,
     showBar: boolean,
     showSearch: boolean,
-    selectedSong?: SongModel
+    selectedSong?: SongModel,
+    settings: Settings
 }
 
 Vue.use(Vuex)
@@ -28,7 +29,11 @@ export default new Vuex.Store<State>({
         searchText: "",
         showBar: false,
         showSearch: false,
-        selectedSong: undefined
+        selectedSong: undefined,
+        settings: {
+            darkTheme: false,
+            playNotes: true
+        }
     },
     mutations: {
         setShowBar(state, value: boolean) {
@@ -43,8 +48,11 @@ export default new Vuex.Store<State>({
         setShowSearch(state, value: boolean) {
             state.showSearch = value
         },
-        selectSong(state, id: number){
-            state.selectedSong = state.songs.find(x=> x.id == id)
+        selectSong(state, id: number) {
+            state.selectedSong = state.songs.find(x => x.id == id)
+        },
+        setDarkTheme(state, value: boolean) {
+            state.settings.darkTheme = value
         }
     },
     getters: {

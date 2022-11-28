@@ -25,25 +25,22 @@ export default class NavigationBar extends Vue {
     {
       title: "Все",
       icon: "mdi-view-list",
-      action: this.showAllSongs
+      action: () => this.$router.push({name: "Home"})
     },
     {
       title: "Категории",
-      icon: "mdi-tag",
-      action: this.goToTags
+      icon: "mdi-tag-multiple",
+      action: () => this.$router.push({name: "Tags"})
     },
+    {
+      title: "Настройки",
+      icon: "mdi-cogs",
+      action: () => this.$router.push({name: "Settings"})
+    }
   ]
 
   get tags(): string[] {
     return this.$store.getters["tags"];
-  }
-
-  showAllSongs() {
-    this.$router.push({"name": "Home"})
-  }
-
-  goToTags() {
-    this.$router.push({name: "Tags"})
   }
 }
 </script>

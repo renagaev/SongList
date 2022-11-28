@@ -38,11 +38,8 @@ export default class App extends Vue {
   }
 
   async created() {
+    this.$vuetify.theme.dark = this.$store.state.settings.darkTheme
     await this.$store.dispatch("loadSongs")
-  }
-
-  get title() {
-    return this.$store.getters["title"]
   }
 }
 </script>

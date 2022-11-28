@@ -3,6 +3,7 @@ import VueRouter, {RouteConfig} from 'vue-router'
 import SongList from "@/components/SongList.vue";
 import SingleSong from "@/components/SingleSong.vue";
 import TagList from "@/components/TagList.vue";
+import Settings from "@/components/Settings.vue";
 
 Vue.use(VueRouter)
 
@@ -25,6 +26,11 @@ const routes: Array<RouteConfig> = [
         path: '/tags',
         name: "Tags",
         component: TagList
+    },
+    {
+        path: '/settings',
+        name: "Settings",
+        component: Settings
     }
 ]
 

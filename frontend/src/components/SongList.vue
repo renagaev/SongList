@@ -22,7 +22,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import {SongModel} from "@/store/SongModel";
+import {SongModel} from "@/store/models";
 import {Prop} from 'vue-property-decorator';
 
 @Component({name: "SongList"})
