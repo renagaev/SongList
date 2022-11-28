@@ -1,5 +1,5 @@
 ﻿<template>
-  <v-app-bar app clipped-left dense>
+  <v-app-bar app clipped-left>
 
     <v-app-bar-nav-icon @click="toggleBar"></v-app-bar-nav-icon>
 
@@ -60,7 +60,7 @@ export default class AppBar extends Vue {
     if (route == "Tags") {
       return "Категории"
     }
-    if(route == "Settings"){
+    if (route == "Settings") {
       return "Настройки"
     }
     return "unknown"

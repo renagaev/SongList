@@ -1,6 +1,6 @@
 ﻿<template>
   <div>
-    <v-list nav dense>
+    <v-list nav>
       <v-list-item-group>
         <template v-for="(item, idx) in items">
           <v-list-item :key="idx" @click="item.action()">

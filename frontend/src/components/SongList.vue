@@ -71,7 +71,7 @@ export default class SongList extends Vue {
 
 <style scoped>
 .scroller {
-  height: calc(100vh - 48px);
+  height: calc(100vh - 64px);
 }
 
 .item {
