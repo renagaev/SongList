@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(x => x.AddDefaultPolicy(x => x.AllowAnyOrigin()));
-
+builder.Services.AddResponseCompression();
 
 var app = builder.Build();
 {
