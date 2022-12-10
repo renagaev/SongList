@@ -17,7 +17,7 @@ public class SongController : ControllerBase
     public Task<Song[]> GetAllSongs() => _dbContext.Set<Song>().ToArrayAsync();
 
 
-    [HttpPost()]
+    [HttpPost("import")]
     public async Task Import([FromBody] List<Song> songs)
     {
         _dbContext.AddRange(songs);
