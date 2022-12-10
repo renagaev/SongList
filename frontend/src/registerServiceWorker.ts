@@ -19,8 +19,9 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New content is downloading.')
     },
-    updated () {
-      self.skipWaiting().then(window.location.reload)
+    updated (reg) {
+      if(reg.waiting != null)
+        reg.waiting?.postMessage("skipWaiting")
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')

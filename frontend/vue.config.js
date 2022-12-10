@@ -5,6 +5,7 @@ module.exports = {
   pwa:{
     name: "Сборник песен",
     short_name: "Песни",
-    theme_color: "#808080"
+    theme_color: "#808080",
+    productionSourceMap: false
   }
 }
