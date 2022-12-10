@@ -4,6 +4,7 @@ import VuexPersistence from 'vuex-persist'
 import {SongService} from "@/client";
 import Fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
+import Piano from "@/piano/piano";
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage
@@ -87,6 +88,8 @@ export default new Vuex.Store<State>({
             if (actionContext.state.songs.length == 0 || 1 == 1) {
                 const res = await SongService.getAllSongs();
                 const songs = res.map(x => x as SongModel)
+                const a = songs.filter(x => x.note != null &&  !Piano.canPlay(x.note))
+                debugger
                 songs.forEach(song => {
                     song.prepared = Fuzzysort.prepare(song.text)
                 })

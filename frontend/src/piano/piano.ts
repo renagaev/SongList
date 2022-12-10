@@ -24,15 +24,15 @@ export default class Piano {
     }
 
     private static convert(noteRaw?: string | null): string | null {
-        if (noteRaw == null)
+        if (noteRaw == null || noteRaw.length == 0)
             return null
         const match = noteRaw.toLowerCase().match("(до|ре|ми|фа|соль|ля|си)(#|♭)?")
         if (match == null)
             return null
         const baseNote = match[1]
-            .replace("до", "С")
+            .replace("до", "C")
             .replace("ре", "D")
-            .replace("ми", "Е")
+            .replace("ми", "E")
             .replace("фа", "F")
             .replace("соль", "G")
             .replace("ля", "A")
