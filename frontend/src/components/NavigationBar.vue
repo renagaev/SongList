@@ -18,23 +18,24 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import {mdiViewList, mdiTagMultiple, mdiCogs} from '@mdi/js'
 
 @Component
 export default class NavigationBar extends Vue {
   items = [
     {
       title: "Все",
-      icon: "mdi-view-list",
+      icon: mdiViewList,
       action: () => this.$router.push({name: "Home"})
     },
     {
       title: "Категории",
-      icon: "mdi-tag-multiple",
+      icon: mdiTagMultiple,
       action: () => this.$router.push({name: "Tags"})
     },
     {
       title: "Настройки",
-      icon: "mdi-cogs",
+      icon: mdiCogs,
       action: () => this.$router.push({name: "Settings"})
     }
   ]

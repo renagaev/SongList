@@ -1,7 +1,9 @@
 ﻿<template>
   <v-app-bar app clipped-left>
 
-    <v-app-bar-nav-icon @click="toggleBar"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click="toggleBar">
+      <v-icon>{{ menuIcon }}</v-icon>
+    </v-app-bar-nav-icon>
 
     <v-toolbar-title v-if="!isSearch" v-text="title"></v-toolbar-title>
     <div v-else>
@@ -16,7 +18,7 @@
 
     <v-spacer></v-spacer>
     <v-btn icon @click="isSearch=!isSearch">
-      <v-icon>mdi-magnify</v-icon>
+      <v-icon>{{ searchIcon }}</v-icon>
     </v-btn>
   </v-app-bar>
 </template>
@@ -24,20 +26,24 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import {mdiMagnify, mdiMenu} from "@mdi/js"
 
 @Component
 export default class AppBar extends Vue {
   showBar = false
+  searchIcon = mdiMagnify
+  menuIcon = mdiMenu
 
-  get dark(){
+  get dark() {
     return this.$vuetify.theme.dark
   }
+
   get isSearch() {
     return this.$store.state.showSearch
   }
 
   set isSearch(value: boolean) {
-    if(!value){
+    if (!value) {
       this.$store.commit("setSearchText", "")
     }
     this.$store.commit("setShowSearch", value)
@@ -46,11 +52,12 @@ export default class AppBar extends Vue {
   toggleBar() {
     this.$store.commit("setShowBar", !this.$store.state.showBar)
   }
-  
-  get searchText(){
+
+  get searchText() {
     return this.$store.state.searchText
   }
-  set searchText(value: string){
+
+  set searchText(value: string) {
     if (this.$route.name != "Home") {
       this.$router.push({name: "Home"})
     }

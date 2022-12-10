@@ -10,7 +10,7 @@
            v-if="canPlay"
            @click="playNote"
            rounded>
-      <v-icon>mdi-music-note</v-icon>
+      <v-icon>{{ noteIcon }}</v-icon>
       {{ song.note }}
     </v-btn>
     <div v-text="song.text" class="text-body-1 words"></div>
@@ -23,12 +23,13 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import {Prop} from 'vue-property-decorator';
 import Piano from "@/piano/piano";
+import {mdiMusicNote} from "@mdi/js"
 
 @Component
 export default class SingleSong extends Vue {
   @Prop()
   id!: number
-
+  noteIcon = mdiMusicNote
   get song() {
     return this.$store.state.selectedSong
   }

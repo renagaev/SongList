@@ -10,6 +10,7 @@
     "generate": "openapi --input http://localhost:5241/swagger/v1/swagger.json --output ./src/client"
   },
   "dependencies": {
+    "@mdi/js": "^7.0.96",
     "core-js": "^3.6.5",
     "fuzzysort": "^2.0.3",
     "openapi-typescript-codegen": "^0.23.0",
