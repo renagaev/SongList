@@ -86,12 +86,17 @@ export default new Vuex.Store<State>({
     actions: {
         async loadSongs(actionContext) {
             if (actionContext.state.songs.length == 0 || 1 == 1) {
-                const res = await SongService.getAllSongs();
-                const songs = res.map(x => x as SongModel)
-                songs.forEach(song => {
-                    song.prepared = Fuzzysort.prepare(song.text)
-                })
-                actionContext.commit("setSongs", songs.map(Object.freeze))
+                try {
+                    const res = await SongService.getAllSongs();
+                    const songs = res.map(x => x as SongModel)
+                    songs.forEach(song => {
+                        song.prepared = Fuzzysort.prepare(song.text)
+                    })
+                    actionContext.commit("setSongs", songs.map(Object.freeze))
+                } catch (e){
+                    console.log("failed to load songs. seems we are offline")
+                    console.log(e)
+                }
             }
         }
     },
