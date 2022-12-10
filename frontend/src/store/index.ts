@@ -60,7 +60,7 @@ export default new Vuex.Store<State>({
             if (tag != null) {
                 return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
-            const text = state.searchText.trim()
+            const text = state.searchText.trim().toLowerCase()
             if (!text)
                 return state.songs
 
@@ -69,9 +69,10 @@ export default new Vuex.Store<State>({
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
             
-            const dumbResults = state.songs.filter(x=> x.title.includes(text) || x.text.includes(text))
-            if(dumbResults.length != 0)
+            const dumbResults = state.songs.filter(x=> x.title.toLowerCase().includes(text) || x.text.toLowerCase().includes(text))
+            if(dumbResults.length != 0){
                 return dumbResults
+            }
 
             return Fuzzysort.go(state.searchText, state.songs, {
                 key: "prepared",
@@ -93,7 +94,7 @@ export default new Vuex.Store<State>({
                     const res = await SongService.getAllSongs();
                     const songs = res.map(x => x as SongModel)
                     songs.forEach(song => {
-                        song.prepared = Fuzzysort.prepare(song.text)
+                        song.prepared = Fuzzysort.prepare(song.title + " " + song.text)
                     })
                     actionContext.commit("setSongs", songs.map(Object.freeze))
                 } catch (e){
