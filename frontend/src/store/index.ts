@@ -4,10 +4,7 @@ import VuexPersistence from 'vuex-persist'
 import {SongService} from "@/client";
 import Fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
-
-const vuexLocal = new VuexPersistence({
-    storage: window.localStorage
-})
+import deepmerge from "deepmerge"
 
 export interface State {
     tags: string[],
@@ -18,6 +15,37 @@ export interface State {
     selectedSong?: SongModel,
     settings: Settings
 }
+
+const requestIdleCallback = window.requestIdleCallback || (cb => {
+    const start = Date.now()
+    return setTimeout(() => {
+        const data = {
+            didTimeout: false,
+            timeRemaining () {
+                return Math.max(0, 50 - (Date.now() - start))
+            }
+        }
+        cb(data)
+    }, 1)
+})
+
+const vuexLocal = new VuexPersistence<State>({
+    filter: (mutation) => mutation.type != "setSongs",
+    reducer: (state) => {
+        const s = {...state} as any
+        delete s.songs
+        return s
+    },
+    saveState: (key, state, storage) => {
+        requestIdleCallback(() => {
+            let data:any = JSON.stringify(state)
+            if (storage && storage._config && storage._config.name === 'localforage') {
+                data = deepmerge({}, state)
+            }
+            storage?.setItem(key, data)
+        })
+    }
+})
 
 Vue.use(Vuex)
 
@@ -32,7 +60,8 @@ export default new Vuex.Store<State>({
         selectedSong: undefined,
         settings: {
             darkTheme: false,
-            playNotes: true
+            playNotes: true,
+            fontSize: 16
         }
     },
     mutations: {
@@ -53,6 +82,9 @@ export default new Vuex.Store<State>({
         },
         setDarkTheme(state, value: boolean) {
             state.settings.darkTheme = value
+        },
+        setFontSize(state, value: number) {
+            state.settings.fontSize = value
         }
     },
     getters: {
@@ -68,9 +100,9 @@ export default new Vuex.Store<State>({
             if (/^-?\d+$/.test(text)) {
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
-            
-            const dumbResults = state.songs.filter(x=> x.title.toLowerCase().includes(text) || x.text.toLowerCase().includes(text))
-            if(dumbResults.length != 0){
+
+            const dumbResults = state.songs.filter(x => x.title.toLowerCase().includes(text) || x.text.toLowerCase().includes(text))
+            if (dumbResults.length != 0) {
                 return dumbResults
             }
 
@@ -89,6 +121,12 @@ export default new Vuex.Store<State>({
     },
     actions: {
         async loadSongs(actionContext) {
+
+            const json = localStorage.getItem("songs")
+            if (json != null) {
+                const songs = JSON.parse(json)
+                actionContext.commit("setSongs", songs.map(Object.freeze))
+            }
             if (actionContext.state.songs.length == 0 || 1 == 1) {
                 try {
                     const res = await SongService.getAllSongs();
@@ -97,7 +135,8 @@ export default new Vuex.Store<State>({
                         song.prepared = Fuzzysort.prepare(song.title + " " + song.text)
                     })
                     actionContext.commit("setSongs", songs.map(Object.freeze))
-                } catch (e){
+                    localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
+                } catch (e) {
                     console.log("failed to load songs. seems we are offline")
                     console.log(e)
                 }
