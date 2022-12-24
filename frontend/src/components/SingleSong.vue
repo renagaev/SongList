@@ -13,7 +13,7 @@
       <v-icon>{{ noteIcon }}</v-icon>
       {{ song.note }}
     </v-btn>
-    <div v-text="song.text" class="text-body-1 words"></div>
+    <div v-text="song.text" class="words" :style="fontStyle"></div>
   </v-container>
 
 </template>
@@ -30,6 +30,11 @@ export default class SingleSong extends Vue {
   @Prop()
   id!: number
   noteIcon = mdiMusicNote
+
+  get fontStyle() {
+    return `font-size: ${this.$store.state.settings.fontSize}px`
+  }
+
   get song() {
     return this.$store.state.selectedSong
   }

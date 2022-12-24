@@ -1,14 +1,26 @@
 ﻿<template>
-  <v-list>
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>Темная тема</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-  </v-list>
+    <v-list>
+      <v-list-item>
+        <v-list-item-action>
+          <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>Темная тема</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider/>
+      <v-list-item>
+        <v-container>
+          <v-subheader class="pl-0">Размер текста песен: {{fontSize}}</v-subheader>
+          <v-slider min="10" max="30" v-model="fontSize"></v-slider>
+          <div :style="fontStyle">Пример текста</div>
+        </v-container>
+
+
+
+      </v-list-item>
+    </v-list>
+
 </template>
 
 <script lang="ts">
@@ -21,6 +33,16 @@ export default class Settings extends Vue {
   checkBoxOff = mdiCheckboxBlankOutline
   checkBoxOn = mdiCheckboxMarked
 
+  get fontStyle(){
+    return `font-size: ${this.fontSize}px`
+  }
+  get fontSize(){
+    return this.settings.fontSize
+  }
+  set fontSize(value: number){
+    this.$store.commit("setFontSize", value)
+  }
+  
   get settings() {
     return this.$store.state.settings
   }

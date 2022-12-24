@@ -15,7 +15,7 @@ export interface State {
     selectedSong?: SongModel,
     settings: Settings
 }
-
+// https://github.com/championswimmer/vuex-persist/issues/17#issuecomment-350825480
 const requestIdleCallback = window.requestIdleCallback || (cb => {
     const start = Date.now()
     return setTimeout(() => {
