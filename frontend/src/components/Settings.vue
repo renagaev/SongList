@@ -10,15 +10,16 @@
       </v-list-item>
       <v-divider/>
       <v-list-item>
-        <v-container>
-          <v-subheader class="pl-0">Размер текста песен: {{fontSize}}</v-subheader>
-          <v-slider min="10" max="30" v-model="fontSize"></v-slider>
+        <v-list-item-content>
+          <v-list-item-title class="pl-0">Размер текста песен: {{fontSize}}</v-list-item-title>
+          <v-container>
+
+            <v-slider min="12" max="50" v-model="fontSize"></v-slider>
+          </v-container>
           <div :style="fontStyle">Пример текста</div>
-        </v-container>
-
-
-
+        </v-list-item-content>
       </v-list-item>
+      <v-divider/>
     </v-list>
 
 </template>
