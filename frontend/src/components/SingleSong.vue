@@ -7,7 +7,7 @@
       />
     </v-chip-group>
     <v-btn class="mb-3"
-           v-if="canPlay"
+           v-if="showNote"
            @click="playNote"
            rounded>
       <v-icon>{{ noteIcon }}</v-icon>
@@ -39,8 +39,8 @@ export default class SingleSong extends Vue {
     return this.$store.state.selectedSong
   }
 
-  get canPlay() {
-    return Piano.canPlay(this.song.note)
+  get showNote() {
+    return this.$store.state.settings.playNotes && Piano.canPlay(this.song.note)
   }
 
   playNote() {

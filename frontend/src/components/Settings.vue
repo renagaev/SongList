@@ -1,26 +1,40 @@
 ﻿<template>
-    <v-list>
-      <v-list-item>
-        <v-list-item-action>
-          <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>Темная тема</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-divider/>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="pl-0">Размер текста песен: {{fontSize}}</v-list-item-title>
-          <v-container>
+  <v-list>
 
-            <v-slider min="12" max="50" v-model="fontSize"></v-slider>
-          </v-container>
-          <div :style="fontStyle">Пример текста</div>
-        </v-list-item-content>
-      </v-list-item>
-      <v-divider/>
-    </v-list>
+    <v-list-item>
+      <v-list-item-action>
+        <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Темная тема</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+    
+    <v-divider/>
+    
+    <v-list-item>
+      <v-list-item-action>
+        <v-checkbox v-model="playNotes" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Показывать ноты</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-divider/>
+    
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
+        <v-container>
+
+          <v-slider min="12" max="50" v-model="fontSize"></v-slider>
+        </v-container>
+        <div :style="fontStyle">Пример текста</div>
+      </v-list-item-content>
+    </v-list-item>
+    <v-divider/>
+  </v-list>
 
 </template>
 
@@ -34,16 +48,27 @@ export default class Settings extends Vue {
   checkBoxOff = mdiCheckboxBlankOutline
   checkBoxOn = mdiCheckboxMarked
 
-  get fontStyle(){
+  get fontStyle() {
     return `font-size: ${this.fontSize}px`
   }
-  get fontSize(){
+
+  get fontSize() {
     return this.settings.fontSize
   }
-  set fontSize(value: number){
+
+  set fontSize(value: number) {
     this.$store.commit("setFontSize", value)
   }
-  
+
+  get playNotes() {
+    return this.settings.playNotes
+  }
+
+  set playNotes(value: boolean) {
+    this.$store.commit("setPlayNotes", value)
+  }
+
+
   get settings() {
     return this.$store.state.settings
   }

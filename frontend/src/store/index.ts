@@ -85,6 +85,9 @@ export default new Vuex.Store<State>({
         },
         setFontSize(state, value: number) {
             state.settings.fontSize = value
+        },
+        setPlayNotes(state, value: boolean){
+            state.settings.playNotes = value
         }
     },
     getters: {
