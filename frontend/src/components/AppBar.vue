@@ -36,6 +36,10 @@ export default class AppBar extends Vue {
   menuIcon = mdiMenu
   title = "Все"
   isSearch = false
+  
+  mounted(){
+    this.updateState()
+  }
 
   get dark() {
     return this.$vuetify.theme.dark
