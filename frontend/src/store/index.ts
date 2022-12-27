@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import {SongService} from "@/client";
-import Fuzzysort from 'fuzzysort'
+import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
 
@@ -15,13 +15,14 @@ export interface State {
     selectedSong?: SongModel,
     settings: Settings
 }
+
 // https://github.com/championswimmer/vuex-persist/issues/17#issuecomment-350825480
 const requestIdleCallback = window.requestIdleCallback || (cb => {
     const start = Date.now()
     return setTimeout(() => {
         const data = {
             didTimeout: false,
-            timeRemaining () {
+            timeRemaining() {
                 return Math.max(0, 50 - (Date.now() - start))
             }
         }
@@ -38,7 +39,7 @@ const vuexLocal = new VuexPersistence<State>({
     },
     saveState: (key, state, storage) => {
         requestIdleCallback(() => {
-            let data:any = JSON.stringify(state)
+            let data: any = JSON.stringify(state)
             if (storage && storage._config && storage._config.name === 'localforage') {
                 data = deepmerge({}, state)
             }
@@ -86,7 +87,7 @@ export default new Vuex.Store<State>({
         setFontSize(state, value: number) {
             state.settings.fontSize = value
         },
-        setPlayNotes(state, value: boolean){
+        setPlayNotes(state, value: boolean) {
             state.settings.playNotes = value
         }
     },
@@ -104,15 +105,18 @@ export default new Vuex.Store<State>({
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
 
-            const dumbResults = state.songs.filter(x => x.title.toLowerCase().includes(text) || x.text.toLowerCase().includes(text))
-            if (dumbResults.length != 0) {
-                return dumbResults
-            }
-
-            return Fuzzysort.go(state.searchText, state.songs, {
-                key: "prepared",
-                limit: 5
-            }).map(x => x.obj)
+            const searchRes = fuzzysort.go<SongModel>(state.searchText, state.songs, {
+                keys: ["preparedTitle", "prepared"],
+                limit: 8,
+                // make title match more important for search result
+                scoreFn: res => {
+                    const title = res[0]
+                    const textRes = res[1]
+                    
+                    return Math.max(title ? title.score : -1000, textRes ? textRes.score - 100 : -1000)
+                }
+            })
+            return searchRes.map(x => x.obj)
 
         },
         song: (state) => (id: number) => {
@@ -135,7 +139,8 @@ export default new Vuex.Store<State>({
                     const res = await SongService.getAllSongs();
                     const songs = res.map(x => x as SongModel)
                     songs.forEach(song => {
-                        song.prepared = Fuzzysort.prepare(song.title + " " + song.text)
+                        song.prepared = fuzzysort.prepare(song.text)
+                        song.preparedTitle = fuzzysort.prepare(song.title)
                     })
                     actionContext.commit("setSongs", songs.map(Object.freeze))
                     localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
