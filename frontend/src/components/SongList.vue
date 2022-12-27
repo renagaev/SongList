@@ -41,13 +41,13 @@ export default class SongList extends Vue {
     if (this.lastTag == this.tag) {
       this.$refs.scroll.scrollTop = this.scrollTop
     }
-    document.documentElement.style.overflow = "hidden"
+    //document.documentElement.style.overflow = "hidden"
   }
 
   deactivated() {
     this.scrollTop = this.$refs.scroll.scrollTop
     this.lastTag = this.tag
-    document.documentElement.style.overflow = "auto"
+    //document.documentElement.style.overflow = "auto"
   }
 
   getTitle(song: SongModel): string {
