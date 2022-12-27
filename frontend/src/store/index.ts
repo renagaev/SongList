@@ -11,7 +11,6 @@ export interface State {
     songs: SongModel[],
     searchText: string,
     showBar: boolean,
-    showSearch: boolean,
     selectedSong?: SongModel,
     settings: Settings
 }
@@ -57,7 +56,6 @@ export default new Vuex.Store<State>({
         songs: [],
         searchText: "",
         showBar: false,
-        showSearch: false,
         selectedSong: undefined,
         settings: {
             darkTheme: false,
@@ -74,9 +72,6 @@ export default new Vuex.Store<State>({
         },
         setSearchText(state, text: string) {
             state.searchText = text
-        },
-        setShowSearch(state, value: boolean) {
-            state.showSearch = value
         },
         selectSong(state, id: number) {
             state.selectedSong = state.songs.find(x => x.id == id)

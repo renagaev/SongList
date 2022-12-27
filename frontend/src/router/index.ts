@@ -12,6 +12,9 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Home',
         component: SongList,
+        meta:{
+            
+        },
         props: route => ({
             tag: route.query.tag
         })

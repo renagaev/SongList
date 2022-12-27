@@ -47,7 +47,6 @@ export default class SongList extends Vue {
   deactivated() {
     this.scrollTop = this.$refs.scroll.scrollTop
     this.lastTag = this.tag
-    this.$store.commit("setShowSearch", false)
     document.documentElement.style.overflow = "auto"
   }
 

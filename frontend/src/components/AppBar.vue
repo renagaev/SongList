@@ -27,26 +27,18 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import {mdiMagnify, mdiMenu} from "@mdi/js"
+import {Watch} from 'vue-property-decorator'
 
 @Component
 export default class AppBar extends Vue {
   showBar = false
   searchIcon = mdiMagnify
   menuIcon = mdiMenu
+  title = "Все"
+  isSearch = false
 
   get dark() {
     return this.$vuetify.theme.dark
-  }
-
-  get isSearch() {
-    return this.$store.state.showSearch
-  }
-
-  set isSearch(value: boolean) {
-    if (!value) {
-      this.$store.commit("setSearchText", "")
-    }
-    this.$store.commit("setShowSearch", value)
   }
 
   toggleBar() {
@@ -64,23 +56,42 @@ export default class AppBar extends Vue {
     this.$store.commit("setSearchText", value)
   }
 
+  get route() {
+    return this.$route
+  }
 
-  get title() {
-    const route = this.$route.name
-    if (route == "Home") {
-      return this.$route.query.tag ?? "Все"
+  @Watch("route")
+  updateState() {
+    const routeName = this.$route.name
+    if (routeName == "Home") {
+      const tag = (this.route.query.tag as string)
+      if (tag) {
+        this.searchText = ""
+        this.title = tag
+      } else if (this.searchText) {
+        this.isSearch = true
+      } else {
+        this.title = "Все"
+      }
+      return
     }
-    if (route == "SingleSong") {
+    if (routeName == "SingleSong") {
       const song = this.$store.state.selectedSong
-      return (song.number ? song.number + '. ' : '') + song.title
+      this.title = (song.number ? song.number + '. ' : '') + song.title
+      this.isSearch = false
+      return
     }
-    if (route == "Tags") {
-      return "Категории"
+    if (routeName == "Tags") {
+      this.title = "Категории"
+      this.isSearch = false
+      return
     }
-    if (route == "Settings") {
-      return "Настройки"
+    if (routeName == "Settings") {
+      this.title = "Настройки"
+      this.isSearch = false
+      return
     }
-    return "unknown"
+    this.title = "unknown"
   }
 }
 </script>
