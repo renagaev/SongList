@@ -86,5 +86,7 @@ export default class Settings extends Vue {
 </script>
 
 <style scoped>
-
+.v-list.theme--dark{
+  background-color: rgb(18, 18, 18);
+}
 </style>
