@@ -6,6 +6,10 @@ module.exports = {
     name: "Сборник песен",
     short_name: "Песни",
     theme_color: "#808080",
-    productionSourceMap: false
+    productionSourceMap: false,
+    workboxPluginMode: 'GenerateSW',
+    workboxOptions: {
+      skipWaiting: true
+    }
   }
 }
