@@ -18,11 +18,18 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import {mdiViewList, mdiTagMultiple, mdiCogs} from '@mdi/js'
+import {mdiViewList, mdiTagMultiple, mdiCogs, mdiDownload} from '@mdi/js'
+import install from "@/services/installPrompt"
 
+type NavItem = {
+  action(): void,
+  icon: string
+  title: string
+}
 @Component
 export default class NavigationBar extends Vue {
-  items = [
+
+  items: NavItem[] = [
     {
       title: "Все",
       icon: mdiViewList,
@@ -34,11 +41,31 @@ export default class NavigationBar extends Vue {
       action: () => this.$router.push({name: "Tags"})
     },
     {
-      title: "Настройки",
+      title: "Настройки1",
       icon: mdiCogs,
       action: () => this.$router.push({name: "Settings"})
     }
   ]
+
+  installNav: NavItem = {
+    action: async () => {
+      await install.trigger();
+      if (!install.isAvailable()) {
+        this.items.splice(this.items.findIndex(x => x.title == "Установить"), 1)
+      }
+    },
+    icon: mdiDownload,
+    title: "Установить"
+  }
+
+  async addInstallButton() {
+    await install.waitPrompt()
+    this.items.push(this.installNav)
+  }
+
+  created() {
+    this.addInstallButton()
+  }
 
   get tags(): string[] {
     return this.$store.getters["tags"];

@@ -22,7 +22,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import {Prop} from 'vue-property-decorator';
-import Piano from "@/piano/piano";
+import Piano from "@/services/piano";
 import {mdiMusicNote} from "@mdi/js"
 
 @Component

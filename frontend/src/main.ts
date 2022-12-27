@@ -6,7 +6,8 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import {OpenAPI} from "@/client";
 import VueVirtualScroller from 'vue-virtual-scroller'
-import Piano from "@/piano/piano"
+import Piano from "@/services/piano"
+import "@/services/installPrompt"
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 Piano.init()
 Vue.use(VueVirtualScroller)
