@@ -1,15 +1,14 @@
 module.exports = {
-  transpileDependencies: [
-    'vuetify'
-  ],
-  pwa:{
-    name: "Сборник песен",
-    short_name: "Песни",
-    theme_color: "#808080",
-    productionSourceMap: false,
-    workboxPluginMode: 'GenerateSW',
-    workboxOptions: {
-      skipWaiting: true
+    transpileDependencies: [
+        'vuetify'
+    ],
+    pwa: {
+        name: "Сборник песен",
+        themeColor: "#808080",
+        productionSourceMap: false,
+        workboxPluginMode: 'GenerateSW',
+        workboxOptions: {
+            skipWaiting: true
+        }
     }
-  }
 }

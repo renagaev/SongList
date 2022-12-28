@@ -41,7 +41,7 @@ export default class NavigationBar extends Vue {
       action: () => this.$router.push({name: "Tags"})
     },
     {
-      title: "Настройки1",
+      title: "Настройки",
       icon: mdiCogs,
       action: () => this.$router.push({name: "Settings"})
     }
