@@ -27,7 +27,6 @@
       <v-list-item-content>
         <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
         <v-container>
-
           <v-slider min="12" max="50" v-model="fontSize"></v-slider>
         </v-container>
         <div :style="fontStyle">Пример текста</div>
@@ -47,17 +46,16 @@ import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js"
 export default class Settings extends Vue {
   checkBoxOff = mdiCheckboxBlankOutline
   checkBoxOn = mdiCheckboxMarked
+  fontSize = 0
 
   get fontStyle() {
     return `font-size: ${this.fontSize}px`
   }
-
-  get fontSize() {
-    return this.settings.fontSize
+  created(){
+    this.fontSize = this.$store.state.settings.fontSize
   }
-
-  set fontSize(value: number) {
-    this.$store.commit("setFontSize", value)
+  destroyed(){
+    this.$store.commit("setFontSize", this.fontSize)
   }
 
   get playNotes() {
