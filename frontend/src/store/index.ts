@@ -9,6 +9,7 @@ import deepmerge from "deepmerge"
 export interface State {
     tags: string[],
     songs: SongModel[],
+    favourites: number[],
     searchText: string,
     showBar: boolean,
     selectedSong?: SongModel,
@@ -57,6 +58,7 @@ export default new Vuex.Store<State>({
         searchText: "",
         showBar: false,
         selectedSong: undefined,
+        favourites: [],
         settings: {
             darkTheme: false,
             playNotes: true,
@@ -84,6 +86,14 @@ export default new Vuex.Store<State>({
         },
         setPlayNotes(state, value: boolean) {
             state.settings.playNotes = value
+        },
+        toggleFavourite(state, id: number){
+            const index = state.favourites.indexOf(id)
+            if(index == -1){
+                state.favourites.unshift(id)
+            } else{
+                state.favourites.splice(index, 1)
+            }
         }
     },
     getters: {
