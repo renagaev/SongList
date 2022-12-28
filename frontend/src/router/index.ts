@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
-import SongList from "@/components/SongList.vue";
 import SingleSong from "@/components/SingleSong.vue";
 import TagList from "@/components/TagList.vue";
 import Settings from "@/components/Settings.vue";
+import MainList from "@/components/MainList.vue";
 
 Vue.use(VueRouter)
 
@@ -11,7 +11,7 @@ const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'Home',
-        component: SongList,
+        component: MainList,
         meta:{
             
         },

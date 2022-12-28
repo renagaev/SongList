@@ -7,7 +7,7 @@
     <app-bar></app-bar>
 
     <v-main>
-      <keep-alive include="SongList">
+      <keep-alive include="MainList">
         <router-view/>
       </keep-alive>
     </v-main>

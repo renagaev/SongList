@@ -33,21 +33,21 @@ export default class SongList extends Vue {
   }
 
   @Prop()
-  tag?: string
+  scrollKey?: string
+  @Prop({ required: true })
+  songs!: SongModel[]
   scrollTop = 0
-  lastTag?: string
+  lastScrollKey?: string
   
   activated() {
-    if (this.lastTag == this.tag) {
+    if (this.lastScrollKey == this.scrollKey) {
       this.$refs.scroll.scrollTop = this.scrollTop
     }
-    //document.documentElement.style.overflow = "hidden"
   }
 
   deactivated() {
     this.scrollTop = this.$refs.scroll.scrollTop
-    this.lastTag = this.tag
-    //document.documentElement.style.overflow = "auto"
+    this.lastScrollKey = this.scrollKey
   }
 
   getTitle(song: SongModel): string {
@@ -55,11 +55,6 @@ export default class SongList extends Vue {
       return `${song.title} | ${song.number}`
     }
     return song.title
-  }
-
-
-  get songs(): SongModel[] {
-    return this.$store.getters["songs"](this.tag)
   }
 
   open(id: number) {
