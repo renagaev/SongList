@@ -4,6 +4,7 @@ import SingleSong from "@/components/SingleSong.vue";
 import TagList from "@/components/TagList.vue";
 import Settings from "@/components/Settings.vue";
 import MainList from "@/components/MainList.vue";
+import FavouritesList from "@/components/FavouritesList.vue";
 
 Vue.use(VueRouter)
 
@@ -22,7 +23,7 @@ const routes: Array<RouteConfig> = [
     {
         path: '/song/:id',
         name: 'SingleSong',
-        props: true,
+        props: (route) => ({id: Number.parseInt(route.params.id)}),
         component: SingleSong
     },
     {
@@ -34,6 +35,11 @@ const routes: Array<RouteConfig> = [
         path: '/settings',
         name: "Settings",
         component: Settings
+    },
+    {
+        path: '/favourites',
+        name: "Favourites",
+        component: FavouritesList
     }
 ]
 

@@ -124,6 +124,13 @@ export default new Vuex.Store<State>({
             return searchRes.map(x => x.obj)
 
         },
+        favourites: (state) => {
+            return state.songs
+                .map(x => ({idx: state.favourites.indexOf(x.id), song: x}))
+                .filter(x=> x.idx != -1)
+                .sort((a, b) => a.idx - b.idx)
+                .map(x=> x.song)
+        },
         song: (state) => (id: number) => {
             return state.songs.find(x => x.id == id)
         },

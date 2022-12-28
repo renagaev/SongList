@@ -95,6 +95,11 @@ export default class AppBar extends Vue {
       this.isSearch = false
       return
     }
+    if (routeName == "Favourites") {
+      this.title = "Избранные"
+      this.isSearch = false
+      return
+    }
     this.title = "unknown"
   }
 }

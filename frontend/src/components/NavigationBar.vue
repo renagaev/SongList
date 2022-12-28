@@ -1,14 +1,16 @@
 ﻿<template>
   <div>
-    <v-list nav>
+    <v-list nav shaped>
       <v-list-item-group>
         <template v-for="(item, idx) in items">
           <v-list-item :key="idx" @click="item.action()">
-            <v-list-item-icon>
+            <v-list-item-icon class="ml-2">
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-divider></v-divider>
           </v-list-item>
+          
         </template>
       </v-list-item-group>
     </v-list>
@@ -18,7 +20,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import {mdiViewList, mdiTagMultiple, mdiCogs, mdiDownload} from '@mdi/js'
+import {mdiViewList, mdiTagMultiple, mdiCogs, mdiDownload, mdiStar} from '@mdi/js'
 import install from "@/services/installPrompt"
 
 type NavItem = {
@@ -41,10 +43,15 @@ export default class NavigationBar extends Vue {
       action: () => this.$router.push({name: "Tags"})
     },
     {
+      title: "Избранные",
+      icon: mdiStar,
+      action: () => this.$router.push({name: "Favourites"})
+    },
+    {
       title: "Настройки",
       icon: mdiCogs,
       action: () => this.$router.push({name: "Settings"})
-    }
+    },
   ]
 
   installNav: NavItem = {
