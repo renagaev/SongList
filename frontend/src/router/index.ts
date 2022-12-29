@@ -13,8 +13,8 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Home',
         component: MainList,
-        meta:{
-            
+        meta: {
+            title: "Все",
         },
         props: route => ({
             tag: route.query.tag
@@ -23,23 +23,32 @@ const routes: Array<RouteConfig> = [
     {
         path: '/song/:id',
         name: 'SingleSong',
+        component: SingleSong,
         props: (route) => ({id: Number.parseInt(route.params.id)}),
-        component: SingleSong
     },
     {
         path: '/tags',
         name: "Tags",
-        component: TagList
+        component: TagList,
+        meta: {
+            title: "Категории"
+        }
     },
     {
         path: '/settings',
         name: "Settings",
-        component: Settings
+        component: Settings,
+        meta: {
+            title: "Настройки"
+        }
     },
     {
         path: '/favourites',
         name: "Favourites",
-        component: FavouritesList
+        component: FavouritesList,
+        meta: {
+            title: "Избранные"
+        }
     }
 ]
 

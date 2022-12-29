@@ -28,6 +28,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import {mdiMagnify, mdiMenu} from "@mdi/js"
 import {Watch} from 'vue-property-decorator'
+import {SongModel} from "@/store/models";
 
 @Component
 export default class AppBar extends Vue {
@@ -59,16 +60,12 @@ export default class AppBar extends Vue {
     }
     this.$store.commit("setSearchText", value)
   }
-
-  get route() {
-    return this.$route
-  }
-
-  @Watch("route")
+  
+  @Watch("$route", {deep: true})
   updateState() {
     const routeName = this.$route.name
     if (routeName == "Home") {
-      const tag = (this.route.query.tag as string)
+      const tag = (this.$route.query.tag as string)
       if (tag) {
         this.searchText = ""
         this.title = tag
@@ -80,27 +77,14 @@ export default class AppBar extends Vue {
       return
     }
     if (routeName == "SingleSong") {
-      const song = this.$store.state.selectedSong
+      const songId = Number.parseInt(this.$route.params.id)
+      const song = this.$store.state.songs.find((x: SongModel) => x.id == songId)
       this.title = (song.number ? song.number + '. ' : '') + song.title
       this.isSearch = false
       return
-    }
-    if (routeName == "Tags") {
-      this.title = "Категории"
-      this.isSearch = false
-      return
-    }
-    if (routeName == "Settings") {
-      this.title = "Настройки"
-      this.isSearch = false
-      return
-    }
-    if (routeName == "Favourites") {
-      this.title = "Избранные"
-      this.isSearch = false
-      return
-    }
-    this.title = "unknown"
+    } 
+    this.title = this.$route.meta?.title ?? "Unknown"
+    this.isSearch = false
   }
 }
 </script>
