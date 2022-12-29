@@ -31,7 +31,7 @@ const requestIdleCallback = window.requestIdleCallback || (cb => {
 })
 
 const vuexLocal = new VuexPersistence<State>({
-    filter: (mutation) => mutation.type != "setSongs",
+    filter: (mutation) => mutation.type != "setSongs" && mutation.type != "setSearchText",
     reducer: (state) => {
         const s = {...state} as any
         delete s.songs
