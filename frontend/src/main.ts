@@ -9,11 +9,17 @@ import VueVirtualScroller from 'vue-virtual-scroller'
 import Piano from "@/services/piano"
 import "@/services/installPrompt"
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-Piano.init()
-Vue.use(VueVirtualScroller)
 
+try {
+  navigator.wakeLock.request("screen")
+} catch (e){
+  console.log(e)
+}
+
+Vue.use(VueVirtualScroller)
 Vue.config.productionTip = false
 OpenAPI.BASE = process.env.VUE_APP_API_BASE
+
 new Vue({
   router,
   store,
