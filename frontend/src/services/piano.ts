@@ -1,13 +1,13 @@
-﻿import {Sampler} from "tone";
+﻿import * as Tone from "tone";
 
 const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 
 export default class Piano {
-    private static piano: Sampler;
+    private static piano: Tone.Sampler;
 
     public static init() {
-        this.piano = new Sampler({
+        this.piano = new Tone.Sampler({
             "C4": require("../assets/notes/C4.mp3"),
             "C#4": require("../assets/notes/Cs4.mp3"),
             "D4": require("../assets/notes/D4.mp3"),
@@ -39,10 +39,10 @@ export default class Piano {
             .replace("си", "B");
         const modifier = match[2]
         let note = baseNote
-        if (modifier == "#")
+        if(modifier == "#")
             note = note + modifier
-        if (modifier == "♭")
-            note = notes[notes.indexOf(note) - 1]
+        if(modifier == "♭")
+            note = notes[notes.indexOf(note)-1]
         if (notes.includes(note))
             return note + "4"
         return null
@@ -52,7 +52,7 @@ export default class Piano {
         return this.convert(noteRaw) != null
     }
 
-    public static async play(note?: string | null) {
+    public static async play(note?: string|null) {
         await this.piano.context.resume()
         const converted = this.convert(note)
         if (converted) {
