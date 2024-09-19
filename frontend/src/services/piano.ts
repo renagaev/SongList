@@ -7,7 +7,7 @@ export default class Piano {
     private static piano: Tone.Sampler;
 
     public static init() {
-        this.piano = new Tone.Sampler({
+        Piano.piano = new Tone.Sampler({
             "C4": require("../assets/notes/C4.mp3"),
             "C#4": require("../assets/notes/Cs4.mp3"),
             "D4": require("../assets/notes/D4.mp3"),
@@ -21,6 +21,7 @@ export default class Piano {
             "A#4": require("../assets/notes/As4.mp3"),
             "B4": require("../assets/notes/B4.mp3")
         }).toDestination()
+        Piano.play("соль")
     }
 
     private static convert(noteRaw?: string | null): string | null {
@@ -49,16 +50,16 @@ export default class Piano {
     }
 
     public static canPlay(noteRaw?: string | null): boolean {
-        return this.convert(noteRaw) != null
+        return Piano.convert(noteRaw) != null
     }
 
     public static async play(note?: string|null) {
-        await this.piano.context.resume()
-        const converted = this.convert(note)
+        await Piano.piano.context.resume()
+        const converted = Piano.convert(note)
         if (converted) {
-            this.piano.triggerAttackRelease(converted, 1)
+            Piano.piano.triggerAttackRelease(converted, 1)
         }
     }
 }
 
-document.addEventListener("click", Piano.init, {once: true})
+document.addEventListener("click", () => Piano.init(), {once: true})
