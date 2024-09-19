@@ -11,7 +11,9 @@
                     placeholder="Введите текст"
                     class="ml-5"
                     v-model="searchText"
+                    :clear-icon="clearIcon"
                     autofocus
+                    clearable
                     :dark="dark"
       />
     </div>
@@ -26,7 +28,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import {mdiMagnify, mdiMenu} from "@mdi/js"
+import {mdiMagnify, mdiMenu, mdiClose} from "@mdi/js"
 import {Watch} from 'vue-property-decorator'
 import {SongModel} from "@/store/models";
 
@@ -34,11 +36,13 @@ import {SongModel} from "@/store/models";
 export default class AppBar extends Vue {
   showBar = false
   searchIcon = mdiMagnify
+  clearIcon = mdiClose
   menuIcon = mdiMenu
   title = "Все"
   isSearch = false
   
   mounted(){
+    this.$store.commit("setSearchText", "")
     this.updateState()
   }
 
