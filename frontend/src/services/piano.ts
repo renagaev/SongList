@@ -21,7 +21,6 @@ export default class Piano {
             "A#4": require("../assets/notes/As4.mp3"),
             "B4": require("../assets/notes/B4.mp3")
         }).toDestination()
-        Piano.play("соль")
     }
 
     private static convert(noteRaw?: string | null): string | null {

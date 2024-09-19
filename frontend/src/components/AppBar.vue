@@ -59,6 +59,7 @@ export default class AppBar extends Vue {
   }
 
   set searchText(value: string) {
+    value ??= ""
     if (this.$route.name != "Home") {
       this.$router.push({name: "Home"})
     }
