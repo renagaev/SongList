@@ -110,19 +110,11 @@ export default new Vuex.Store<State>({
                 return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
             const text = state.searchText.trim().toLowerCase()
-            if (!text)
+            if (!text){
                 return state.songs.sort((a, b) => {
-                    if (a.opened & b.opened){
-                       return + (a.opened > b.opened) 
-                    }
-                    if (a.opened){
-                        return -1
-                    }
-                    if (b.opened){
-                        return 1
-                    }
-                    return + (a.id > b.id)
+                    return (b.opened - a.opened) || (a.id - b.id)
                 })
+            }
 
             // contains only digits
             if (/^-?\d+$/.test(text)) {
@@ -214,7 +206,7 @@ export default new Vuex.Store<State>({
             await actionContext.state.connection.invoke("openSong", id)
         },
         async songClosed(actionContext: ActionContext<State, State>, id: number){
-            actionContext.commit("updateOpenedCounter", {id, value: Math.max(actionContext.getters.song(id).opened - 1)})
+            actionContext.commit("updateOpenedCounter", {id, value: Math.max(actionContext.getters.song(id).opened - 1, 0)})
             while (actionContext.state.connection.state != 'Connected'){
                 await new Promise(r => setTimeout(r, 100));
             }
