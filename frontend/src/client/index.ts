@@ -7,5 +7,6 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { Song } from './models/Song';
+export type { SongOpeningStats } from './models/SongOpeningStats';
 
 export { SongService } from './services/SongService';

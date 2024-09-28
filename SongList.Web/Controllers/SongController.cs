@@ -1,18 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SongList.Web.Services;
 
 namespace SongList.Web.Controllers;
 
 [Route("[controller]")]
-public class SongController : ControllerBase
+public class SongController(AppContext dbContext, OpenedSongsManager openedSongsManager) : ControllerBase
 {
-    private readonly AppContext _dbContext;
-
-    public SongController(AppContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     [HttpGet(Name = "getAllSongs")]
-    public Task<Song[]> GetAllSongs() => _dbContext.Set<Song>().ToArrayAsync();
+    public Task<Song[]> GetAllSongs() => dbContext.Set<Song>().ToArrayAsync();
+
+    [HttpGet("opened", Name = "getOpenedSongs")]
+    public SongOpeningStats[] GetOpenedSongs() => openedSongsManager
+        .GetOpenSongs()
+        .Select(x =>
+            new SongOpeningStats
+            {
+                Id = x.Key,
+                Count = x.Value
+            })
+        .ToArray();
 }

@@ -1,7 +1,7 @@
 ﻿<template>
   <v-container>
     <v-chip-group column>
-      <v-chip color="secondary" :ripple="false" small 
+      <v-chip color="secondary" :ripple="false" small
               v-for="tag in song.tags" :key="tag" v-text="tag"
               @click="goToTag(tag)"
       />
@@ -65,8 +65,16 @@ export default class SingleSong extends Vue {
     Piano.play(this.song.note)
   }
 
-  created(): void {
+  created() {
     this.$store.commit("selectSong", this.id)
+  }
+
+  async mounted() {
+    await this.$store.dispatch("songOpened", this.id)
+  }
+
+  async beforeDestroy(): void {
+    await this.$store.dispatch("songClosed", this.id)
   }
 
   goToTag(tag: string) {
