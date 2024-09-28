@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Song } from '../models/Song';
+import type { SongOpeningStats } from '../models/SongOpeningStats';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -21,18 +22,13 @@ export class SongService {
     }
 
     /**
-     * @param requestBody 
-     * @returns any Success
+     * @returns SongOpeningStats Success
      * @throws ApiError
      */
-    public static postSong(
-requestBody?: Array<Song>,
-): CancelablePromise<any> {
+    public static getOpenedSongs(): CancelablePromise<Array<SongOpeningStats>> {
         return __request(OpenAPI, {
-            method: 'POST',
-            url: '/Song',
-            body: requestBody,
-            mediaType: 'application/json',
+            method: 'GET',
+            url: '/Song/opened',
         });
     }
 

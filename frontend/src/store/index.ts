@@ -1,10 +1,12 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, {ActionContext} from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import {SongService} from "@/client";
+import {SongService, SongOpeningStats, OpenAPI} from "@/client";
 import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
+import * as signalR from '@microsoft/signalr';
+import {HubConnection} from "@microsoft/signalr";
 
 export interface State {
     tags: string[],
@@ -13,7 +15,8 @@ export interface State {
     searchText: string,
     showBar: boolean,
     selectedSong?: SongModel,
-    settings: Settings
+    settings: Settings,
+    connection: HubConnection
 }
 
 // https://github.com/championswimmer/vuex-persist/issues/17#issuecomment-350825480
@@ -35,6 +38,7 @@ const vuexLocal = new VuexPersistence<State>({
     reducer: (state) => {
         const s = {...state} as any
         delete s.songs
+        delete s.connection
         return s
     },
     saveState: (key, state, storage) => {
@@ -63,7 +67,8 @@ export default new Vuex.Store<State>({
             darkTheme: false,
             playNotes: true,
             fontSize: 16
-        }
+        },
+        connection: null!
     },
     mutations: {
         setShowBar(state, value: boolean) {
@@ -87,23 +92,37 @@ export default new Vuex.Store<State>({
         setPlayNotes(state, value: boolean) {
             state.settings.playNotes = value
         },
-        toggleFavourite(state, id: number){
+        toggleFavourite(state, id: number) {
             const index = state.favourites.indexOf(id)
-            if(index == -1){
+            if (index == -1) {
                 state.favourites.unshift(id)
-            } else{
+            } else {
                 state.favourites.splice(index, 1)
             }
+        },
+        updateOpenedCounter(state: State, value: { id: number, value: number }) {
+            const song = state.songs.find(x=> x.id == value.id)!.opened = value.value
         }
     },
     getters: {
-        songs: (state) => (tag?: string) => {
+        songs: (state: State) => (tag?: string) => {
             if (tag != null) {
                 return state.songs.filter(x => x.tags.indexOf(tag) != -1)
             }
             const text = state.searchText.trim().toLowerCase()
             if (!text)
-                return state.songs
+                return state.songs.sort((a, b) => {
+                    if (a.opened & b.opened){
+                       return + (a.opened > b.opened) 
+                    }
+                    if (a.opened){
+                        return -1
+                    }
+                    if (b.opened){
+                        return 1
+                    }
+                    return + (a.id > b.id)
+                })
 
             // contains only digits
             if (/^-?\d+$/.test(text)) {
@@ -113,12 +132,11 @@ export default new Vuex.Store<State>({
             const searchRes = fuzzysort.go<SongModel>(state.searchText, state.songs, {
                 keys: ["preparedTitle", "prepared"],
                 limit: 8,
-                // make title match more important for search result
                 scoreFn: res => {
                     const title = res[0]
                     const textRes = res[1]
-                    
-                    return Math.max(title ? title.score : -1000, textRes ? textRes.score - 100 : -1000)
+
+                    return Math.max(title ? title.score : -1000, textRes ? textRes.score - 1 : -1000)
                 }
             })
             return searchRes.map(x => x.obj)
@@ -127,9 +145,9 @@ export default new Vuex.Store<State>({
         favourites: (state) => {
             return state.songs
                 .map(x => ({idx: state.favourites.indexOf(x.id), song: x}))
-                .filter(x=> x.idx != -1)
+                .filter(x => x.idx != -1)
                 .sort((a, b) => a.idx - b.idx)
-                .map(x=> x.song)
+                .map(x => x.song)
         },
         song: (state) => (id: number) => {
             return state.songs.find(x => x.id == id)
@@ -140,27 +158,67 @@ export default new Vuex.Store<State>({
     },
     actions: {
         async loadSongs(actionContext) {
-
             const json = localStorage.getItem("songs")
             if (json != null) {
-                const songs = JSON.parse(json)
-                actionContext.commit("setSongs", songs.map(Object.freeze))
+                const songs: SongModel[] = JSON.parse(json)
+                songs.forEach(x => x.opened = 0)
+                actionContext.commit("setSongs", songs)
             }
-            if (actionContext.state.songs.length == 0 || 1 == 1) {
+            if (actionContext.state.songs.length == 0) {
                 try {
                     const res = await SongService.getAllSongs();
                     const songs = res.map(x => x as SongModel)
                     songs.forEach(song => {
                         song.prepared = fuzzysort.prepare(song.text)
                         song.preparedTitle = fuzzysort.prepare(song.title)
+                        song.opened = 0
                     })
-                    actionContext.commit("setSongs", songs.map(Object.freeze))
+                    actionContext.commit("setSongs", songs)
                     localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
                 } catch (e) {
                     console.log("failed to load songs. seems we are offline")
                     console.log(e)
                 }
             }
+        },
+        async initializeNowOpened(actionContext: ActionContext<State, State>) {
+            actionContext.state.connection = new signalR.HubConnectionBuilder()
+                .withUrl(`${OpenAPI.BASE}/songsHub`)
+                .withAutomaticReconnect()
+                .build()
+            const connection = actionContext.state.connection
+            connection.onreconnected(async connectionId => {
+                if(actionContext.state.selectedSong){
+                    await actionContext.state.connection.invoke("openSong", actionContext.state.selectedSong.id)
+                }
+            })
+            
+            connection.on("updateCounter", (songId, value) => {
+                actionContext.commit("updateOpenedCounter", {id: songId, value})
+            })
+
+            await connection.start()
+                .catch(err => console.error('SignalR Connection Error: ', err));
+
+            const opened: Array<SongOpeningStats> = await SongService.getOpenedSongs()
+            opened.forEach(song => {
+                const id = song.id
+                const value = song.count
+                actionContext.commit("updateOpenedCounter", {id, value})
+            })
+        },
+        async songOpened(actionContext: ActionContext<State, State>, id: number){
+            while (!actionContext.state.connection?.invoke && actionContext.state.connection?.state != 'Connected'){
+                await new Promise(r => setTimeout(r, 100));
+            }
+            await actionContext.state.connection.invoke("openSong", id)
+        },
+        async songClosed(actionContext: ActionContext<State, State>, id: number){
+            while (!actionContext.state.connection?.invoke && actionContext.state.connection.state != 'Connected'){
+                await new Promise(r => setTimeout(r, 100));
+            }
+            actionContext.commit("updateOpenedCounter", {id, value: Math.max(actionContext.getters.song(id).opened - 1)})
+            await actionContext.state.connection.invoke("closeSong", id)
         }
     },
     modules: {},

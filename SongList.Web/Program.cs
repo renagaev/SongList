@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using SongList.Web.Controllers;
+using SongList.Web.Services;
 using AppContext = SongList.Web.AppContext;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +11,15 @@ builder.Services.AddDbContext<AppContext>(o => o.UseNpgsql(config["DbConnectionS
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(x => x.AddDefaultPolicy(x => x.AllowAnyOrigin()));
+builder.Services.AddCors(x => x.AddDefaultPolicy(x =>
+    x.SetIsOriginAllowed(_ => true)
+        .AllowCredentials()
+        .AllowAnyHeader()
+));
 builder.Services.AddResponseCompression();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<OpenedSongsManager>();
+builder.Services.AddHostedService(s => s.GetService<OpenedSongsManager>());
 
 var app = builder.Build();
 {
@@ -29,6 +38,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseAuthorization();
 
+app.MapHub<SongsHub>("/songsHub");
 app.MapControllers();
+
 
 app.Run();

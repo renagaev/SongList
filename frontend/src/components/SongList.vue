@@ -8,7 +8,7 @@
       ref="scroll"
   >
     <div class="item">
-      <v-list-item two-line @click="open(item.id)" class="item">
+      <v-list-item two-line active @click="open(item.id)" :class="'item ' + getClass(item)">
         <v-list-item-content>
           <v-list-item-title v-text="getTitle(item)"/>
           <v-list-item-subtitle v-text="item.text"/>
@@ -34,11 +34,11 @@ export default class SongList extends Vue {
 
   @Prop()
   scrollKey?: string
-  @Prop({ required: true })
+  @Prop({required: true})
   songs!: SongModel[]
   scrollTop = 0
   lastScrollKey?: string
-  
+
   activated() {
     if (this.lastScrollKey == this.scrollKey) {
       this.$refs.scroll.scrollTop = this.scrollTop
@@ -57,6 +57,16 @@ export default class SongList extends Vue {
     return song.title
   }
 
+  getClass(song: SongModel) {
+    if (song.opened) {
+      if (this.$vuetify.theme.dark) {
+        return "opened-dark"
+      }
+      return "opened"
+    }
+    return ""
+  }
+
   open(id: number) {
     this.$router.push("song/" + id.toString())
   }
@@ -70,5 +80,13 @@ export default class SongList extends Vue {
 
 .item {
   height: 64px;
+}
+
+.opened-dark {
+  background-color: #424242
+}
+
+.opened {
+  background-color: #BDBDBD;
 }
 </style>

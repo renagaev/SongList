@@ -16,3 +16,12 @@ public class Song
     public string? Note { get; set; }
     public string OriginalTitle { get; set; }
 }
+
+public class SongOpeningStats
+{
+    [Required]
+    public int Id { get; set; }
+    
+    [Required]
+    public int Count { get; set; }
+}
