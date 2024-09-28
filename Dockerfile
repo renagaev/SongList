@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as backend
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as backend
 
 WORKDIR app
 
@@ -18,7 +18,7 @@ RUN npm install
 COPY frontend . 
 RUN npm run build 
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final 
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final 
 WORKDIR app 
 COPY --from=backend app/publish .
 COPY --from=frontend app/dist wwwroot
