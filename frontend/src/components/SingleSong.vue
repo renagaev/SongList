@@ -32,7 +32,11 @@ import Component from 'vue-class-component'
 import {Prop} from 'vue-property-decorator';
 import Piano from "@/services/piano";
 import {mdiMusicNote, mdiStar, mdiStarOutline} from "@mdi/js"
-
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteUpdate',
+  'beforeRouteLeave'
+]);
 @Component
 export default class SingleSong extends Vue {
   @Prop()
@@ -73,8 +77,9 @@ export default class SingleSong extends Vue {
     await this.$store.dispatch("songOpened", this.id)
   }
 
-  async beforeDestroy() {
-    await this.$store.dispatch("songClosed", this.id)
+  async beforeRouteLeave(to: any, from: any, next: any) {
+    this.$store.dispatch("songClosed", this.id)
+    await next()
   }
 
   goToTag(tag: string) {

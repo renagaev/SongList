@@ -37,10 +37,10 @@ export default class App extends Vue {
     this.$store.commit("setShowBar", value)
   }
 
-  async created() {
+  created() {
     this.$vuetify.theme.dark = this.$store.state.settings.darkTheme
-    await this.$store.dispatch("loadSongs")
-    await this.$store.dispatch("initializeNowOpened")
+    this.$store.dispatch("loadSongs")
+    this.$store.dispatch("initializeNowOpened")
   }
 }
 </script>

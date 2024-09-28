@@ -34,7 +34,7 @@ const requestIdleCallback = window.requestIdleCallback || (cb => {
 })
 
 const vuexLocal = new VuexPersistence<State>({
-    filter: (mutation) => mutation.type != "setSongs" && mutation.type != "setSearchText",
+    filter: (mutation) => mutation.type != "setSongs" && mutation.type != "setSearchText" && mutation.type != 'updateOpenedCounter',
     reducer: (state) => {
         const s = {...state} as any
         delete s.songs
@@ -197,27 +197,27 @@ export default new Vuex.Store<State>({
                 actionContext.commit("updateOpenedCounter", {id: songId, value})
             })
 
-            await connection.start()
-                .catch(err => console.error('SignalR Connection Error: ', err));
-
-            const opened: Array<SongOpeningStats> = await SongService.getOpenedSongs()
-            opened.forEach(song => {
+            SongService.getOpenedSongs().then(stats => stats.forEach(song => {
                 const id = song.id
                 const value = song.count
                 actionContext.commit("updateOpenedCounter", {id, value})
-            })
+            }))
+
+            await connection.start()
+                .catch(err => console.error('SignalR Connection Error: ', err));
+            
         },
         async songOpened(actionContext: ActionContext<State, State>, id: number){
-            while (!actionContext.state.connection?.invoke && actionContext.state.connection?.state != 'Connected'){
+            while (actionContext.state.connection?.state != 'Connected'){
                 await new Promise(r => setTimeout(r, 100));
             }
             await actionContext.state.connection.invoke("openSong", id)
         },
         async songClosed(actionContext: ActionContext<State, State>, id: number){
-            while (!actionContext.state.connection?.invoke && actionContext.state.connection.state != 'Connected'){
+            actionContext.commit("updateOpenedCounter", {id, value: Math.max(actionContext.getters.song(id).opened - 1)})
+            while (actionContext.state.connection.state != 'Connected'){
                 await new Promise(r => setTimeout(r, 100));
             }
-            actionContext.commit("updateOpenedCounter", {id, value: Math.max(actionContext.getters.song(id).opened - 1)})
             await actionContext.state.connection.invoke("closeSong", id)
         }
     },
