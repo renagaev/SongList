@@ -19,7 +19,7 @@ builder.Services.AddCors(x => x.AddDefaultPolicy(x =>
 builder.Services.AddResponseCompression();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<OpenedSongsManager>();
-builder.Services.AddHostedService(s => s.GetService<OpenedSongsManager>());
+builder.Services.AddHostedService(s => s.GetRequiredService<OpenedSongsManager>());
 
 var app = builder.Build();
 {
