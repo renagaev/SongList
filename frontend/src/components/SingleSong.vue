@@ -73,7 +73,7 @@ export default class SingleSong extends Vue {
     await this.$store.dispatch("songOpened", this.id)
   }
 
-  async beforeDestroy(): void {
+  async beforeDestroy() {
     await this.$store.dispatch("songClosed", this.id)
   }
 
