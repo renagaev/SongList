@@ -1,26 +1,37 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using SongList.Web.Entities;
 
 namespace SongList.Web;
 
 public class AppContext : DbContext
 {
-    public AppContext(DbContextOptions options): base(options)
-    {   
+    public AppContext(DbContextOptions options) : base(options)
+    {
     }
+
+    public DbSet<Song> Songs { get; init; }
+    public DbSet<SongHistoryItem> History { get; init; }
+    public DbSet<SongMapping> Mappings { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var jsonSerializerOptions = new JsonSerializerOptions();
         modelBuilder.Entity<Song>()
+            .ToTable("Song")
             .Property(x => x.Tags)
             .HasConversion(
-                convertToProviderExpression: value => JsonSerializer.Serialize(value, jsonSerializerOptions) ?? "[]",
+                convertToProviderExpression: value => JsonSerializer.Serialize(value, jsonSerializerOptions),
                 convertFromProviderExpression: value =>
-                    JsonSerializer.Deserialize<string[]>(value ?? "[]", jsonSerializerOptions) ?? Array.Empty<string>())
+                    JsonSerializer.Deserialize<string[]>(value, jsonSerializerOptions) ?? Array.Empty<string>())
             .HasMaxLength(64 * 1024)
             .IsRequired(false)
             .HasColumnType("jsonb");
+
+        modelBuilder.Entity<SongHistoryItem>().HasIndex(x => x.SongId);
+        modelBuilder.Entity<SongMapping>().HasIndex(x => x.HolyricsId);
+        modelBuilder.Entity<SongMapping>().HasIndex(x => new { x.SongId, x.HolyricsId }).IsUnique();
+
         base.OnModelCreating(modelBuilder);
     }
 }
