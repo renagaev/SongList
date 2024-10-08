@@ -156,21 +156,19 @@ export default new Vuex.Store<State>({
                 songs.forEach(x => x.opened = 0)
                 actionContext.commit("setSongs", songs)
             }
-            if (actionContext.state.songs.length == 0) {
-                try {
-                    const res = await SongService.getAllSongs();
-                    const songs = res.map(x => x as SongModel)
-                    songs.forEach(song => {
-                        song.prepared = fuzzysort.prepare(song.text)
-                        song.preparedTitle = fuzzysort.prepare(song.title)
-                        song.opened = 0
-                    })
-                    actionContext.commit("setSongs", songs)
-                    localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
-                } catch (e) {
-                    console.log("failed to load songs. seems we are offline")
-                    console.log(e)
-                }
+            try {
+                const res = await SongService.getAllSongs();
+                const songs = res.map(x => x as SongModel)
+                songs.forEach(song => {
+                    song.prepared = fuzzysort.prepare(song.text)
+                    song.preparedTitle = fuzzysort.prepare(song.title)
+                    song.opened = 0
+                })
+                actionContext.commit("setSongs", songs)
+                localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
+            } catch (e) {
+                console.log("failed to load songs. seems we are offline")
+                console.log(e)
             }
         },
         async initializeNowOpened(actionContext: ActionContext<State, State>) {
