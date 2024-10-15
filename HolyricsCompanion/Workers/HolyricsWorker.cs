@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace HolyricsCompanion.Workers;
 
-public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory): BackgroundService
+public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory, ILogger<HolyricsWorker> logger): BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -18,6 +18,7 @@ public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, ISe
             try
             {
                 var historyItems = await client.GetHistories(stoppingToken);
+                logger.LogInformation($"received {historyItems.Length} history items");
                 foreach (var historyItem in historyItems)
                 {
                     var recordedLastTime = storage.GetSongLastTime(historyItem.MusicId);
@@ -42,8 +43,7 @@ public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, ISe
             }
             catch (Exception e)
             {
-                var x = 0;
-                // ignored
+                logger.LogInformation(e, "failed to receive new history items");
             }
         }
     }
