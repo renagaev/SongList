@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace HolyricsCompanion.Workers;
 
-public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory)
+public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory, ILogger<OutboxWorker> logger)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,18 +18,19 @@ public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServ
             var client = scope.ServiceProvider.GetRequiredService<SonglistClient>();
 
             var itemsToSend = storage.GetNonSentItems();
+            logger.LogInformation($"found {itemsToSend.Length} new history items to send");
             foreach (var historyItem in itemsToSend)
             {
                 try
                 {
-                    await client.ReportItem(historyItem.HolyricsId, historyItem.CreatedAt, historyItem.Title,
-                        stoppingToken);
+                    await client.ReportItem(historyItem.HolyricsId, historyItem.CreatedAt, historyItem.Title, stoppingToken);
                     historyItem.Sent = true;
                     storage.Upsert(historyItem);
+                    logger.LogInformation("reported new item to server");
                 }
                 catch (Exception e)
                 {
-                    // ignored
+                    logger.LogInformation(e, "failed to report history item");
                 }
             }
 

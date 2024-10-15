@@ -29,14 +29,7 @@ public class Repository: IDisposable
 
     public void Upsert(HistoryItem historyItem)
     {
-        var existing = _collection.FindOne(x =>
-            x.CreatedAt == historyItem.CreatedAt &&
-            x.HolyricsId == historyItem.HolyricsId);
-
-        if (existing == null)
-        {
-            _collection.Upsert(historyItem);
-        }
+        _collection.Upsert(historyItem);
     }
     
 
