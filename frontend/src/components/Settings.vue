@@ -9,9 +9,9 @@
         <v-list-item-title>Темная тема</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    
+
     <v-divider/>
-    
+
     <v-list-item>
       <v-list-item-action>
         <v-checkbox v-model="playNotes" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
@@ -21,8 +21,17 @@
       </v-list-item-content>
     </v-list-item>
 
+    <v-list-item>
+      <v-list-item-action>
+        <v-checkbox v-model="showHistory" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Показывать историю песен</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+
     <v-divider/>
-    
+
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
@@ -51,10 +60,12 @@ export default class Settings extends Vue {
   get fontStyle() {
     return `font-size: ${this.fontSize}px`
   }
-  created(){
+
+  created() {
     this.fontSize = this.$store.state.settings.fontSize
   }
-  destroyed(){
+
+  destroyed() {
     this.$store.commit("setFontSize", this.fontSize)
   }
 
@@ -66,6 +77,13 @@ export default class Settings extends Vue {
     this.$store.commit("setPlayNotes", value)
   }
 
+  get showHistory() {
+    return this.settings.showHistory
+  }
+
+  set showHistory(value: boolean) {
+    this.$store.commit("setShowHistory", value)
+  }
 
   get settings() {
     return this.$store.state.settings
@@ -84,7 +102,7 @@ export default class Settings extends Vue {
 </script>
 
 <style scoped>
-.v-list.theme--dark{
+.v-list.theme--dark {
   background-color: rgb(18, 18, 18);
 }
 </style>

@@ -5,5 +5,6 @@ export type SongModel = Song & { prepared?: Fuzzysort.Prepared, preparedTitle?: 
 export type Settings = {
     darkTheme: boolean
     playNotes: boolean
+    showHistory: boolean
     fontSize: number
 }

@@ -1,34 +1,39 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Song } from '../models/Song';
-import type { SongOpeningStats } from '../models/SongOpeningStats';
+import type { ServiceDto } from '../models/ServiceDto';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 
-export class SongService {
+export class HistoryService {
 
     /**
-     * @returns Song OK
+     * @param songId
+     * @returns string OK
      * @throws ApiError
      */
-    public static getAllSongs(): CancelablePromise<Array<Song>> {
+    public static getSongHistory(
+        songId: number,
+    ): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/Song',
+            url: '/history/{songId}',
+            path: {
+                'songId': songId,
+            },
         });
     }
 
     /**
-     * @returns SongOpeningStats OK
+     * @returns ServiceDto OK
      * @throws ApiError
      */
-    public static getOpenedSongs(): CancelablePromise<Array<SongOpeningStats>> {
+    public static getServices(): CancelablePromise<Array<ServiceDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/Song/opened',
+            url: '/history/services',
         });
     }
 

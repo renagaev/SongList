@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex, {ActionContext} from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import {SongService, SongOpeningStats, OpenAPI} from "@/client";
+import {SongService, HistoryService, SongOpeningStats, OpenAPI} from "@/client";
 import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
@@ -66,6 +66,7 @@ export default new Vuex.Store<State>({
         settings: {
             darkTheme: false,
             playNotes: true,
+            showHistory: false,
             fontSize: 16
         },
         connection: null!
@@ -91,6 +92,9 @@ export default new Vuex.Store<State>({
         },
         setPlayNotes(state, value: boolean) {
             state.settings.playNotes = value
+        },
+        setShowHistory(state, value: boolean){
+            state.settings.showHistory = value
         },
         toggleFavourite(state, id: number) {
             const index = state.favourites.indexOf(id)
@@ -209,6 +213,10 @@ export default new Vuex.Store<State>({
                 await new Promise(r => setTimeout(r, 100));
             }
             await actionContext.state.connection.invoke("closeSong", id)
+        },
+        async getSongHistory(actionContext: ActionContext<State, State>, id: number){
+            const res = await HistoryService.getSongHistory(id)
+            return res.map(d => new Date(d))
         }
     },
     modules: {},
