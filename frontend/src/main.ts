@@ -1,14 +1,16 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-import vuetify from './plugins/vuetify'
+import VueRouter from 'vue-router'
+import Vuex from 'vuex'
 import {OpenAPI} from "@/client";
 import VueVirtualScroller from 'vue-virtual-scroller'
 import Piano from "@/services/piano"
 import "@/services/installPrompt"
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import { createVuetify } from 'vuetify'
 
 try {
   navigator.wakeLock.request("screen")
@@ -16,13 +18,14 @@ try {
   console.log(e)
 }
 
-Vue.use(VueVirtualScroller)
-Vue.config.productionTip = false
-OpenAPI.BASE = process.env.VUE_APP_API_BASE
+const vuetify = createVuetify()
 
-new Vue({
-  router,
-  store,
+OpenAPI.BASE = process.env.VUE_APP_API_BASE
+const app = createApp(App, {
   vuetify,
-  render: h => h(App)
-}).$mount('#app')
+})
+app.use(vuetify)
+app.use(store)
+app.use(VueVirtualScroller)
+app.use(router)
+app.mount('#app')

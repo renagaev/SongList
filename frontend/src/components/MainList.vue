@@ -1,29 +1,25 @@
 ﻿<template>
-  <song-list :songs="songs" :scroll-key="tag">
-
-  </song-list>
+  <song-list :songs="songs" :scroll-key="tag"></song-list>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {SongModel} from "@/store/models";
-import {Prop} from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
 import SongList from "@/components/SongList.vue";
 
-@Component({
-  name: "MainList",
-  components: {SongList}
-})
-export default class MainList extends Vue {
+// Props
+defineProps({
+  tag: {
+    type: String,
+    required: false,
+  },
+});
 
-  @Prop()
-  tag?: string
+// Store
+const store = useStore();
 
-  get songs(): SongModel[] {
-    return this.$store.getters["songs"](this.tag)
-  }
-}
+// Computed properties
+const songs = computed(() => store.getters["songs"](tag));
 </script>
 
 <style scoped>

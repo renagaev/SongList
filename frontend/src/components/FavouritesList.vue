@@ -1,23 +1,18 @@
 ﻿<template>
-  <song-list :songs="songs">
-  </song-list>
+  <song-list :songs="songs"></song-list>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {SongModel} from "@/store/models";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
 import SongList from "@/components/SongList.vue";
+import { SongModel } from "@/store/models";
 
-@Component({
-  name: "FavouritesList",
-  components: {SongList}
-})
-export default class FavouritesList extends Vue {
-  get songs(): SongModel[] {
-    return this.$store.getters["favourites"]
-  }
-}
+// Store
+const store = useStore();
+
+// Computed properties
+const songs = computed<SongModel[]>(() => store.getters["favourites"]);
 </script>
 
 <style scoped>

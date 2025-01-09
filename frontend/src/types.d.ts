@@ -1,1 +1,1 @@
-declare module "vue2-ios-pwa-prompt"
+declare module "vue-ios-pwa-prompt"

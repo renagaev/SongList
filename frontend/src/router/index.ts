@@ -1,14 +1,12 @@
 import Vue from 'vue'
-import VueRouter, {RouteConfig} from 'vue-router'
+import {createRouter, RouteRecordRaw, createWebHashHistory} from 'vue-router'
 import SingleSong from "@/components/SingleSong.vue";
 import TagList from "@/components/TagList.vue";
 import Settings from "@/components/Settings.vue";
 import MainList from "@/components/MainList.vue";
 import FavouritesList from "@/components/FavouritesList.vue";
 
-Vue.use(VueRouter)
-
-const routes: Array<RouteConfig> = [
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'Home',
@@ -24,7 +22,7 @@ const routes: Array<RouteConfig> = [
         path: '/song/:id',
         name: 'SingleSong',
         component: SingleSong,
-        props: (route) => ({id: Number.parseInt(route.params.id)}),
+        props: (route) => ({id: Number.parseInt(route.params.id as string)}),
     },
     {
         path: '/tags',
@@ -52,17 +50,9 @@ const routes: Array<RouteConfig> = [
     }
 ]
 
-const router = new VueRouter({
-    mode: 'hash',
-    base: process.env.BASE_URL,
-    routes,
-    scrollBehavior(to, from, savedPosition) {
-        if (savedPosition) {
-            return savedPosition
-        } else {
-            return {x: 0, y: 0}
-        }
-    },
+const router = createRouter({
+    history: createWebHashHistory(process.env.BASE_URL),
+    routes
 })
 
 export default router

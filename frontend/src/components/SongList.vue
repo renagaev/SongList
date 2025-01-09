@@ -4,73 +4,83 @@
       :items="songs"
       :item-size="64"
       key-field="id"
-      v-slot="{item}"
+      v-slot="{ item }"
       ref="scroll"
   >
     <div class="item">
-      <v-list-item two-line active @click="open(item.id)" :class="'item ' + getClass(item)">
+      <v-list-item
+          two-line
+          active
+          @click="open(item.id)"
+          :class="'item ' + getClass(item)"
+      >
         <v-list-item-content>
-          <v-list-item-title v-text="getTitle(item)"/>
-          <v-list-item-subtitle v-text="item.text"/>
+          <v-list-item-title v-text="getTitle(item)" />
+          <v-list-item-subtitle v-text="item.text" />
         </v-list-item-content>
       </v-list-item>
-      <v-divider/>
+      <v-divider />
     </div>
   </recycle-scroller>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {SongModel} from "@/store/models";
-import {Prop} from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onActivated, onDeactivated } from "vue";
+import { useRouter } from "vue-router";
+import { SongModel } from "@/store/models";
 
-@Component({name: "SongList"})
-export default class SongList extends Vue {
+// Props
+defineProps({
+  scrollKey: {
+    type: String,
+    required: false,
+  },
+  songs: {
+    type: Array as () => SongModel[],
+    required: true,
+  },
+});
 
-  $refs!: {
-    scroll: HTMLFormElement
+// Refs
+const scrollTop = ref(0);
+const lastScrollKey = ref<string | undefined>(undefined);
+const scroll = ref<HTMLElement | null>(null);
+
+// Router
+const router = useRouter();
+
+// Computed
+const scrollRef = computed(() => scroll.value);
+
+// Methods
+const getTitle = (song: SongModel): string => {
+  return song.number ? `${song.title} | ${song.number}` : song.title;
+};
+
+const getClass = (song: SongModel): string => {
+  if (song.opened) {
+    return scroll.value?.classList.contains("dark") ? "opened-dark" : "opened";
   }
+  return "";
+};
 
-  @Prop()
-  scrollKey?: string
-  @Prop({required: true})
-  songs!: SongModel[]
-  scrollTop = 0
-  lastScrollKey?: string
+const open = (id: number) => {
+  router.push(`/song/${id}`);
+};
 
-  activated() {
-    if (this.lastScrollKey == this.scrollKey) {
-      this.$refs.scroll.scrollTop = this.scrollTop
-    }
+// Lifecycle hooks
+onActivated(() => {
+  if (lastScrollKey.value === scrollKey && scrollRef.value) {
+    scrollRef.value.scrollTop = scrollTop.value;
   }
+});
 
-  deactivated() {
-    this.scrollTop = this.$refs.scroll.scrollTop
-    this.lastScrollKey = this.scrollKey
+onDeactivated(() => {
+  if (scrollRef.value) {
+    scrollTop.value = scrollRef.value.scrollTop;
+    lastScrollKey.value = scrollKey;
   }
-
-  getTitle(song: SongModel): string {
-    if (song.number) {
-      return `${song.title} | ${song.number}`
-    }
-    return song.title
-  }
-
-  getClass(song: SongModel) {
-    if (song.opened) {
-      if (this.$vuetify.theme.dark) {
-        return "opened-dark"
-      }
-      return "opened"
-    }
-    return ""
-  }
-
-  open(id: number) {
-    this.$router.push("song/" + id.toString())
-  }
-}
+});
 </script>
 
 <style scoped>
@@ -83,7 +93,7 @@ export default class SongList extends Vue {
 }
 
 .opened-dark {
-  background-color: #424242
+  background-color: #424242;
 }
 
 .opened {
