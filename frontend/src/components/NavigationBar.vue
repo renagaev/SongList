@@ -1,17 +1,15 @@
 ﻿<template>
   <div>
     <v-list nav shaped>
-      <v-list-item-group>
-        <template v-for="(item, idx) in navItems" :key="idx">
-          <v-list-item @click="item.action">
-            <v-list-item-icon class="ml-2">
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-            <v-divider></v-divider>
-          </v-list-item>
-        </template>
-      </v-list-item-group>
+      <template v-for="(item, idx) in navItems" :key="idx">
+        <v-list-item
+            :title="item.title"
+            :prepend-icon="item.icon"
+            class="ml-2"
+            @click="item.action"/>
+        
+        <v-divider></v-divider>
+      </template>
     </v-list>
   </div>
 </template>

@@ -10,7 +10,10 @@ import VueVirtualScroller from 'vue-virtual-scroller'
 import Piano from "@/services/piano"
 import "@/services/installPrompt"
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 try {
   navigator.wakeLock.request("screen")
@@ -18,7 +21,10 @@ try {
   console.log(e)
 }
 
-const vuetify = createVuetify()
+const vuetify = createVuetify({
+  components,
+  directives
+})
 
 OpenAPI.BASE = process.env.VUE_APP_API_BASE
 const app = createApp(App, {

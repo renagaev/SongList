@@ -35,6 +35,7 @@ import {ref, computed, watch, onMounted} from 'vue';
 import {mdiMagnify, mdiMenu, mdiClose} from "@mdi/js";
 import {useRoute, useRouter} from 'vue-router';
 import {SongModel} from "@/store/models";
+import { useStore } from "vuex";
 
 // Ссылки и переменные
 const route = useRoute();
@@ -45,16 +46,17 @@ const clearIcon = ref(mdiClose);
 const menuIcon = ref(mdiMenu);
 const title = ref("Все");
 const isSearch = ref(false);
+const store = useStore()
 
 // Геттеры и сеттеры
 const searchText = computed({
-  get: (): string => route.meta.store.state.searchText,
+  get: (): string => store.state.searchText,
   set: (value: string) => {
     value ||= "";
     if (route.name !== "Home") {
       router.push({name: "Home"});
     }
-    route.meta.store.commit("setSearchText", value);
+    store.commit("setSearchText", value);
   },
 });
 
@@ -63,7 +65,7 @@ const dark = computed(() => route.meta.vuetify.theme.current.dark);
 
 // Методы
 const toggleBar = () => {
-  route.meta.store.commit("setShowBar", !route.meta.store.state.showBar);
+  store.commit("setShowBar", !store.state.showBar);
 };
 
 const updateState = () => {
@@ -85,7 +87,7 @@ const updateState = () => {
   if (routeName === "SingleSong") {
     const idParam = route.params.id;
     const songId = Array.isArray(idParam) ? Number.parseInt(idParam[0]) : Number.parseInt(idParam);
-    const song = route.meta.store.state.songs.find((x: SongModel) => x.id === songId);
+    const song = store.state.songs.find((x: SongModel) => x.id === songId);
     title.value = (song?.number ? `${song.number}. ` : "") + song?.title;
     isSearch.value = false;
     return;
@@ -97,7 +99,7 @@ const updateState = () => {
 
 // Lifecycle hooks
 onMounted(() => {
-  route.meta.store.commit("setSearchText", "");
+  store.commit("setSearchText", "");
   updateState();
 });
 

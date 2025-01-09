@@ -14,10 +14,8 @@
           @click="open(item.id)"
           :class="'item ' + getClass(item)"
       >
-        <v-list-item-content>
-          <v-list-item-title v-text="getTitle(item)" />
-          <v-list-item-subtitle v-text="item.text" />
-        </v-list-item-content>
+        <v-list-item-title>{{getTitle(item)}}</v-list-item-title>
+        <v-list-item-subtitle>{{item.text}}</v-list-item-subtitle>
       </v-list-item>
       <v-divider />
     </div>

@@ -4,50 +4,43 @@
       <v-list-item-action>
         <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
       </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>Темная тема</v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title>Темная тема</v-list-item-title>
     </v-list-item>
 
-    <v-divider />
+    <v-divider/>
 
     <v-list-item>
       <v-list-item-action>
         <v-checkbox v-model="playNotes" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
       </v-list-item-action>
-      <v-list-item-content>
         <v-list-item-title>Показывать ноты</v-list-item-title>
-      </v-list-item-content>
     </v-list-item>
-
+    <v-divider/>
+    
     <v-list-item>
       <v-list-item-action>
         <v-checkbox v-model="showHistory" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
       </v-list-item-action>
-      <v-list-item-content>
         <v-list-item-title>Показывать историю песен</v-list-item-title>
-      </v-list-item-content>
     </v-list-item>
 
-    <v-divider />
+    <v-divider/>
 
     <v-list-item>
-      <v-list-item-content>
         <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
         <v-container>
           <v-slider min="12" max="50" v-model="fontSize"></v-slider>
         </v-container>
         <div :style="fontStyle">Пример текста</div>
-      </v-list-item-content>
     </v-list-item>
-    <v-divider />
+    <v-divider/>
   </v-list>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
-import { useStore } from "vuex";
+import {ref, computed, onMounted, onUnmounted} from "vue";
+import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
+import {useStore} from "vuex";
 
 // Icons
 const checkBoxOff = mdiCheckboxBlankOutline;

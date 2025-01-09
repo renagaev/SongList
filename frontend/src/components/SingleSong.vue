@@ -40,14 +40,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
-import { mdiMusicNote, mdiStar, mdiStarOutline } from "@mdi/js";
+import {ref, computed, onMounted} from "vue";
+import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
+import {mdiMusicNote, mdiStar, mdiStarOutline} from "@mdi/js";
 import Piano from "@/services/piano";
-import { daysAgo } from "@/services/DateHelper";
+import {daysAgo} from "@/services/DateHelper";
+import {useStore} from "vuex";
 
+const store = useStore()
 // Props
-defineProps({
+const props = defineProps({
   id: {
     type: Number,
     required: true,
@@ -63,9 +65,6 @@ const unFavouriteIcon = mdiStarOutline;
 const route = useRoute();
 const router = useRouter();
 const history = ref<Date[]>([]);
-
-// Computed properties
-const store = route.meta.store;
 
 const isFavourite = computed(() => store.state.favourites.includes(route.params.id));
 
@@ -113,7 +112,7 @@ const loadHistory = async () => {
 };
 
 const goToTag = (tag: string) => {
-  router.push({ name: "Home", query: { tag } });
+  router.push({name: "Home", query: {tag}});
 };
 
 // Lifecycle hooks

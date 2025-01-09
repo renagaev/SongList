@@ -8,7 +8,7 @@ import { useStore } from "vuex";
 import SongList from "@/components/SongList.vue";
 
 // Props
-defineProps({
+const props = defineProps({
   tag: {
     type: String,
     required: false,
@@ -19,7 +19,7 @@ defineProps({
 const store = useStore();
 
 // Computed properties
-const songs = computed(() => store.getters["songs"](tag));
+const songs = computed(() => store.getters["songs"](props.tag));
 </script>
 
 <style scoped>
