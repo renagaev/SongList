@@ -2,36 +2,37 @@
   <v-list>
     <v-list-item>
       <v-list-item-action>
-        <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+        <v-checkbox v-model="darkTheme" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox>
+        <v-list-item-title>Темная тема</v-list-item-title>
       </v-list-item-action>
-      <v-list-item-title>Темная тема</v-list-item-title>
+      
     </v-list-item>
 
+    <v-divider/>
+
+    <v-list-item
+        title="Показывать ноты">
+      <v-list-item-action start> 
+        <v-checkbox-btn :model-value="playNotes" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+      </v-list-item-action>
+    </v-list-item>
     <v-divider/>
 
     <v-list-item>
       <v-list-item-action>
-        <v-checkbox v-model="playNotes" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
+        <v-checkbox v-model="showHistory" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox>
       </v-list-item-action>
-        <v-list-item-title>Показывать ноты</v-list-item-title>
-    </v-list-item>
-    <v-divider/>
-    
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="showHistory" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-        <v-list-item-title>Показывать историю песен</v-list-item-title>
+      <v-list-item-title>Показывать историю песен</v-list-item-title>
     </v-list-item>
 
     <v-divider/>
 
     <v-list-item>
-        <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
-        <v-container>
-          <v-slider min="12" max="50" v-model="fontSize"></v-slider>
-        </v-container>
-        <div :style="fontStyle">Пример текста</div>
+      <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
+      <v-container>
+        <v-slider min="12" max="50" v-model="fontSize"></v-slider>
+      </v-container>
+      <div :style="fontStyle">Пример текста</div>
     </v-list-item>
     <v-divider/>
   </v-list>
@@ -41,6 +42,7 @@
 import {ref, computed, onMounted, onUnmounted} from "vue";
 import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
 import {useStore} from "vuex";
+import {useTheme} from "vuetify";
 
 // Icons
 const checkBoxOff = mdiCheckboxBlankOutline;
@@ -48,6 +50,7 @@ const checkBoxOn = mdiCheckboxMarked;
 
 // Store
 const store = useStore();
+const theme = useTheme();
 
 // Reactive variables
 const fontSize = ref(0);
@@ -75,7 +78,7 @@ const darkTheme = computed({
   get: () => settings.value.darkTheme,
   set: (value: boolean) => {
     store.commit("setDarkTheme", value);
-    store.state.$vuetify.theme.dark = value;
+    theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
   },
 });
 

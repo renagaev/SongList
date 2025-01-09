@@ -3,12 +3,12 @@
     <v-list nav shaped>
       <template v-for="(item, idx) in navItems" :key="idx">
         <v-list-item
+            rounded
             :title="item.title"
             :prepend-icon="item.icon"
             class="ml-2"
-            @click="item.action"/>
-        
-        <v-divider></v-divider>
+            @click="item.action">
+        </v-list-item>
       </template>
     </v-list>
   </div>

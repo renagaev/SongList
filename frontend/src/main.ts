@@ -14,6 +14,9 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import {mdiViewList, mdiTagMultiple, mdiCogs, mdiDownload, mdiStar, mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
+
 
 try {
   navigator.wakeLock.request("screen")
@@ -23,7 +26,13 @@ try {
 
 const vuetify = createVuetify({
   components,
-  directives
+  directives,
+  icons:{
+    defaultSet: 'mdi',
+    sets: {
+      mdi,
+    },
+  }
 })
 
 OpenAPI.BASE = process.env.VUE_APP_API_BASE
