@@ -82,6 +82,13 @@ onDeactivated(() => {
 </script>
 
 <style scoped>
+
+.v-list-item-subtitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+}
 .scroller {
   height: calc(100vh - 64px);
 }

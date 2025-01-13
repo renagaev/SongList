@@ -4,7 +4,7 @@
       <v-icon>{{ menuIcon }}</v-icon>
     </v-app-bar-nav-icon>
 
-    <v-toolbar-title v-if="!isSearch" v-text="title"></v-toolbar-title>
+    <v-toolbar-title v-if="!isSearch">{{title}}</v-toolbar-title>
     <div v-else>
       <v-text-field
           solo
@@ -22,8 +22,6 @@
           :dark="dark"
       />
     </div>
-
-    <v-spacer></v-spacer>
     <v-btn icon @click="isSearch = !isSearch">
       <v-icon>{{ searchIcon }}</v-icon>
     </v-btn>

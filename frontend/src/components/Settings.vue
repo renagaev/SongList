@@ -1,28 +1,34 @@
 ﻿<template>
   <v-list>
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="darkTheme" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox>
-        <v-list-item-title>Темная тема</v-list-item-title>
-      </v-list-item-action>
-      
+    <v-list-item
+        title="Темная тема">
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn v-model="darkTheme" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
     </v-list-item>
 
     <v-divider/>
 
     <v-list-item
         title="Показывать ноты">
-      <v-list-item-action start> 
-        <v-checkbox-btn :model-value="playNotes" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
-      </v-list-item-action>
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn :model-value="playNotes" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
+
     </v-list-item>
     <v-divider/>
 
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="showHistory" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-      <v-list-item-title>Показывать историю песен</v-list-item-title>
+    <v-list-item
+        title="Показывать историю песен">
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn v-model="showHistory" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
     </v-list-item>
 
     <v-divider/>
@@ -30,7 +36,7 @@
     <v-list-item>
       <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
       <v-container>
-        <v-slider min="12" max="50" v-model="fontSize"></v-slider>
+        <v-slider min="12" max="50" step="1" v-model="fontSize"></v-slider>
       </v-container>
       <div :style="fontStyle">Пример текста</div>
     </v-list-item>
