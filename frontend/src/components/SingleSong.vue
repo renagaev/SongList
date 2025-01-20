@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from "vue";
+import {ref, computed, onMounted, onBeforeMount} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {mdiMusicNote, mdiStar, mdiStarOutline} from "@mdi/js";
 import Piano from "@/services/piano";
@@ -99,25 +99,23 @@ const playNote = () => {
   Piano.play(song.value.note);
 };
 
-const loadHistory = async () => {
-  if (showHistory.value) {
-    history.value = await store.dispatch("getSongHistory", props.id);
-  }
-};
-
 const goToTag = (tag: string) => {
   router.push({name: "Home", query: {tag}});
 };
 
 store.commit("selectSong", props.id);
+onBeforeMount(async() => {
+  if (showHistory.value) {
+    history.value = await store.dispatch("getSongHistory", props.id);
+  }
+})
 // Lifecycle hooks
 onMounted(async () => {
-  await loadHistory();
   await store.dispatch("songOpened", props.id);
 });
 
 onBeforeRouteLeave((to, from, next) => {
-  store.dispatch("songClosed", route.params.id);
+  store.dispatch("songClosed", props.id);
   next();
 });
 </script>

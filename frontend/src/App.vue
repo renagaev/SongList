@@ -2,10 +2,10 @@
   <v-app>
     <PWAPrompt
         :times-to-show="3"
-        copy-title="Добавить на главный экран"
-        copy-body="Этот сайт может быть приложением. Добавь его на главный экран, чтобы просматривать его в оффлайн в полноэкранном режиме"
-        copy-share-button-label="1. Нажми на кнопку 'Поделиться'"
-        copy-add-home-button-label="2. Нажми 'Добавить на главный экран'"
+        copyTitle="Добавить на главный экран"
+        copyDescription="Этот сайт может быть приложением. Добавь его на главный экран, чтобы просматривать его в оффлайн в полноэкранном режиме"
+        copyShareStep="1. Нажми на кнопку 'Поделиться'"
+        copyAddToHomeScreenStep="2. Нажми 'Добавить на главный экран'"
         copy-close-prompt="Отмена"
     />
     <v-navigation-drawer v-model="showBar">
@@ -26,7 +26,7 @@ import {useStore} from "vuex";
 import {useTheme} from "vuetify";
 import NavigationBar from "@/components/NavigationBar.vue";
 import AppBar from "@/components/AppBar.vue";
-import PWAPrompt from "vue-ios-pwa-prompt";
+import {PWAPrompt} from "vue-ios-pwa-prompt";
 
 // Store
 const store = useStore();
