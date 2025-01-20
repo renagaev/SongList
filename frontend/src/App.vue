@@ -1,18 +1,17 @@
 <template>
   <v-app>
-    <PWAPrompt 
-        :timesToShow="3"
-        copyTitle='Добавить на главный экран'
-        copyBody='Этот сайт может быть приложением. Добавь его на главный экран, чтобы просматривать его в оффлайн в полноэкранном режиме'
-        copyShareButtonLabel='1. Нажми на кнопку "Поделиться"'
-        copyAddHomeButtonLabel='2. Нажми "Добавить на главный экран"'
-        copyClosePrompt="Отмена"
+    <PWAPrompt
+        :times-to-show="3"
+        copyTitle="Добавить на главный экран"
+        copyDescription="Этот сайт может быть приложением. Добавь его на главный экран, чтобы просматривать его в оффлайн в полноэкранном режиме"
+        copyShareStep="1. Нажми на кнопку 'Поделиться'"
+        copyAddToHomeScreenStep="2. Нажми 'Добавить на главный экран'"
+        copy-close-prompt="Отмена"
     />
-    <v-navigation-drawer v-model="showBar" clipped app>
+    <v-navigation-drawer v-model="showBar">
       <navigation-bar></navigation-bar>
     </v-navigation-drawer>
     <app-bar></app-bar>
-
     <v-main>
       <keep-alive include="MainList">
         <router-view/>
@@ -21,35 +20,38 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
+<script setup lang="ts">
+import {ref, computed, onMounted} from "vue";
+import {useStore} from "vuex";
+import {useTheme} from "vuetify";
 import NavigationBar from "@/components/NavigationBar.vue";
 import AppBar from "@/components/AppBar.vue";
-import {Component} from 'vue-property-decorator';
-import PWAPrompt from "vue2-ios-pwa-prompt"
+import {PWAPrompt} from "vue-ios-pwa-prompt";
 
-@Component({
-  components: {
-    NavigationBar,
-    PWAPrompt,
-    AppBar
+// Store
+const store = useStore();
+const theme = useTheme();
+
+// Reactive properties
+const isSearch = ref(false);
+
+// Computed properties
+const showBar = computed({
+  get: () => store.state.showBar,
+  set: (value: boolean) => {
+    store.commit("setShowBar", value);
   },
-})
-export default class App extends Vue {
-  isSearch = false
+});
 
-  get showBar() {
-    return this.$store.state.showBar
-  }
+// Methods
+const initializeApp = () => {
+  store.dispatch("loadSongs");
+  store.dispatch("initializeNowOpened");
+  theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
+};
 
-  set showBar(value) {
-    this.$store.commit("setShowBar", value)
-  }
-
-  created() {
-    this.$vuetify.theme.dark = this.$store.state.settings.darkTheme
-    this.$store.dispatch("loadSongs")
-    this.$store.dispatch("initializeNowOpened")
-  }
-}
+// Lifecycle hooks
+onMounted(() => {
+  initializeApp();
+});
 </script>

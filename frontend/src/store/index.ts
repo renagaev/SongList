@@ -52,9 +52,6 @@ const vuexLocal = new VuexPersistence<State>({
     }
 })
 
-Vue.use(Vuex)
-
-
 export default new Vuex.Store<State>({
     state: {
         tags: ["Простые", "Сложные"],

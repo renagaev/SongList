@@ -1,104 +1,106 @@
 ﻿<template>
   <v-list>
+    <v-list-item
+        title="Темная тема">
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn v-model="darkTheme" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
+    </v-list-item>
 
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="darkTheme" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>Темная тема</v-list-item-title>
-      </v-list-item-content>
+    <v-divider/>
+
+    <v-list-item
+        title="Показывать ноты">
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn :model-value="playNotes" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
+
+    </v-list-item>
+    <v-divider/>
+
+    <v-list-item
+        title="Показывать историю песен">
+      <template v-slot:prepend>
+        <v-list-item-action start>
+          <v-checkbox-btn v-model="showHistory" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+        </v-list-item-action>
+      </template>
     </v-list-item>
 
     <v-divider/>
 
     <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="playNotes" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>Показывать ноты</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-
-    <v-list-item>
-      <v-list-item-action>
-        <v-checkbox v-model="showHistory" :on-icon="checkBoxOn" :off-icon="checkBoxOff"></v-checkbox>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>Показывать историю песен</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-
-    <v-divider/>
-
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
-        <v-container>
-          <v-slider min="12" max="50" v-model="fontSize"></v-slider>
-        </v-container>
-        <div :style="fontStyle">Пример текста</div>
-      </v-list-item-content>
+      <v-list-item-title class="pl-0">Размер текста песен: {{ fontSize }}</v-list-item-title>
+      <v-container>
+        <v-slider min="12" max="50" step="1" v-model="fontSize"></v-slider>
+      </v-container>
+      <div :style="fontStyle">Пример текста</div>
     </v-list-item>
     <v-divider/>
   </v-list>
-
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js"
+<script setup lang="ts">
+import {ref, computed, onMounted, onUnmounted} from "vue";
+import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
+import {useStore} from "vuex";
+import {useTheme} from "vuetify";
 
-@Component
-export default class Settings extends Vue {
-  checkBoxOff = mdiCheckboxBlankOutline
-  checkBoxOn = mdiCheckboxMarked
-  fontSize = 0
+// Icons
+const checkBoxOff = mdiCheckboxBlankOutline;
+const checkBoxOn = mdiCheckboxMarked;
 
-  get fontStyle() {
-    return `font-size: ${this.fontSize}px`
-  }
+// Store
+const store = useStore();
+const theme = useTheme();
 
-  created() {
-    this.fontSize = this.$store.state.settings.fontSize
-  }
+// Reactive variables
+const fontSize = ref(0);
 
-  destroyed() {
-    this.$store.commit("setFontSize", this.fontSize)
-  }
+// Computed properties
+const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
 
-  get playNotes() {
-    return this.settings.playNotes
-  }
+const settings = computed(() => store.state.settings);
 
-  set playNotes(value: boolean) {
-    this.$store.commit("setPlayNotes", value)
-  }
+const playNotes = computed({
+  get: () => settings.value.playNotes,
+  set: (value: boolean) => {
+    store.commit("setPlayNotes", value);
+  },
+});
 
-  get showHistory() {
-    return this.settings.showHistory
-  }
+const showHistory = computed({
+  get: () => settings.value.showHistory,
+  set: (value: boolean) => {
+    store.commit("setShowHistory", value);
+  },
+});
 
-  set showHistory(value: boolean) {
-    this.$store.commit("setShowHistory", value)
-  }
+const darkTheme = computed({
+  get: () => settings.value.darkTheme,
+  set: (value: boolean) => {
+    store.commit("setDarkTheme", value);
+    theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
+  },
+});
 
-  get settings() {
-    return this.$store.state.settings
-  }
+// Methods
+const saveFontSize = () => {
+  store.commit("setFontSize", fontSize.value);
+};
 
-  get darkTheme() {
-    return this.settings.darkTheme
-  }
+// Lifecycle hooks
+onMounted(() => {
+  fontSize.value = store.state.settings.fontSize;
+});
 
-  set darkTheme(value: boolean) {
-    this.$store.commit("setDarkTheme", value)
-    this.$vuetify.theme.dark = this.$store.state.settings.darkTheme
-  }
-
-}
+onUnmounted(() => {
+  saveFontSize();
+});
 </script>
 
 <style scoped>

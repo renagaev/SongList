@@ -1,33 +1,34 @@
 ﻿<template>
   <v-list dense>
-    <template v-for="tag in tags">
-      <v-list-item :key="tag" @click="setTag(tag)">
+    <template v-for="tag in tags" :key="tag">
+      <v-list-item @click="setTag(tag)">
         <v-list-item-title v-text="tag"></v-list-item-title>
       </v-list-item>
-      <v-divider :key="tag+'divider'"></v-divider>
+      <v-divider></v-divider>
     </template>
   </v-list>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+<script setup lang="ts">
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
-@Component
-export default class TagList extends Vue {
+// Vuex Store и Router
+const store = useStore();
+const router = useRouter();
 
-  setTag(tag: string) {
-    this.$router.push({name: "Home", query: {tag: tag}})
-  }
+// Computed
+const tags = computed(() => store.getters["tags"]);
 
-  get tags() {
-    return this.$store.getters["tags"]
-  }
-}
+// Methods
+const setTag = (tag: string) => {
+  router.push({ name: "Home", query: { tag } });
+};
 </script>
 
 <style scoped>
-.v-list.theme--dark{
+.v-list.theme--dark {
   background-color: rgb(18, 18, 18);
 }
 </style>
