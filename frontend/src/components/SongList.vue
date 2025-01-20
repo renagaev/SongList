@@ -10,7 +10,6 @@
     <div class="item">
       <v-list-item
           two-line
-          active
           @click="open(item.id)"
           :class="'item ' + getClass(item)"
       >

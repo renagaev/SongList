@@ -8,11 +8,10 @@
         copy-add-home-button-label="2. Нажми 'Добавить на главный экран'"
         copy-close-prompt="Отмена"
     />
-    <v-navigation-drawer v-model="showBar" clipped app>
+    <v-navigation-drawer v-model="showBar">
       <navigation-bar></navigation-bar>
     </v-navigation-drawer>
     <app-bar></app-bar>
-
     <v-main>
       <keep-alive include="MainList">
         <router-view/>
@@ -22,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useStore } from "vuex";
+import {ref, computed, onMounted} from "vue";
+import {useStore} from "vuex";
 import {useTheme} from "vuetify";
 import NavigationBar from "@/components/NavigationBar.vue";
 import AppBar from "@/components/AppBar.vue";

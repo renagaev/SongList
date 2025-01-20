@@ -1,11 +1,13 @@
 ﻿<template>
   <div>
-    <v-list nav shaped>
+    <v-list nav>
       <template v-for="(item, idx) in navItems" :key="idx">
         <v-list-item
+            rounded="shaped"
+            density="comfortable"
             :title="item.title"
             :prepend-icon="item.icon"
-            class="ml-2 rounded-pill"
+            class="ml-2"
             @click="item.action">
         </v-list-item>
       </template>

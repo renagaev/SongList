@@ -2,21 +2,16 @@
   <v-container>
     <v-chip-group column>
       <v-chip
-          color="secondary"
-          :ripple="false"
-          small
           v-for="tag in song.tags"
+          density="compact"
           :key="tag"
-          v-text="tag"
-          @click="goToTag(tag)"
-      />
+          @click="goToTag(tag)">{{tag}}</v-chip>
     </v-chip-group>
     <div>
       <v-btn
           class="mb-3 mr-2"
           v-if="showNote"
           @click="playNote"
-          color="secondary"
           rounded
       >
         <v-icon>{{ noteIcon }}</v-icon>
@@ -26,7 +21,6 @@
           class="mb-3 mr-2"
           rounded
           @click="toggleFavourite"
-          color="secondary"
       >
         <v-icon :color="isFavourite ? 'amber' : ''">
           {{ isFavourite ? favouriteIcon : unFavouriteIcon }}
@@ -34,7 +28,7 @@
       </v-btn>
     </div>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
-    <v-divider style="margin-bottom: 10px"></v-divider>
+    <v-divider style="margin: 10px 0"></v-divider>
     <div v-text="song.text" class="words" :style="fontStyle"></div>
   </v-container>
 </template>
@@ -66,7 +60,7 @@ const route = useRoute();
 const router = useRouter();
 const history = ref<Date[]>([]);
 
-const isFavourite = computed(() => store.state.favourites.includes(route.params.id));
+const isFavourite = computed(() => store.state.favourites.includes(props.id));
 
 const lastSingedText = computed(() => {
   const morning = history.value.find((x) => x.getHours() < 16);
@@ -98,7 +92,7 @@ const showNote = computed(() =>
 
 // Methods
 const toggleFavourite = () => {
-  store.commit("toggleFavourite", route.params.id);
+  store.commit("toggleFavourite", props.id);
 };
 
 const playNote = () => {
@@ -107,7 +101,7 @@ const playNote = () => {
 
 const loadHistory = async () => {
   if (showHistory.value) {
-    history.value = await store.dispatch("getSongHistory", route.params.id);
+    history.value = await store.dispatch("getSongHistory", props.id);
   }
 };
 
@@ -115,11 +109,11 @@ const goToTag = (tag: string) => {
   router.push({name: "Home", query: {tag}});
 };
 
+store.commit("selectSong", props.id);
 // Lifecycle hooks
 onMounted(async () => {
-  store.commit("selectSong", route.params.id);
   await loadHistory();
-  await store.dispatch("songOpened", route.params.id);
+  await store.dispatch("songOpened", props.id);
 });
 
 onBeforeRouteLeave((to, from, next) => {
