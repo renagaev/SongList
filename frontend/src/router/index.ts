@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(process.env.BASE_URL),
+    history: createWebHashHistory(import.meta.env.VITE_API_BASE),
     routes
 })
 

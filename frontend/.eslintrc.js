@@ -1,7 +1,8 @@
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
+    es2022: true,
   },
   'extends': [
     "@vue/typescript/recommended",
