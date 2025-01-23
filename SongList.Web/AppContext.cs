@@ -4,15 +4,12 @@ using SongList.Web.Entities;
 
 namespace SongList.Web;
 
-public class AppContext : DbContext
+public class AppContext(DbContextOptions options) : DbContext(options)
 {
-    public AppContext(DbContextOptions options) : base(options)
-    {
-    }
-
     public DbSet<Song> Songs { get; init; }
     public DbSet<SongHistoryItem> History { get; init; }
     public DbSet<SongMapping> Mappings { get; init; }
+    public DbSet<Note> Notes { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +24,9 @@ public class AppContext : DbContext
             .HasMaxLength(64 * 1024)
             .IsRequired(false)
             .HasColumnType("jsonb");
+
+        modelBuilder.Entity<Song>()
+            .HasOne(x => x.Note);
 
         modelBuilder.Entity<SongHistoryItem>().HasIndex(x => x.SongId);
         modelBuilder.Entity<SongMapping>().HasIndex(x => x.HolyricsId);

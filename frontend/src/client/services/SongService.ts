@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { Note } from '../models/Note';
 import type { Song } from '../models/Song';
 import type { SongOpeningStats } from '../models/SongOpeningStats';
 
@@ -18,6 +19,17 @@ export class SongService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/Song',
+        });
+    }
+
+    /**
+     * @returns Note OK
+     * @throws ApiError
+     */
+    public static getNotes(): CancelablePromise<Array<Note>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/Song/notes',
         });
     }
 

@@ -15,10 +15,21 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
         {
             Id = x.Id,
             Title = x.Title,
-            Note = x.Note,
+            NoteId = x.NoteId,
+            Note = x.Note != null ? x.Note.SimpleName : null,
             Number = x.Number,
             Tags = x.Tags,
             Text = x.Text
+        })
+        .ToArrayAsync(cancellationToken);
+
+    [HttpGet("notes", Name = "getNotes")]
+    public Task<NoteDto[]> GetNotes(CancellationToken cancellationToken) => dbContext.Notes
+        .Select(x => new NoteDto
+        {
+            Id = x.Id,
+            Name = x.Name,
+            SimpleName = x.SimpleName
         })
         .ToArrayAsync(cancellationToken);
 

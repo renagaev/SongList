@@ -15,13 +15,7 @@ import { createVuetify } from 'vuetify'
 import {mdiViewList, mdiTagMultiple, mdiCogs, mdiDownload, mdiStar, mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-
-try {
-  navigator.wakeLock.request("screen")
-} catch (e){
-  console.log(e)
-}
-
+document.addEventListener("click", e => navigator.wakeLock.request("screen"), {once: true})
 const vuetify = createVuetify({
   icons:{
     defaultSet: 'mdi',
