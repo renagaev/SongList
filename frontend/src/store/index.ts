@@ -183,7 +183,10 @@ export default new Vuex.Store<State>({
         },
         async initializeNowOpened(actionContext: ActionContext<State, State>) {
             actionContext.state.connection = new signalR.HubConnectionBuilder()
-                .withUrl(`${OpenAPI.BASE}/songsHub`)
+                .withUrl(`${OpenAPI.BASE}/songsHub`, {
+                    skipNegotiation: true,
+                    transport: signalR.HttpTransportType.WebSockets
+                })
                 .withAutomaticReconnect()
                 .build()
             const connection = actionContext.state.connection
