@@ -5,7 +5,8 @@
           v-for="tag in song.tags"
           density="compact"
           :key="tag"
-          @click="goToTag(tag)">{{tag}}</v-chip>
+          @click="goToTag(tag)">{{ tag }}
+      </v-chip>
     </v-chip-group>
     <div>
       <v-btn
@@ -87,8 +88,9 @@ const showHistory = computed(() => store.state.settings.showHistory);
 const song = computed(() => store.state.selectedSong);
 
 const showNote = computed(() =>
-    store.state.settings.playNotes && Piano.canPlay(song.value.note)
+    store.state.settings.playNotes && song.value.noteId != null
 );
+const note = computed(() => store.state.notes.find((x) => x.id === song.value.noteId));
 
 // Methods
 const toggleFavourite = () => {
@@ -96,7 +98,7 @@ const toggleFavourite = () => {
 };
 
 const playNote = () => {
-  Piano.play(song.value.note);
+  Piano.play(note.value.name);
 };
 
 const goToTag = (tag: string) => {
@@ -104,7 +106,7 @@ const goToTag = (tag: string) => {
 };
 
 store.commit("selectSong", props.id);
-onBeforeMount(async() => {
+onBeforeMount(async () => {
   if (showHistory.value) {
     history.value = await store.dispatch("getSongHistory", props.id);
   }

@@ -25,6 +25,7 @@
 import { ref, computed, onActivated, onDeactivated } from "vue";
 import { useRouter } from "vue-router";
 import { SongModel } from "@/store/models";
+import {useTheme} from 'vuetify'
 
 // Props
 defineProps({
@@ -42,7 +43,7 @@ defineProps({
 const scrollTop = ref(0);
 const lastScrollKey = ref<string | undefined>(undefined);
 const scroll = ref<HTMLElement | null>(null);
-
+const theme = useTheme();
 // Router
 const router = useRouter();
 
@@ -56,7 +57,7 @@ const getTitle = (song: SongModel): string => {
 
 const getClass = (song: SongModel): string => {
   if (song.opened) {
-    return scroll.value?.classList.contains("dark") ? "opened-dark" : "opened";
+    return theme.isDark ? "opened-dark" : "opened";
   }
   return "";
 };

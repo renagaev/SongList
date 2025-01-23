@@ -6,6 +6,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { Note } from './models/Note';
 export type { ServiceDto } from './models/ServiceDto';
 export { ServiceType } from './models/ServiceType';
 export type { Song } from './models/Song';

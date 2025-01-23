@@ -47,6 +47,7 @@ const showBar = computed({
 const initializeApp = () => {
   store.dispatch("loadSongs");
   store.dispatch("initializeNowOpened");
+  store.dispatch("loadNotes")
   theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
 };
 
