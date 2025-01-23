@@ -99,6 +99,6 @@ export default defineConfig({
                 ]
             }
         }),
-        analyzer()
+        // analyzer()
     ]
 })
