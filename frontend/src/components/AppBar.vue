@@ -5,23 +5,20 @@
     </v-app-bar-nav-icon>
 
     <v-toolbar-title v-if="!isSearch">{{title}}</v-toolbar-title>
-    <div v-else>
-      <v-text-field
-          solo
-          dense
-          hide-details
-          flat
-          filled
-          light
-          placeholder="Введите текст"
-          class="ml-5"
-          v-model="searchText"
-          :clear-icon="clearIcon"
-          autofocus
-          clearable
-          :dark="dark"
-      />
-    </div>
+    <v-text-field v-else
+        variant="solo-filled"
+        density="compact"
+        hide-details
+        flat
+        light
+        placeholder="Введите текст"
+        class="ml-5"
+        style="padding-right: 10px"
+        v-model="searchText"
+        :clear-icon="clearIcon"
+        autofocus
+        clearable
+    />
     <v-btn icon @click="isSearch = !isSearch">
       <v-icon>{{ searchIcon }}</v-icon>
     </v-btn>
@@ -57,9 +54,6 @@ const searchText = computed({
     store.commit("setSearchText", value);
   },
 });
-
-// Темная тема
-const dark = computed(() => route.meta.vuetify.theme.current.dark);
 
 // Методы
 const toggleBar = () => {
