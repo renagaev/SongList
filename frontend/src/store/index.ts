@@ -126,19 +126,13 @@ export default new Vuex.Store<State>({
             if (/^-?\d+$/.test(text)) {
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
-
-            const searchRes = fuzzysort.go<SongModel>(state.searchText, state.songs, {
-                keys: ["preparedTitle", "prepared"],
-                limit: 8,
-                scoreFn: res => {
-                    const title = res[0]
-                    const textRes = res[1]
-
-                    return Math.max(title ? title.score : -1000, textRes ? textRes.score - 1 : -1000)
-                }
+            let search = state.songs.flatMap(song => Array.from(new Set(song.text.split("\n").filter(x=> x != ""))).map(x => ({obj: song, value: x.toLowerCase(), isTitle: false})).concat([{obj: song, value: song.title.toLowerCase(), isTitle: true}]))
+            const searchRes = fuzzysort.go<SongModel>(state.searchText, search, {
+                key: "value",
+                limit: 50,
+                scoreFn: res => res.score * (res.obj.isTitle ? 3 : 1),
             })
-            return searchRes.map(x => x.obj)
-
+            return Array.from(new Set(searchRes.map(x => x.obj.obj)))
         },
         favourites: (state) => {
             return state.songs
@@ -166,8 +160,6 @@ export default new Vuex.Store<State>({
                 const res = await SongService.getAllSongs();
                 const songs = res.map(x => x as SongModel)
                 songs.forEach(song => {
-                    song.prepared = fuzzysort.prepare(song.text)
-                    song.preparedTitle = fuzzysort.prepare(song.title)
                     song.opened = 0
                 })
                 actionContext.commit("setSongs", songs)
