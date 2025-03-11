@@ -26,37 +26,9 @@ export default class Piano {
         Piano.sampler.toDestination()
     }
 
-    private static nearestNoteCache = new Map<string, string>();
-
-    private static findNearestAvailableNote(note: string): string {
-        if (Piano.nearestNoteCache.has(note)) {
-            return Piano.nearestNoteCache.get(note)!;
-        }
-
-        const midi = Tone.Frequency(note).toMidi();
-        const nearestNote = availableNotes.reduce((prev, curr) => {
-            const prevDiff = Math.abs(midi - Tone.Frequency(prev).toMidi());
-            const currDiff = Math.abs(midi - Tone.Frequency(curr).toMidi());
-            return currDiff < prevDiff ? curr : prev;
-        });
-
-        Piano.nearestNoteCache.set(note, nearestNote);
-        return nearestNote;
-    }
-
     public static async play(note?: any) {
         await Piano.sampler.context.resume()
-        if (availableNotes.includes(note)) {
-            Piano.sampler.triggerAttackRelease(note, '1n');
-        } else {
-            // Если нота отсутствует, используем ближайшую доступную
-            const nearestNote = Piano.findNearestAvailableNote(note);
-            const pitchShift = Tone.Frequency(note).toMidi() - Tone.Frequency(nearestNote).toMidi();
-            const pitchShiftEffect = new Tone.PitchShift(pitchShift).toDestination();
-            Piano.sampler.connect(pitchShiftEffect);
-            Piano.sampler.triggerAttackRelease(nearestNote!, '1n', Tone.now());
-            Piano.sampler.disconnect(pitchShiftEffect);
-        }
+        Piano.sampler.triggerAttackRelease(note, '1n');
     }
 }
 
