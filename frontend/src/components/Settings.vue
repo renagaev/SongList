@@ -74,7 +74,7 @@ const theme = useTheme();
 // Reactive variables
 const fontSize = ref(0);
 const userName = computed(() => store.state.userName)
-const isAdmin = computed(() => store.state.isAdmin)
+const isAdmin = computed(() => store.state.adminEnabled)
 // Computed properties
 const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
 

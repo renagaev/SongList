@@ -20,6 +20,7 @@ export interface State {
     token?: string,
     userName?: string,
     isAdmin: boolean,
+    adminEnabled: boolean,
     connection: HubConnection
 }
 
@@ -72,7 +73,8 @@ export default new Vuex.Store<State>({
             fontSize: 16
         },
         connection: null!,
-        isAdmin: false
+        isAdmin: false,
+        adminEnabled: false
     },
     mutations: {
         setShowBar(state, value: boolean) {
@@ -117,7 +119,11 @@ export default new Vuex.Store<State>({
             state.token = token
         },
         setUserName(state, userName: string) {
+            state.isAdmin = !!userName
             state.userName = userName
+        },
+        enableAdmin(state) {
+            state.adminEnabled = true
         }
     },
     getters: {
