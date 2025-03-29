@@ -48,6 +48,7 @@ const initializeApp = () => {
   store.dispatch("loadSongs");
   store.dispatch("initializeNowOpened");
   store.dispatch("loadNotes")
+  store.dispatch("checkLogin")
   theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
 };
 

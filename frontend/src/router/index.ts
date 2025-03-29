@@ -5,6 +5,7 @@ import TagList from "@/components/TagList.vue";
 import Settings from "@/components/Settings.vue";
 import MainList from "@/components/MainList.vue";
 import FavouritesList from "@/components/FavouritesList.vue";
+import EnableAdmin from "@/components/EnableAdmin.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -47,6 +48,11 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
             title: "Избранные"
         }
+    },
+    {
+        path: '/enable-admin',
+        name: "EnableAdmin",
+        component: EnableAdmin
     }
 ]
 

@@ -41,15 +41,28 @@
       <div :style="fontStyle">Пример текста</div>
     </v-list-item>
     <v-divider/>
+    <div v-if="isAdmin">
+      <v-list-item>
+        <v-list-item-title class="pl-0" v-if="!!userName">Авторизован как {{userName}}</v-list-item-title>
+        <telegram-login-temp v-else
+                             mode="callback"
+                             :telegram-login="botUsername"
+                             @callback="tgLoginCallback"
+        />
+      </v-list-item>
+      <v-divider/>
+    </div>
   </v-list>
 </template>
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted} from "vue";
 import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
+import {telegramLoginTemp} from 'vue3-telegram-login'
 import {useStore} from "vuex";
 import {useTheme} from "vuetify";
 
+const botUsername = import.meta.env.VITE_BOT_USERNAME
 // Icons
 const checkBoxOff = mdiCheckboxBlankOutline;
 const checkBoxOn = mdiCheckboxMarked;
@@ -60,7 +73,8 @@ const theme = useTheme();
 
 // Reactive variables
 const fontSize = ref(0);
-
+const userName = computed(() => store.state.userName)
+const isAdmin = computed(() => store.state.adminEnabled)
 // Computed properties
 const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
 
@@ -93,6 +107,9 @@ const saveFontSize = () => {
   store.commit("setFontSize", fontSize.value);
 };
 
+const tgLoginCallback = async (user) => {
+  await  store.dispatch("login", user)
+}
 // Lifecycle hooks
 onMounted(() => {
   fontSize.value = store.state.settings.fontSize;

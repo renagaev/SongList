@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import Vuex, {ActionContext} from 'vuex'
+import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import {SongService, HistoryService, SongOpeningStats, OpenAPI, Note} from "@/client";
+import {SongService, HistoryService, SongOpeningStats, OpenAPI, Note, AuthService} from "@/client";
 import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
@@ -17,6 +17,10 @@ export interface State {
     showBar: boolean,
     selectedSong?: SongModel,
     settings: Settings,
+    token?: string,
+    userName?: string,
+    isAdmin: boolean,
+    adminEnabled: boolean,
     connection: HubConnection
 }
 
@@ -68,7 +72,9 @@ export default new Vuex.Store<State>({
             showHistory: false,
             fontSize: 16
         },
-        connection: null!
+        connection: null!,
+        isAdmin: false,
+        adminEnabled: false
     },
     mutations: {
         setShowBar(state, value: boolean) {
@@ -108,6 +114,16 @@ export default new Vuex.Store<State>({
         },
         updateOpenedCounter(state: State, value: { id: number, value: number }) {
             const song = state.songs.find(x => x.id == value.id)!.opened = value.value
+        },
+        setToken(state, token: string) {
+            state.token = token
+        },
+        setUserName(state, userName: string) {
+            state.isAdmin = !!userName
+            state.userName = userName
+        },
+        enableAdmin(state) {
+            state.adminEnabled = true
         }
     },
     getters: {
@@ -126,7 +142,11 @@ export default new Vuex.Store<State>({
             if (/^-?\d+$/.test(text)) {
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
-            let search = state.songs.flatMap(song => Array.from(new Set(song.text.split("\n").filter(x=> x != ""))).map(x => ({obj: song, value: x.toLowerCase(), isTitle: false})).concat([{obj: song, value: song.title.toLowerCase(), isTitle: true}]))
+            let search = state.songs.flatMap(song => Array.from(new Set(song.text.split("\n").filter(x => x != ""))).map(x => ({
+                obj: song,
+                value: x.toLowerCase(),
+                isTitle: false
+            })).concat([{obj: song, value: song.title.toLowerCase(), isTitle: true}]))
             const searchRes = fuzzysort.go<SongModel>(state.searchText, search, {
                 key: "value",
                 limit: 50,
@@ -221,6 +241,24 @@ export default new Vuex.Store<State>({
         async getSongHistory(actionContext: ActionContext<State, State>, id: number) {
             const res = await HistoryService.getSongHistory(id)
             return res.map(d => new Date(d))
+        },
+        async login(actionContext: ActionContext<State, State>, user: object) {
+            const res = await AuthService.getTgAdminToken(user)
+            actionContext.commit("setToken", res)
+            actionContext.dispatch("checkLogin")
+        },
+        async checkLogin(actionContext: ActionContext<State, State>) {
+            if (!actionContext.state.token) {
+                actionContext.commit("setUserName", null)
+                return
+            }
+            OpenAPI.TOKEN = actionContext.state.token
+            try {
+                const userName = await AuthService.getUser()
+                actionContext.commit("setUserName", userName)
+            } catch (e) {
+                actionContext.commit("setUserName", null)
+            }
         }
     },
     modules: {},
