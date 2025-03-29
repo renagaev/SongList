@@ -12,5 +12,6 @@ export { ServiceType } from './models/ServiceType';
 export type { Song } from './models/Song';
 export type { SongOpeningStats } from './models/SongOpeningStats';
 
+export { AuthService } from './services/AuthService';
 export { HistoryService } from './services/HistoryService';
 export { SongService } from './services/SongService';

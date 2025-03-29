@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
-namespace SongList.Web.Controllers;
+namespace SongList.Web.Auth;
 
 public class TokenAuthOptions : AuthenticationSchemeOptions
 {

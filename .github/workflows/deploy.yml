@@ -29,6 +29,8 @@ jobs:
           tags: ${{ env.image_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            "VITE_BOT_USERNAME=${{ secrets.TG_BOT_USERNAME }}"
       - 
         name: Update container version via SSH
         uses: appleboy/ssh-action@master
@@ -39,4 +41,10 @@ jobs:
           script: |
             docker pull ${{ env.image_tag }}
             docker stop ${{ env.container_name }} || true && docker rm ${{ env.container_name }} || true
-            docker run -d --name ${{ env.container_name }}  --env DbConnectionString="${{ secrets.DB }}" -p ${{ secrets.APP_PORT }}:80 ${{ env.image_tag }} 
+            docker run -d --name ${{ env.container_name }} \
+              --env DbConnectionString="${{ secrets.DB }}" \
+              --env Tg__Token="${{ secrets.TG_TOKEN }}" \
+              --env Tg__ChatId="${{ secrets.TG_ADMIN_CHAT_ID }}" \
+              --env Jwt__Key="${{ secrets.JWT_KEY }}" \
+            --restart unless-stopped
+            -p ${{ secrets.APP_PORT }}:80 ${{ env.image_tag }} 
