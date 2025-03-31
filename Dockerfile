@@ -9,7 +9,8 @@ COPY SongList.Web .
 RUN dotnet publish SongList.Web.csproj --output ./publish
 
 FROM node:lts-alpine as frontend 
-
+ARG BOT_USERNAME
+ENV VITE_BOT_USERNAME=${BOT_USERNAME}
 WORKDIR app 
 
 COPY frontend/package.json .

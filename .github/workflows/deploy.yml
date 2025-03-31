@@ -29,8 +29,8 @@ jobs:
           tags: ${{ env.image_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          secrets: |
-            "VITE_BOT_USERNAME=${{ secrets.TG_BOT_USERNAME }}"
+          build-args: |
+            "BOT_USERNAME=${{ secrets.TG_BOT_USERNAME }}"
       - 
         name: Update container version via SSH
         uses: appleboy/ssh-action@master
