@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {ActionContext} from "vuex";
 import VuexPersistence from 'vuex-persist'
-import {SongService, HistoryService, SongOpeningStats, OpenAPI, Note, AuthService} from "@/client";
+import {SongService, HistoryService, SongOpeningStats, OpenAPI, Note, AuthService, Song} from "@/client";
 import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
@@ -60,10 +61,10 @@ const vuexLocal = new VuexPersistence<State>({
 export default new Vuex.Store<State>({
     state: {
         tags: ["Простые", "Сложные"],
-        songs: [],
+        songs: Array.of<SongModel>(),
         searchText: "",
         showBar: false,
-        notes: [],
+        notes: Array.of<Note>(),
         selectedSong: undefined,
         favourites: [],
         settings: {
@@ -191,7 +192,8 @@ export default new Vuex.Store<State>({
         },
         async loadNotes(actionContext) {
             const notes = await SongService.getNotes();
-            actionContext.commit("setNotes", notes)
+            const sorted = notes.sort((a, b) => a.id - b.id)
+            actionContext.commit("setNotes", sorted)
         },
         async initializeNowOpened(actionContext: ActionContext<State, State>) {
             actionContext.state.connection = new signalR.HubConnectionBuilder()
@@ -259,6 +261,12 @@ export default new Vuex.Store<State>({
             } catch (e) {
                 actionContext.commit("setUserName", null)
             }
+        },
+        async updateSong(actionContext: ActionContext<State, State>, updatedSong: Song) {
+            const song = await SongService.updateSong(updatedSong.id, updatedSong)
+            const model = song as SongModel
+            model.opened = 0
+            actionContext.commit("setSongs", actionContext.state.songs.map(x => x.id == model.id? model : x))
         }
     },
     modules: {},

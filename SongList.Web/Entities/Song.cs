@@ -5,16 +5,16 @@ namespace SongList.Web.Entities;
 public class Song
 {
     public int Id { get; init; }
-    public string Title { get; init; }
+    public string Title { get; set; }
     public string[] Tags { get; init; } = [];
-    public string Text { get; init; }
+    public string Text { get; set; }
     public int? Number { get; init; }
     public string OriginalTitle { get; init; }
 
     public List<SongHistoryItem> History { get; init; } = [];
     public List<SongMapping> Mappings { get; init; } = [];
     public Note? Note { get; init; }
-    public int? NoteId { get; init; }
+    public int? NoteId { get; set; }
 }
 
 public class SongOpeningStats

@@ -76,7 +76,7 @@ const updateState = () => {
     return;
   }
 
-  if (routeName === "SingleSong") {
+  if (routeName === "SingleSong" || routeName === "EditSong") {
     const idParam = route.params.id;
     const songId = Array.isArray(idParam) ? Number.parseInt(idParam[0]) : Number.parseInt(idParam);
     const song = store.state.songs.find((x: SongModel) => x.id === songId);
