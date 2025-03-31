@@ -27,6 +27,14 @@
           {{ isFavourite ? favouriteIcon : unFavouriteIcon }}
         </v-icon>
       </v-btn>
+
+      <v-btn
+          class="mb-3 mr-2"
+          rounded
+          @click="goToEdit"
+          v-if="isAdmin">
+        <v-icon>{{ editIcon }}</v-icon>
+      </v-btn>
     </div>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
     <v-divider style="margin: 10px 0"></v-divider>
@@ -37,7 +45,7 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, onBeforeMount} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
-import {mdiMusicNote, mdiStar, mdiStarOutline} from "@mdi/js";
+import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil} from "@mdi/js";
 import Piano from "@/services/piano";
 import {daysAgo} from "@/services/DateHelper";
 import {useStore} from "vuex";
@@ -55,6 +63,7 @@ const props = defineProps({
 const noteIcon = mdiMusicNote;
 const favouriteIcon = mdiStar;
 const unFavouriteIcon = mdiStarOutline;
+const editIcon = mdiPencil
 
 // Refs and route
 const route = useRoute();
@@ -62,6 +71,7 @@ const router = useRouter();
 const history = ref<Date[]>([]);
 
 const isFavourite = computed(() => store.state.favourites.includes(props.id));
+const isAdmin = computed(() => store.state.isAdmin);
 
 const lastSingedText = computed(() => {
   const morning = history.value.find((x) => x.getHours() < 16);
@@ -104,6 +114,9 @@ const playNote = () => {
 const goToTag = (tag: string) => {
   router.push({name: "Home", query: {tag}});
 };
+const goToEdit = () => {
+  router.push({name: "EditSong", params: {id: props.id}})
+}
 
 store.commit("selectSong", props.id);
 onBeforeMount(async () => {

@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import {createRouter, RouteRecordRaw, createWebHashHistory} from 'vue-router'
 import SingleSong from "@/components/SingleSong.vue";
 import TagList from "@/components/TagList.vue";
@@ -6,6 +5,7 @@ import Settings from "@/components/Settings.vue";
 import MainList from "@/components/MainList.vue";
 import FavouritesList from "@/components/FavouritesList.vue";
 import EnableAdmin from "@/components/EnableAdmin.vue";
+import EditSong from "@/components/EditSong.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -23,6 +23,12 @@ const routes: Array<RouteRecordRaw> = [
         path: '/song/:id',
         name: 'SingleSong',
         component: SingleSong,
+        props: (route) => ({id: Number.parseInt(route.params.id as string)}),
+    },
+    {
+        path: '/song/:id/edit',
+        name: "EditSong",
+        component: EditSong,
         props: (route) => ({id: Number.parseInt(route.params.id as string)}),
     },
     {
