@@ -135,7 +135,7 @@ export default new Vuex.Store<State>({
             const text = state.searchText.trim().toLowerCase()
             if (!text) {
                 return state.songs.sort((a, b) => {
-                    return (b.opened - a.opened) || (a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
+                    return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
                 })
             }
 
