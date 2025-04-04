@@ -5,7 +5,6 @@
       :item-size="64"
       key-field="id"
       v-slot="{ item }"
-      ref="scroll"
   >
     <div class="item">
       <v-list-item
@@ -28,11 +27,7 @@ import { SongModel } from "@/store/models";
 import {useTheme} from 'vuetify'
 
 // Props
-defineProps({
-  scrollKey: {
-    type: String,
-    required: false,
-  },
+const props = defineProps({
   songs: {
     type: Array as () => SongModel[],
     required: true,
@@ -49,6 +44,7 @@ const router = useRouter();
 
 // Computed
 const scrollRef = computed(() => scroll.value);
+const scrollKey = computed(() => props.songs?.map(x=> x.id).join(""))
 
 // Methods
 const getTitle = (song: SongModel): string => {
@@ -68,7 +64,7 @@ const open = (id: number) => {
 
 // Lifecycle hooks
 onActivated(() => {
-  if (lastScrollKey.value === scrollKey && scrollRef.value) {
+  if (lastScrollKey.value === scrollKey.value && scrollRef.value) {
     scrollRef.value.scrollTop = scrollTop.value;
   }
 });
@@ -76,7 +72,7 @@ onActivated(() => {
 onDeactivated(() => {
   if (scrollRef.value) {
     scrollTop.value = scrollRef.value.scrollTop;
-    lastScrollKey.value = scrollKey;
+    lastScrollKey.value = scrollKey.value;
   }
 });
 </script>
