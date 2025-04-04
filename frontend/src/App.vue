@@ -13,9 +13,11 @@
     </v-navigation-drawer>
     <app-bar></app-bar>
     <v-main>
-      <keep-alive include="MainList">
-        <router-view/>
-      </keep-alive>
+      <router-view v-slot="{ Component }">
+        <keep-alive include="MainList">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </v-main>
   </v-app>
 </template>
