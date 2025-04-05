@@ -265,8 +265,12 @@ export default new Vuex.Store<State>({
         async updateSong(actionContext: ActionContext<State, State>, updatedSong: Song) {
             const song = await SongService.updateSong(updatedSong.id, updatedSong)
             const model = song as SongModel
-            model.opened = 0
-            actionContext.commit("setSongs", actionContext.state.songs.map(x => x.id == model.id? model : x))
+            const existingSong = actionContext.state.songs.find(x => x.id == model.id)!
+            existingSong.title = model.title
+            existingSong.tags = model.tags
+            existingSong.text = model.text
+            existingSong.number = model.number
+            existingSong.noteId = model.noteId
         }
     },
     modules: {},

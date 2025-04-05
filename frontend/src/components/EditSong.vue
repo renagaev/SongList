@@ -45,7 +45,7 @@ const save = async () => {
     tags: song.tags
   }
   await store.dispatch("updateSong", updatedSong)
-  await router.push(`/song/${song.id}`);
+  await router.back();
 }
 
 
