@@ -132,8 +132,7 @@ const goToEdit = () => {
 
 const share = () => {
   navigator.share({
-    title: song.value.name,
-    text: song.value.name,
+    title: song.value.title,
     url: window.location.href,
   });
 }
