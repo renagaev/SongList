@@ -7,7 +7,7 @@
     </v-number-input>
     <v-select v-model="song.noteId" label="Нота" rounded-sm variant="outlined" :items="notes" :item-title="'name'"
               :item-value="'id'"></v-select>
-    <v-textarea v-model="song.text" label="Текст" required auto-grow rounded-sm variant="outlined"></v-textarea>
+    <v-textarea v-model="song.text" label="Текст" :rules="rules" required auto-grow rounded-sm variant="outlined"></v-textarea>
     <v-btn class="mt-2"  type="submit" block>Сохранить</v-btn>
   </v-form>
 
