@@ -253,9 +253,6 @@ export default new Vuex.Store<State>({
             actionContext.dispatch("checkLogin")
         },
         async checkLogin(actionContext: ActionContext<State, State>) {
-            actionContext.commit("setUserName", "test")
-            return
-            
             if (!actionContext.state.token) {
                 actionContext.commit("setUserName", null)
                 return
