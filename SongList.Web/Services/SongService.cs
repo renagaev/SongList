@@ -41,6 +41,7 @@ public class SongService(AppContext dbContext)
         {
             Text = songDto.Text,
             Title = songDto.Title,
+            OriginalTitle = songDto.Title,
             Tags = [],
             Number = songDto.Number,
             NoteId = songDto.NoteId
