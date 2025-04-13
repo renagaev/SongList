@@ -43,7 +43,7 @@
     <v-divider/>
     <div v-if="isAdmin">
       <v-list-item>
-        <v-list-item-title class="pl-0" v-if="!!userName">Авторизован как {{userName}}</v-list-item-title>
+        <v-list-item-title class="pl-0" v-if="!!userName">Авторизован как {{ userName }}</v-list-item-title>
         <telegram-login-temp v-else
                              mode="callback"
                              :telegram-login="botUsername"
@@ -51,6 +51,10 @@
         />
       </v-list-item>
       <v-divider/>
+
+      <v-list-item title="Добавить песню" @click="goToAddSong">
+
+      </v-list-item>
     </div>
   </v-list>
 </template>
@@ -61,6 +65,7 @@ import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
 import {telegramLoginTemp} from 'vue3-telegram-login'
 import {useStore} from "vuex";
 import {useTheme} from "vuetify";
+import {useRouter} from "vue-router";
 
 const botUsername = import.meta.env.VITE_BOT_USERNAME
 // Icons
@@ -79,6 +84,7 @@ const isAdmin = computed(() => store.state.adminEnabled)
 const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
 
 const settings = computed(() => store.state.settings);
+const router = useRouter()
 
 const playNotes = computed({
   get: () => settings.value.playNotes,
@@ -108,7 +114,11 @@ const saveFontSize = () => {
 };
 
 const tgLoginCallback = async (user) => {
-  await  store.dispatch("login", user)
+  await store.dispatch("login", user)
+}
+
+const goToAddSong = () => {
+  router.push({name: "AddSong"})
 }
 // Lifecycle hooks
 onMounted(() => {

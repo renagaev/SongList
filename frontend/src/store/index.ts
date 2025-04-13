@@ -125,6 +125,9 @@ export default new Vuex.Store<State>({
         },
         enableAdmin(state) {
             state.adminEnabled = true
+        },
+        addSong(state, song: SongModel) {
+            state.songs.push(song)
         }
     },
     getters: {
@@ -250,6 +253,9 @@ export default new Vuex.Store<State>({
             actionContext.dispatch("checkLogin")
         },
         async checkLogin(actionContext: ActionContext<State, State>) {
+            actionContext.commit("setUserName", "test")
+            return
+            
             if (!actionContext.state.token) {
                 actionContext.commit("setUserName", null)
                 return
@@ -271,6 +277,11 @@ export default new Vuex.Store<State>({
             existingSong.text = model.text
             existingSong.number = model.number
             existingSong.noteId = model.noteId
+        },
+        async addSong(actionContext: ActionContext<State, State>, newSong: Song) {
+            const model = await SongService.addSong(newSong) as SongModel
+            actionContext.commit("addSong", model)
+            return model.id
         }
     },
     modules: {},

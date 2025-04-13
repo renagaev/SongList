@@ -55,6 +55,22 @@ export class SongService {
     }
 
     /**
+     * @param requestBody
+     * @returns Song OK
+     * @throws ApiError
+     */
+    public static addSong(
+        requestBody?: Song,
+    ): CancelablePromise<Song> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/Song/add',
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
      * @returns SongOpeningStats OK
      * @throws ApiError
      */

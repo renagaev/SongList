@@ -51,6 +51,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddScoped<HistoryService>();
 builder.Services.AddSingleton<OpenedSongsManager>();
+builder.Services.AddScoped<SongService>();
 builder.Services.AddHostedService(s => s.GetRequiredService<OpenedSongsManager>());
 
 builder.Services.AddOptions<TgOptions>().BindConfiguration("Tg");

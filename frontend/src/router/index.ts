@@ -1,11 +1,12 @@
 import {createRouter, RouteRecordRaw, createWebHashHistory} from 'vue-router'
-import SingleSong from "@/components/SingleSong.vue";
-import TagList from "@/components/TagList.vue";
-import Settings from "@/components/Settings.vue";
-import MainList from "@/components/MainList.vue";
-import FavouritesList from "@/components/FavouritesList.vue";
-import EnableAdmin from "@/components/EnableAdmin.vue";
-import EditSong from "@/components/EditSong.vue";
+import SingleSong from "@/pages/SingleSong.vue";
+import TagList from "@/pages/TagList.vue";
+import Settings from "@/pages/Settings.vue";
+import MainList from "@/pages/MainList.vue";
+import FavouritesList from "@/pages/FavouritesList.vue";
+import EnableAdmin from "@/pages/EnableAdmin.vue";
+import EditSong from "@/pages/EditSong.vue";
+import AddSong from "@/pages/AddSong.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -30,6 +31,14 @@ const routes: Array<RouteRecordRaw> = [
         name: "EditSong",
         component: EditSong,
         props: (route) => ({id: Number.parseInt(route.params.id as string)}),
+    },
+    {
+        path: '/song/add',
+        name: "AddSong",
+        component: AddSong,
+        meta:{
+            title: "Добавить песню"
+        }
     },
     {
         path: '/tags',
@@ -69,7 +78,7 @@ const router = createRouter({
         if (savedPosition) {
             return savedPosition
         } else {
-            return { top: 0 }
+            return {top: 0}
         }
     }
 })
