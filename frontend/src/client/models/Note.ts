@@ -6,5 +6,6 @@ export type Note = {
     id?: number;
     name: string;
     simpleName: string;
+    detailedName: string;
 };
 

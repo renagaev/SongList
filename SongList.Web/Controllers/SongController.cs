@@ -22,7 +22,8 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
         {
             Id = x.Id,
             Name = x.Name,
-            SimpleName = x.SimpleName
+            SimpleName = x.SimpleName,
+            DetailedName = x.DetailedName
         })
         .ToArrayAsync(cancellationToken);
 

@@ -5,7 +5,7 @@
       <template v-slot:increment></template>
       <template v-slot:decrement></template>
     </v-number-input>
-    <v-select v-model="song.noteId" label="Нота" rounded-sm variant="outlined" :items="notes" :item-title="'name'"
+    <v-select v-model="song.noteId" label="Нота" rounded-sm variant="outlined" :items="notes" :item-title="'detailedName'"
               :item-value="'id'"></v-select>
     <v-textarea v-model="song.text" label="Текст" :rules="rules" required auto-grow rounded-sm variant="outlined"></v-textarea>
     <v-btn class="mt-2"  type="submit" block>Сохранить</v-btn>
@@ -21,7 +21,6 @@ import type {Song} from "@/client";
 import {PropType, ref} from "vue";
 
 const store = useStore()
-const router = useRouter()
 const props = defineProps({
   song: {
     type: Object as PropType<Song>,

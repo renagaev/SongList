@@ -11,4 +11,7 @@ public record NoteDto
     public string Name { get; init; }
     [Required]
     public string SimpleName { get; init; }
+    
+    [Required]
+    public string DetailedName { get; init; }
 }
