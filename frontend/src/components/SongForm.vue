@@ -15,8 +15,6 @@
 
 <script setup lang="ts">
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
-import {VNumberInput} from "vuetify/labs/components";
 import type {Song} from "@/client";
 import {PropType, ref} from "vue";
 
