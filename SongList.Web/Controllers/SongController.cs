@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +30,11 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
 
     [HttpPost("{id}/edit", Name = "updateSong")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<SongDto> UpdateSong(int id, [FromBody] SongDto songDto, CancellationToken cancellationToken) =>
-        await songService.UpdateSong(id, songDto, cancellationToken);
+    public async Task<SongDto> UpdateSong(int id, [FromBody] SongDto songDto, CancellationToken cancellationToken)
+    {
+        var userName = User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
+        return await songService.UpdateSong(id, songDto, userName, cancellationToken);
+    }
 
     [HttpPost("add", Name = "addSong")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

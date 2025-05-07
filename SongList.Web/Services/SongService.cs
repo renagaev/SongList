@@ -1,11 +1,14 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using SongList.Web.Auth;
 using SongList.Web.Dto;
 using SongList.Web.Entities;
+using Telegram.Bot;
 
 namespace SongList.Web.Services;
 
-public class SongService(AppContext dbContext)
+public class SongService(AppContext dbContext, ITelegramBotClient telegramBotClient, IOptions<TgOptions> options)
 {
     private static Expression<Func<Song, SongDto>> projection = x => new SongDto
     {
@@ -25,13 +28,22 @@ public class SongService(AppContext dbContext)
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task<SongDto> UpdateSong(int id, SongDto songDto, CancellationToken cancellationToken)
+    public async Task<SongDto> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)
     {
         var song = await dbContext.Songs.FirstAsync(x => x.Id == id, cancellationToken);
+        var oldNoteId = song.NoteId;
         song.Text = songDto.Text;
         song.Title = songDto.Title;
         song.NoteId = songDto.NoteId;
         await dbContext.SaveChangesAsync(cancellationToken);
+        if (oldNoteId != songDto.NoteId && oldNoteId != null)
+        {
+            var oldNote = await dbContext.Notes.FirstAsync(x => x.Id == oldNoteId, cancellationToken: cancellationToken);
+            var newNote = await dbContext.Notes.FirstAsync(x => x.Id == song.NoteId, cancellationToken: cancellationToken);
+            await telegramBotClient.SendMessage(options.Value.ChatId,
+                $"{userName} обновил ноту у песни \"{song.Title}\" c {oldNote.DetailedName} на {newNote.DetailedName}",
+                cancellationToken: cancellationToken);
+        }
         return await dbContext.Songs.Select(projection).FirstAsync(x => x.Id == id, cancellationToken);
     }
 
