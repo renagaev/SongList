@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import path from "path";
 import vuetify from 'vite-plugin-vuetify'
 import {VitePWA} from 'vite-plugin-pwa'
-import { visualizer } from 'rollup-plugin-visualizer'
+import { analyzer } from 'vite-bundle-analyzer'
 
 export default defineConfig({
     resolve: {
@@ -99,9 +99,6 @@ export default defineConfig({
                 ]
             }
         }),
-        visualizer({
-            filename: './dist/bundle-analysis.html',
-            open: true,
-        })
+        // analyzer()
     ]
 })
