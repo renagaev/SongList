@@ -38,6 +38,8 @@
         </v-icon>
       </v-btn>
 
+      <attachments :id="id"/>
+
       <v-btn
           class="mb-3 mr-2"
           rounded
@@ -59,6 +61,7 @@ import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant} from 
 import Piano from "@/services/piano";
 import {daysAgo} from "@/services/DateHelper";
 import {useStore} from "vuex";
+import Attachments from "@/components/Attachments.vue";
 
 const store = useStore()
 // Props

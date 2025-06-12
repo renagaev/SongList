@@ -13,6 +13,7 @@ public class Song
 
     public List<SongHistoryItem> History { get; init; } = [];
     public List<SongMapping> Mappings { get; init; } = [];
+    public List<SongAttachment> Attachments { get; init; } = [];
     public Note? Note { get; init; }
     public int? NoteId { get; set; }
 }
