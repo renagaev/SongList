@@ -18,7 +18,7 @@ export default defineConfig({
             registerType: 'autoUpdate',
             workbox: {
                 skipWaiting: true,
-                navigateFallbackDenylist: ["/^\\/attachments/"]
+                navigateFallbackDenylist: [/^\/attachments*/]
             },
             manifest: {
                 name: "Сборник песен",
