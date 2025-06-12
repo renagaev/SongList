@@ -16,7 +16,7 @@
         <v-divider></v-divider>
 
         <v-card-text class="pa-1">
-          <div v-if="!isAdmin && (attachmentsCount != 0)">
+          <div v-if="attachmentsCount != 0">
             <attachments-list :items="attachments" @update="loadAttachments()"/>
           </div>
           <div v-else>
@@ -28,7 +28,7 @@
           <div v-if="isAdmin">
             <v-divider v-if="attachmentsCount == 0"></v-divider>
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
-              <v-file-input label="Файл" variant="outlined" v-model="file" :prepend-icon="null" :clear-icon="mdiCloseCircle"/>
+              <v-file-input label="Файл" variant="outlined" v-model="file" :prepend-icon="null" :clear-icon="mdiCloseCircle" :multiple="false"/>
               <v-text-field label="Название" placeholder="Введи название" variant="outlined" v-model="title"/>
               <v-btn type="submit" block :loading="loading">Добавить</v-btn>
             </v-form>
