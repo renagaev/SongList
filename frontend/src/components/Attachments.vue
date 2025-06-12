@@ -25,11 +25,16 @@
             </p>
 
           </div>
-          <div v-if="isAdmin">
+          <div v-if="isAdmin || true">
             <v-divider v-if="attachmentsCount == 0"></v-divider>
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
-              <v-file-input label="Файл" variant="outlined" v-model="file" :prepend-icon="null" :clear-icon="mdiCloseCircle" :multiple="false"/>
-              <v-text-field label="Название" placeholder="Введи название" variant="outlined" v-model="title"/>
+              <v-file-input :label="'Файл'"
+                            @change="setFile"
+                            :clear-icon="mdiCloseCircle"
+                            :prepend-icon="null"
+                            variant="outlined"
+              ></v-file-input>
+              <v-text-field :label="'Название'" placeholder="Введи название" variant="outlined" v-model="title"/>
               <v-btn type="submit" block :loading="loading">Добавить</v-btn>
             </v-form>
           </div>
@@ -72,22 +77,26 @@ const isAdmin = computed(() => store.state.isAdmin);
 
 let file: Blob | null = null
 let title: string | null = null
-let loading = false
+let loading = ref(false)
 
+function setFile(e: Event){
+  const target= e.target as HTMLInputElement;
+  file = (target.files as FileList)[0];
+}
 function clearForm() {
   file = null
   title = null
-  loading = false
+  loading.value = false
 }
 
 async function uploadAttachment() {
   if (file == null || !(!!title)) {
     return
   }
-  loading = true
+  loading.value = true
   await AttachmentsService.uploadAttachment(props.id, {file: file!, displayName: title!})
   await loadAttachments()
-  loading = false
+  loading.value = false
 }
 </script>
 
