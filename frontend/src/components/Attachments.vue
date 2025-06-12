@@ -25,7 +25,7 @@
             </p>
 
           </div>
-          <div v-if="isAdmin || true">
+          <div v-if="isAdmin">
             <v-divider v-if="attachmentsCount == 0"></v-divider>
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
               <v-file-input label="Файл" variant="outlined" v-model="file" :prepend-icon="null" :clear-icon="mdiCloseCircle"/>

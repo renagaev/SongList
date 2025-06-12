@@ -35,7 +35,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(["update"])
-let isAdmin = store.state.isAdmin || true
+let isAdmin = store.state.isAdmin
 let getIcon = (type: AttachmentType) => type == AttachmentType._0 ? mdiMusicBox : mdiFileDocument
 let getLink = (id: number) => `${OpenAPI.BASE}/attachments/${id}/download`
 
