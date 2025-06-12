@@ -26,7 +26,11 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
         new FileExtensionContentTypeProvider().TryGetContentType(attachment.name, out contentType);
         contentType ??= "application/octet-stream";
         Response.Headers.ContentDisposition = "inline; filename=" + HttpUtility.UrlEncode(attachment.name);
-        return File(attachment.content, contentType);
+        return new FileStreamResult(attachment.content, contentType)
+        {
+            FileDownloadName = attachment.name,
+            EnableRangeProcessing = true
+        };
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

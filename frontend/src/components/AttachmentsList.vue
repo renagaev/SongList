@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-list>
-      <div v-for="item in items" :key="item.id">
+      <div v-for="(item, index) in items" :key="item.id">
         <v-list-item :title="item.name" class="spacer">
           <template v-slot:prepend class="spacer">
             <v-icon size="24">{{ getIcon(item.type) }}</v-icon>
@@ -18,7 +18,7 @@
           </template>
         </v-list-item>
 
-        <v-divider/>
+        <v-divider v-if="index < items.length - 1"/>
       </div>
 
     </v-list>

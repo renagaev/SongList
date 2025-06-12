@@ -13,7 +13,6 @@
     <template v-slot:default="{ isActive }">
       <v-card class="pa-2">
         <v-card-title>Файлы</v-card-title>
-        <v-divider></v-divider>
 
         <v-card-text class="pa-1">
           <div v-if="attachmentsCount != 0">
@@ -26,7 +25,7 @@
 
           </div>
           <div v-if="isAdmin">
-            <v-divider v-if="attachmentsCount == 0"></v-divider>
+            <v-divider></v-divider>
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
               <v-file-input :label="'Файл'"
                             @change="setFile"

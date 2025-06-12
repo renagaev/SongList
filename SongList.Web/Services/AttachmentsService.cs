@@ -23,7 +23,7 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task<(string name, byte[] content)> GetContent(int id, CancellationToken cancellationToken)
+    public async Task<(string name, Stream content)> GetContent(int id, CancellationToken cancellationToken)
     {
         var attachment = await dbContext.Attachments
             .FirstAsync(x => x.Id == id, cancellationToken);
@@ -37,7 +37,7 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
 
         await minioClient.GetObjectAsync(args, cancellationToken);
         ms.Position = 0;
-        return (attachment.Name, ms.ToArray());
+        return (attachment.Name, ms);
     }
 
     public async Task CreateAttachment(int songId, Stream stream, string title, string originalName,
