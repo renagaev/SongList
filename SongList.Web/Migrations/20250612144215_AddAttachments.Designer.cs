@@ -12,7 +12,7 @@ using SongList.Web;
 namespace SongList.Web.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20250612092805_AddAttachments")]
+    [Migration("20250612144215_AddAttachments")]
     partial class AddAttachments
     {
         /// <inheritdoc />
@@ -94,6 +94,9 @@ namespace SongList.Web.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()

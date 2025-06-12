@@ -44,6 +44,7 @@ builder.Services.AddCors(x => x.AddDefaultPolicy(x =>
     x.SetIsOriginAllowed(_ => true)
         .AllowCredentials()
         .AllowAnyHeader()
+        .AllowAnyMethod()
 ));
 builder.Services.AddResponseCompression();
 builder.Services.AddSignalR();

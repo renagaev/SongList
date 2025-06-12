@@ -20,7 +20,8 @@ namespace SongList.Web.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     S3Path = table.Column<string>(type: "text", nullable: false),
                     SongId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false)
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

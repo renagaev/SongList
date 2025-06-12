@@ -40,7 +40,8 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
         return (attachment.Name, ms.ToArray());
     }
 
-    public async Task CreateAttachment(int songId, Stream stream, string title, string originalName, CancellationToken cancellationToken)
+    public async Task CreateAttachment(int songId, Stream stream, string title, string originalName,
+        CancellationToken cancellationToken)
     {
         var extension = Path.GetExtension(originalName);
         var type = extension switch
@@ -59,7 +60,7 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
             S3Path = $"{songId}/{Guid.NewGuid()}{Path.GetExtension(originalName)}"
         };
         dbContext.Attachments.Add(attachment);
-        
+
         var args = new PutObjectArgs()
             .WithObject(attachment.S3Path)
             .WithBucket(s3Settings.Value.BucketName)
@@ -73,12 +74,7 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
     {
         var attachment = await dbContext.Attachments
             .FirstAsync(x => x.Id == id, cancellationToken);
-        dbContext.Attachments.Remove(attachment);
-
-        var args = new RemoveObjectArgs()
-            .WithObject(attachment.S3Path)
-            .WithBucket(s3Settings.Value.BucketName);
-        await minioClient.RemoveObjectAsync(args, cancellationToken);
-        await dbContext.SaveChangesAsync(CancellationToken.None);
+        attachment.IsDeleted = true;
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

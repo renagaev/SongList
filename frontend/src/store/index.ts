@@ -2,7 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {ActionContext} from "vuex";
 import VuexPersistence from 'vuex-persist'
-import {SongService, HistoryService, SongOpeningStats, OpenAPI, Note, AuthService, Song} from "@/client";
+import {
+    SongService,
+    HistoryService,
+    SongOpeningStats,
+    OpenAPI,
+    Note,
+    AuthService,
+    Song,
+    AttachmentsService
+} from "@/client";
 import fuzzysort from 'fuzzysort'
 import {Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
@@ -246,6 +255,12 @@ export default new Vuex.Store<State>({
         async getSongHistory(actionContext: ActionContext<State, State>, id: number) {
             const res = await HistoryService.getSongHistory(id)
             return res.map(d => new Date(d))
+        },
+        async getSongAttachments(actionContext: ActionContext<State, State>, id: number){
+            return AttachmentsService.getAttachments(id);
+        },
+        async removeSongAttachment(actionContext: ActionContext<State, State>, id: number){
+            return AttachmentsService.deleteAttachment(id)
         },
         async login(actionContext: ActionContext<State, State>, user: object) {
             const res = await AuthService.getTgAdminToken(user)

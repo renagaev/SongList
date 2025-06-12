@@ -38,6 +38,9 @@ public class AppContext(DbContextOptions options) : DbContext(options)
             .HasMany(x => x.Attachments)
             .WithOne(x => x.Song);
 
+        modelBuilder.Entity<SongAttachment>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
         base.OnModelCreating(modelBuilder);
     }
 }

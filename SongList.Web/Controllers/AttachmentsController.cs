@@ -1,6 +1,9 @@
+using System.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Net.Http.Headers;
 using SongList.Web.Dto;
 using SongList.Web.Services;
 
@@ -19,21 +22,23 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
     public async Task<IActionResult> GetAttachment(int id, CancellationToken cancellationToken)
     {
         var attachment = await service.GetContent(id, cancellationToken);
-        return new FileContentResult(attachment.content, "application/octet-stream")
-        {
-            FileDownloadName = attachment.name
-        };
+        string contentType;
+        new FileExtensionContentTypeProvider().TryGetContentType(attachment.name, out contentType);
+        contentType ??= "application/octet-stream";
+        Response.Headers.ContentDisposition = "inline; filename=" + HttpUtility.UrlEncode(attachment.name);
+        return File(attachment.content, contentType);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("song/{songId:int}", Name = "uploadAttachment")]
-    public async Task UploadAttachment(int songId, IFormFile file, [FromForm] string displayName, CancellationToken cancellationToken)
+    public async Task UploadAttachment(int songId, IFormFile file, [FromForm] string displayName,
+        CancellationToken cancellationToken)
     {
         var stream = file.OpenReadStream();
-        await service.CreateAttachment(songId, stream, displayName, file.Name, cancellationToken);
+        await service.CreateAttachment(songId, stream, displayName, file.FileName, cancellationToken);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id:int}", Name = "deleteAttachment")]
     public async Task DeleteAttachment(int id, CancellationToken cancellationToken)
     {

@@ -14,4 +14,5 @@ public class SongAttachment
     public int SongId { get; init; }
     public Song Song { get; init; }
     public AttachmentType Type { get; init; }
+    public bool IsDeleted { get; set; }
 }
