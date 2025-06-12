@@ -10,6 +10,7 @@ public class AppContext(DbContextOptions options) : DbContext(options)
     public DbSet<SongHistoryItem> History { get; init; }
     public DbSet<SongMapping> Mappings { get; init; }
     public DbSet<Note> Notes { get; init; }
+    public DbSet<SongAttachment> Attachments { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,11 @@ public class AppContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<SongHistoryItem>().HasIndex(x => x.SongId);
         modelBuilder.Entity<SongMapping>().HasIndex(x => x.HolyricsId);
         modelBuilder.Entity<SongMapping>().HasIndex(x => new { x.SongId, x.HolyricsId }).IsUnique();
+
+
+        modelBuilder.Entity<Song>()
+            .HasMany(x => x.Attachments)
+            .WithOne(x => x.Song);
 
         base.OnModelCreating(modelBuilder);
     }

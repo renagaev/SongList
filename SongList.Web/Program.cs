@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Minio;
 using SongList.Web.Auth;
 using SongList.Web.Controllers;
 using SongList.Web.Services;
@@ -52,6 +52,21 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<HistoryService>();
 builder.Services.AddSingleton<OpenedSongsManager>();
 builder.Services.AddScoped<SongService>();
+
+builder.Services.AddOptions<S3Settings>().BindConfiguration(nameof(S3Settings));
+builder.Services.AddSingleton<IMinioClient>(s =>
+{
+    var options = s.GetRequiredService<IOptions<S3Settings>>().Value;
+    var factory = new MinioClientFactory(client => client
+        .WithRegion(options.Region)
+        .WithEndpoint(options.BaseUrl)
+        .WithSSL()
+        .WithCredentials(options.AccessKey, options.SecretKey));
+    return factory.CreateClient();
+});
+builder.Services.AddScoped<AttachmentsService>();
+
+
 builder.Services.AddHostedService(s => s.GetRequiredService<OpenedSongsManager>());
 
 builder.Services.AddOptions<TgOptions>().BindConfiguration("Tg");
