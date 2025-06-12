@@ -29,7 +29,7 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
         return File(attachment.content, contentType);
     }
 
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("song/{songId:int}", Name = "uploadAttachment")]
     public async Task UploadAttachment(int songId, IFormFile file, [FromForm] string displayName,
         CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
         await service.CreateAttachment(songId, stream, displayName, file.FileName, cancellationToken);
     }
 
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id:int}", Name = "deleteAttachment")]
     public async Task DeleteAttachment(int id, CancellationToken cancellationToken)
     {

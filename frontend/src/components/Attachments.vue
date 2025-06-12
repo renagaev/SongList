@@ -79,8 +79,8 @@ let file: Blob | null = null
 let title: string | null = null
 let loading = ref(false)
 
-function setFile(e: Event){
-  const target= e.target as HTMLInputElement;
+function setFile(e: Event) {
+  const target = e.target as HTMLInputElement;
   file = (target.files as FileList)[0];
 }
 function clearForm() {
@@ -94,9 +94,12 @@ async function uploadAttachment() {
     return
   }
   loading.value = true
-  await AttachmentsService.uploadAttachment(props.id, {file: file!, displayName: title!})
-  await loadAttachments()
-  loading.value = false
+  try {
+    await AttachmentsService.uploadAttachment(props.id, {file: file!, displayName: title!})
+    await loadAttachments()
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
