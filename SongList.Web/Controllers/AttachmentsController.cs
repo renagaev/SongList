@@ -28,7 +28,6 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
         Response.Headers.ContentDisposition = "inline; filename=" + HttpUtility.UrlEncode(attachment.name);
         return new FileStreamResult(attachment.content, contentType)
         {
-            FileDownloadName = attachment.name,
             EnableRangeProcessing = true
         };
     }
