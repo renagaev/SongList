@@ -1,13 +1,13 @@
 using LiteDB;
 
-namespace HolyricsCompanion.Storage;
+namespace HolyricsCompanion.History;
 
-public class Repository: IDisposable
+public class HistoryRepository: IDisposable
 {
     private readonly LiteDatabase _db;
     private readonly ILiteCollection<HistoryItem> _collection;
 
-    public Repository(LiteDatabase db)
+    public HistoryRepository(LiteDatabase db)
     {
         _db = db;
         _collection = _db.GetCollection<HistoryItem>();

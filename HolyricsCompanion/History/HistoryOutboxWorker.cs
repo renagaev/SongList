@@ -1,10 +1,10 @@
 using HolyricsCompanion.Songlist;
-using HolyricsCompanion.Storage;
+using HolyricsCompanion.Workers;
 using Microsoft.Extensions.Options;
 
-namespace HolyricsCompanion.Workers;
+namespace HolyricsCompanion.History;
 
-public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory, ILogger<OutboxWorker> logger)
+public class HistoryOutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory, ILogger<HistoryOutboxWorker> logger)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -14,7 +14,7 @@ public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServ
             await Task.Delay(optionsMonitor.CurrentValue.OutboxInterval, stoppingToken);
 
             using var scope = scopeFactory.CreateScope();
-            var storage = scope.ServiceProvider.GetRequiredService<Repository>();
+            var storage = scope.ServiceProvider.GetRequiredService<HistoryRepository>();
             var client = scope.ServiceProvider.GetRequiredService<SonglistClient>();
 
             var itemsToSend = storage.GetNonSentItems();
@@ -23,7 +23,13 @@ public class OutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServ
             {
                 try
                 {
-                    await client.ReportItem(historyItem.HolyricsId, historyItem.CreatedAt, historyItem.Title, stoppingToken);
+                    var dto = new SongHistoryItem()
+                    {
+                        HolyricsId = historyItem.HolyricsId,
+                        CreatedAt = historyItem.CreatedAt,
+                        Title = historyItem.Title
+                    };
+                    await client.ReportHistoryItem(dto, stoppingToken);
                     historyItem.Sent = true;
                     storage.Upsert(historyItem);
                     logger.LogInformation("reported new item to server");

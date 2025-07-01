@@ -7,7 +7,7 @@ using SongList.Web.Services;
 namespace SongList.Web.Controllers;
 
 [Route("history")]
-public class HistoryController(HistoryService service, AppContext dbContext) : ControllerBase
+public class HistoryController(SongHistoryService service, AppContext dbContext) : ControllerBase
 {
     
     [Authorize(AuthenticationSchemes = "Token")]
@@ -16,6 +16,14 @@ public class HistoryController(HistoryService service, AppContext dbContext) : C
     public async Task AddHistoryItem([FromBody] AddHistoryItemRequest request, CancellationToken cancellationToken)
     {
         await service.AddHistoryItem(request.HolyricsId, request.CreatedAt, request.Title, cancellationToken);
+    }
+
+    [Authorize(AuthenticationSchemes = "Token")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpPost("slides")]
+    public async Task AddSlideHistoryItem([FromBody] AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
+    {
+        await service.AddSlideHistoryItem(request, cancellationToken);
     }
     
     [HttpGet("{songId:int}", Name = "getSongHistory")]

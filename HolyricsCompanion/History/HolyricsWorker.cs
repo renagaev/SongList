@@ -1,8 +1,8 @@
 using HolyricsCompanion.Holyrics;
-using HolyricsCompanion.Storage;
+using HolyricsCompanion.Workers;
 using Microsoft.Extensions.Options;
 
-namespace HolyricsCompanion.Workers;
+namespace HolyricsCompanion.History;
 
 public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, IServiceScopeFactory scopeFactory, ILogger<HolyricsWorker> logger): BackgroundService
 {
@@ -13,7 +13,7 @@ public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, ISe
             await Task.Delay(optionsMonitor.CurrentValue.HistoryPollingInterval, stoppingToken);
             using var scope = scopeFactory.CreateScope();
             var client = scope.ServiceProvider.GetRequiredService<HolyricsClient>();
-            var storage = scope.ServiceProvider.GetRequiredService<Repository>();
+            var storage = scope.ServiceProvider.GetRequiredService<HistoryRepository>();
             
             try
             {

@@ -1,28 +1,24 @@
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.Extensions.Options;
 
 namespace HolyricsCompanion.Songlist;
 
-public class SonglistClient(HttpClient httpClient, IOptionsSnapshot<SonglistSettings> optionsSnapshot)
+public class SonglistClient(HttpClient httpClient)
 {
-    private readonly SonglistSettings _settings = optionsSnapshot.Value;
-
-    public async Task ReportItem(string holyricsId, DateTimeOffset createdAt, string title, CancellationToken cancellationToken)
+    public async Task ReportSongSlide(SongSlideItem item, CancellationToken cancellationToken)
     {
-        var model = new HistoryItem
-        {
-            HolyricsId = holyricsId,
-            CreatedAt = createdAt,
-            Title = title
-        };
+        var res = await httpClient.PostAsJsonAsync("/history/slides", item, cancellationToken);
+        res.EnsureSuccessStatusCode();
+    }
 
-        var req = new HttpRequestMessage(HttpMethod.Post, $"{_settings.BaseUrl}/history")
-        {
-            Content = JsonContent.Create(model)
-        };
-        req.Headers.Authorization = new AuthenticationHeaderValue(_settings.Token);
-        var res = await httpClient.SendAsync(req, cancellationToken);
+    public async Task ReportBibleVerse(BibleVerseItem item, CancellationToken cancellationToken)
+    {
+        var res = await httpClient.PostAsJsonAsync("/bible-history", item, cancellationToken);
+        res.EnsureSuccessStatusCode();
+    }
+
+    public async Task ReportHistoryItem(SongHistoryItem model, CancellationToken cancellationToken)
+    {
+        var res = await httpClient.PostAsJsonAsync("/history", model, cancellationToken);
         res.EnsureSuccessStatusCode();
     }
 }

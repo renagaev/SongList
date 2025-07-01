@@ -1,4 +1,4 @@
-namespace HolyricsCompanion.Storage;
+namespace HolyricsCompanion.History;
 
 public record HistoryItem
 {

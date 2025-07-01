@@ -11,6 +11,8 @@ public class AppContext(DbContextOptions options) : DbContext(options)
     public DbSet<SongMapping> Mappings { get; init; }
     public DbSet<Note> Notes { get; init; }
     public DbSet<SongAttachment> Attachments { get; init; }
+    public DbSet<SongSlideHistoryItem> SlideHistory { get; init; }
+    public DbSet<VerseHistoryItem> VerseHistory { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,6 +42,14 @@ public class AppContext(DbContextOptions options) : DbContext(options)
 
         modelBuilder.Entity<SongAttachment>()
             .HasQueryFilter(x => !x.IsDeleted);
+
+        modelBuilder.Entity<SongSlideHistoryItem>()
+            .HasIndex(x => x.ShowedAt);
+        modelBuilder.Entity<SongSlideHistoryItem>()
+            .HasIndex(x => x.HolyricsId);
+
+        modelBuilder.Entity<VerseHistoryItem>()
+            .HasIndex(x => x.ShowedAt);
 
         base.OnModelCreating(modelBuilder);
     }

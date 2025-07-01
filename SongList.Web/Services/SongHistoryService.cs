@@ -4,7 +4,7 @@ using SongList.Web.Entities;
 
 namespace SongList.Web.Services;
 
-public class HistoryService(AppContext context)
+public class SongHistoryService(AppContext context)
 {
     public async Task AddHistoryItem(string holyricsId, DateTimeOffset createdAt, string title,
         CancellationToken cancellationToken)
@@ -51,5 +51,26 @@ public class HistoryService(AppContext context)
                 Type = x.Key.IsMorning ? ServiceType.Morning : ServiceType.Evening,
                 Songs = x.Select(x => x.SongId!.Value).ToArray()
             }).ToArrayAsync(cancellationToken);
+    }
+
+    public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
+    {
+        var exists = await context.SlideHistory
+            .AnyAsync(x => x.HolyricsId == request.HolyricsId && x.ShowedAt == request.ShowedAt, cancellationToken);
+        if (exists)
+        {
+            return;
+        }
+
+        context.SlideHistory.Add(new SongSlideHistoryItem
+        {
+            HolyricsId = request.HolyricsId,
+            SlideNumber = request.SlideNumber,
+            TotalSlides = request.TotalSlides,
+            SongName = request.SongName,
+            ShowedAt = request.ShowedAt,
+            HiddenAt = request.HiddenAt
+        });
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
