@@ -4,4 +4,5 @@ public record WorkersSettings
 {
     public TimeSpan OutboxInterval { get; init; }
     public TimeSpan HistoryPollingInterval { get; init; }
+    public TimeSpan SlidePollingInterval { get; init; }
 }

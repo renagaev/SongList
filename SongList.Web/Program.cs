@@ -50,7 +50,8 @@ builder.Services.AddResponseCompression();
 builder.Services.AddSignalR();
 
 
-builder.Services.AddScoped<HistoryService>();
+builder.Services.AddScoped<SongHistoryService>();
+builder.Services.AddScoped<VerseHistoryService>();
 builder.Services.AddSingleton<OpenedSongsManager>();
 builder.Services.AddScoped<SongService>();
 
