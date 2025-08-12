@@ -287,6 +287,7 @@ export default new Vuex.Store<State>({
             existingSong.title = model.title
             existingSong.tags = model.tags
             existingSong.text = model.text
+            existingSong.tags = model.tags
             existingSong.number = model.number
             existingSong.noteId = model.noteId
         },

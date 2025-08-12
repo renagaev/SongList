@@ -3,13 +3,25 @@ import vue from '@vitejs/plugin-vue'
 import path from "path";
 import vuetify from 'vite-plugin-vuetify'
 import {VitePWA} from 'vite-plugin-pwa'
-import { analyzer } from 'vite-bundle-analyzer'
+import {analyzer} from 'vite-bundle-analyzer'
 
 export default defineConfig({
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "src"),
         }
+    },
+    esbuild: {target: 'es2020'},
+    build: {
+        target: 'es2020',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    tone: ['tone', 'standardized-audio-context'],
+                }
+            }
+        },
+        cssCodeSplit: true,
     },
     plugins: [
         vue(),
@@ -100,6 +112,6 @@ export default defineConfig({
                 ]
             }
         }),
-        // analyzer()
+        analyzer()
     ]
 })

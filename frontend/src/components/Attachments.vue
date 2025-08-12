@@ -29,7 +29,6 @@
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
               <v-file-input :label="'Файл'"
                             @change="setFile"
-                            :clear-icon="mdiCloseCircle"
                             :prepend-icon="null"
                             variant="outlined"
               ></v-file-input>
@@ -47,7 +46,7 @@
 <script setup lang="ts">
 
 import {useStore} from "vuex";
-import {mdiPaperclip, mdiCloseCircle} from "@mdi/js";
+import {mdiPaperclip} from "@mdi/js";
 import {Attachment, AttachmentsService} from "@/client";
 import {computed, ref} from "vue";
 import AttachmentsList from "@/components/AttachmentsList.vue";
@@ -60,7 +59,6 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(mdiCloseCircle)
 
 let attachments = ref(Array.of<Attachment>())
 let attachmentsCount = computed(() => attachments.value.length)

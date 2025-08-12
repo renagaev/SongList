@@ -15,7 +15,6 @@
         class="ml-5"
         style="padding-right: 10px"
         v-model="searchText"
-        :clear-icon="clearIcon"
         autofocus
         clearable
     />
@@ -27,7 +26,7 @@
 
 <script setup lang="ts">
 import {ref, computed, watch, onMounted} from 'vue';
-import {mdiMagnify, mdiMenu, mdiClose} from "@mdi/js";
+import {mdiMagnify, mdiMenu} from "@mdi/js";
 import {useRoute, useRouter} from 'vue-router';
 import {SongModel} from "@/store/models";
 import { useStore } from "vuex";
@@ -35,9 +34,7 @@ import { useStore } from "vuex";
 // Ссылки и переменные
 const route = useRoute();
 const router = useRouter();
-const showBar = ref(false);
 const searchIcon = ref(mdiMagnify);
-const clearIcon = ref(mdiClose);
 const menuIcon = ref(mdiMenu);
 const title = ref("Все");
 const isSearch = ref(false);

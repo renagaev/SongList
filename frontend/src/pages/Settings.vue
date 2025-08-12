@@ -4,7 +4,7 @@
         title="Темная тема">
       <template v-slot:prepend>
         <v-list-item-action start>
-          <v-checkbox-btn v-model="darkTheme" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+          <v-checkbox-btn v-model="darkTheme"></v-checkbox-btn>
         </v-list-item-action>
       </template>
     </v-list-item>
@@ -15,7 +15,7 @@
         title="Показывать ноты">
       <template v-slot:prepend>
         <v-list-item-action start>
-          <v-checkbox-btn :model-value="playNotes" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+          <v-checkbox-btn :model-value="playNotes"></v-checkbox-btn>
         </v-list-item-action>
       </template>
 
@@ -26,7 +26,7 @@
         title="Показывать историю песен">
       <template v-slot:prepend>
         <v-list-item-action start>
-          <v-checkbox-btn v-model="showHistory" :true-icon="checkBoxOn" :false-icon="checkBoxOff"></v-checkbox-btn>
+          <v-checkbox-btn v-model="showHistory"></v-checkbox-btn>
         </v-list-item-action>
       </template>
     </v-list-item>
@@ -61,16 +61,12 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted} from "vue";
-import {mdiCheckboxBlankOutline, mdiCheckboxMarked} from "@mdi/js";
 import {telegramLoginTemp} from 'vue3-telegram-login'
 import {useStore} from "vuex";
 import {useTheme} from "vuetify";
 import {useRouter} from "vue-router";
 
 const botUsername = import.meta.env.VITE_BOT_USERNAME
-// Icons
-const checkBoxOff = mdiCheckboxBlankOutline;
-const checkBoxOn = mdiCheckboxMarked;
 
 // Store
 const store = useStore();

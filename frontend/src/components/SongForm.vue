@@ -1,7 +1,8 @@
 <template>
   <v-form class="pa-3" @submit.prevent :validate-on="'input'" @submit="save">
     <v-text-field v-model="song.title" :rules="rules" label="Название" required rounded-sm variant="outlined"></v-text-field>
-    <v-number-input v-model="song.number" label="Номер" rounded-sm control-variant="stacked" variant="outlined">
+    <v-combobox v-model="song.tags" :items="tags" rounded-sm label="Теги" multiple variant="outlined" chips/>
+    <v-number-input v-model="song.number" label="Номер" rounded-sm control-variant="stacked" variant="outlined" >
       <template v-slot:increment></template>
       <template v-slot:decrement></template>
     </v-number-input>
@@ -19,6 +20,7 @@ import type {Song} from "@/client";
 import {PropType, ref} from "vue";
 
 const store = useStore()
+const tags = store.getters["tags"]
 const props = defineProps({
   song: {
     type: Object as PropType<Song>,
