@@ -2,7 +2,7 @@
   <v-container>
     <v-chip-group column>
       <v-chip
-          v-for="tag in song.tags"
+          v-for="tag in tags"
           density="compact"
           :key="tag"
           @click="goToTag(tag)">{{ tag }}
@@ -111,7 +111,9 @@ const fontStyle = computed(() => `font-size: ${store.state.settings.fontSize}px`
 const showHistory = computed(() => store.state.settings.showHistory);
 
 const song = computed(() => store.state.selectedSong);
-
+const tags = computed(() => store.state.selectedSong.tags.sort((a, b) => {
+  return a.toLowerCase().localeCompare(b.toLowerCase())
+}));
 const showNote = computed(() =>
     store.state.settings.playNotes && song.value.noteId != null
 );
