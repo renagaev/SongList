@@ -8,7 +8,7 @@ public class Song
     public string Title { get; set; }
     public string[] Tags { get; set; } = [];
     public string Text { get; set; }
-    public int? Number { get; init; }
+    public int? Number { get; set; }
     public string OriginalTitle { get; init; }
 
     public List<SongHistoryItem> History { get; init; } = [];
