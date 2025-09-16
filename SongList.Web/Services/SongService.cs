@@ -36,6 +36,7 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
         song.Title = songDto.Title;
         song.NoteId = songDto.NoteId;
         song.Tags = songDto.Tags;
+        song.Number = songDto.Number;
         await dbContext.SaveChangesAsync(cancellationToken);
         if (oldNoteId != songDto.NoteId && oldNoteId != null)
         {
