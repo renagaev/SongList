@@ -27,8 +27,17 @@ export default class Piano {
     }
 
     public static async play(note?: any) {
-        await Piano.sampler.context.resume()
-        Piano.sampler.triggerAttackRelease(note, '1n');
+        try {
+            await Piano.sampler.context.resume()
+            Piano.sampler.triggerAttackRelease(note, '1n');
+        } catch (e) {
+            setTimeout(async () => {
+                await Piano.sampler.context.resume()
+                Piano.sampler.triggerAttackRelease(note, '1n');
+            }, 1)
+        }
+        
+        
     }
 }
 

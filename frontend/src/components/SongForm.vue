@@ -7,7 +7,14 @@
       <template v-slot:decrement></template>
     </v-number-input>
     <v-select v-model="song.noteId" label="Нота" rounded-sm variant="outlined" :items="notes" :item-title="'detailedName'"
-              :item-value="'id'"></v-select>
+              :item-value="'id'">
+      <template #item="{ props, item }">
+        <v-list-item
+            v-bind="props"
+            @click="() => { props.onClick?.(); playNote(item.raw.id) }"
+        />
+      </template>
+    </v-select>
     <v-textarea v-model="song.text" label="Текст" :rules="rules" required auto-grow rounded-sm variant="outlined"></v-textarea>
     <v-btn class="mt-2"  type="submit" block>Сохранить</v-btn>
   </v-form>
@@ -17,7 +24,8 @@
 <script setup lang="ts">
 import {useStore} from "vuex";
 import type {Song} from "@/client";
-import {PropType, ref} from "vue";
+import {PropType} from "vue";
+import Piano from "@/services/piano";
 
 const store = useStore()
 const tags = store.getters["tags"]
@@ -31,7 +39,10 @@ const notes = store.state.notes
 const emit = defineEmits<{
   (e: "save")
 }>()
-
+const playNote = async (id) => {
+  const note = notes.find(x=> x.id == id)
+  await Piano.play(note.name)
+}
 const song = props.song!;
 const rules = [value => {
   if (value)
