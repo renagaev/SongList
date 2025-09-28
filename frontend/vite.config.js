@@ -30,17 +30,7 @@ export default defineConfig({
             registerType: 'autoUpdate',
             workbox: {
                 skipWaiting: true,
-                navigateFallbackDenylist: [/^\/attachments*/],
-                runtimeCaching: [
-                    {
-                        urlPattern: ({request}) => request.mode === 'navigate',
-                        handler: 'NetworkFirst',
-                        options: {
-                            networkTimeoutSeconds: 3,
-                            cacheName: 'navigation-runtime-cache',
-                        },
-                    },
-                ],
+                navigateFallbackDenylist: [/^\/attachments*/]
             },
             manifest: {
                 name: "Сборник песен",
