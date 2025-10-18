@@ -16,6 +16,7 @@ public class Song
     public List<SongAttachment> Attachments { get; init; } = [];
     public Note? Note { get; init; }
     public int? NoteId { get; set; }
+    public bool IsDeleted { get; set; }
 }
 
 public class SongOpeningStats

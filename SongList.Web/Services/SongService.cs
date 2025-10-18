@@ -24,6 +24,7 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
     public async Task<SongDto[]> GetAllSongs(CancellationToken cancellationToken)
     {
         return await dbContext.Songs
+            .Where(x=> !x.IsDeleted)
             .Select(projection)
             .ToArrayAsync(cancellationToken);
     }
