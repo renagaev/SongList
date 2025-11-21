@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SongList.Web.Auth;
@@ -33,8 +34,8 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
     {
         var song = await dbContext.Songs.FirstAsync(x => x.Id == id, cancellationToken);
         var oldNoteId = song.NoteId;
-        song.Text = songDto.Text;
-        song.Title = songDto.Title;
+        song.Text = ReplaceLatinWithCyrillic(songDto.Text);
+        song.Title = ReplaceLatinWithCyrillic(songDto.Title);
         song.NoteId = songDto.NoteId;
         song.Tags = songDto.Tags;
         song.Number = songDto.Number;
@@ -54,8 +55,8 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
     {
         var song = new Song
         {
-            Text = songDto.Text,
-            Title = songDto.Title,
+            Text = ReplaceLatinWithCyrillic(songDto.Text),
+            Title = ReplaceLatinWithCyrillic(songDto.Title),
             OriginalTitle = songDto.Title,
             Tags = [],
             Number = songDto.Number,
@@ -64,5 +65,50 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
         dbContext.Songs.Add(song);
         await dbContext.SaveChangesAsync(cancellationToken);
         return await dbContext.Songs.Select(projection).FirstAsync(x => x.Id == song.Id, cancellationToken);
+    }
+    
+    private static readonly Dictionary<char, char> Map = new()
+    {
+        // Заглавные
+        ['A'] = 'А',
+        ['B'] = 'В',
+        ['C'] = 'С',
+        ['E'] = 'Е',
+        ['H'] = 'Н',
+        ['K'] = 'К',
+        ['M'] = 'М',
+        ['O'] = 'О',
+        ['P'] = 'Р',
+        ['T'] = 'Т',
+        ['X'] = 'Х',
+        ['Y'] = 'У',
+
+        // Строчные
+        ['a'] = 'а',
+        ['c'] = 'с',
+        ['e'] = 'е',
+        ['o'] = 'о',
+        ['p'] = 'р',
+        ['x'] = 'х',
+        ['y'] = 'у',
+        ['k'] = 'к',
+        ['m'] = 'м',
+        ['h'] = 'һ', // похожее, но реже нужно — можно убрать
+        ['b'] = 'Ь'  // иногда используют так, тоже опционально
+    };
+
+    public static string ReplaceLatinWithCyrillic(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        var sb = new StringBuilder(input.Length);
+
+        foreach (var ch in input)
+        {
+            sb.Append(Map.GetValueOrDefault(ch, ch));
+        }
+
+        return sb.ToString();
     }
 }
