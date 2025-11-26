@@ -53,6 +53,27 @@ public class SongHistoryService(AppContext context)
             }).ToArrayAsync(cancellationToken);
     }
 
+    public Task<SongHistorySummaryDto[]> GetHistorySummary(CancellationToken cancellationToken)
+    {
+        var eveningThreshold = TimeSpan.FromHours(16);
+
+        return context.History
+            .Where(x => x.SongId != null)
+            .GroupBy(x => x.SongId!.Value)
+            .Select(x => new SongHistorySummaryDto
+            {
+                SongId = x.Key,
+                LastMorning = x
+                    .Where(x => x.CreatedAt.TimeOfDay < eveningThreshold)
+                    .Max(x => (DateTimeOffset?)x.CreatedAt),
+                LastEvening = x
+                    .Where(x => x.CreatedAt.TimeOfDay >= eveningThreshold)
+                    .Max(x => (DateTimeOffset?)x.CreatedAt),
+                Last = x.Max(x => (DateTimeOffset?)x.CreatedAt)
+            })
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
     {
         var exists = await context.SlideHistory

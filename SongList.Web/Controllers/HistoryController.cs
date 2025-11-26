@@ -36,4 +36,8 @@ public class HistoryController(SongHistoryService service, AppContext dbContext)
     [HttpGet("services", Name = "getServices")]
     public Task<ServiceDto[]> GetServicesHistory(CancellationToken cancellationToken) =>
         service.GetServices(cancellationToken);
+
+    [HttpGet("summary", Name = "getHistorySummary")]
+    public Task<SongHistorySummaryDto[]> GetHistorySummary(CancellationToken cancellationToken) =>
+        service.GetHistorySummary(cancellationToken);
 }
