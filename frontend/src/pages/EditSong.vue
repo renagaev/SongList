@@ -1,5 +1,5 @@
 <template>
-  <SongForm :song="song" @save="save"></SongForm>
+  <SongForm :song="song" :loading="isSaving" @save="save"></SongForm>
 </template>
 
 <script setup lang="ts">
@@ -19,9 +19,18 @@ const props = defineProps({
 
 const originalSong = store.getters.song(props.id)
 const song = ref(structuredClone(toRaw(originalSong)))
+const isSaving = ref(false);
 const save = async () => {
-  await store.dispatch("updateSong", song.value)
-  await router.back();
+  if (isSaving.value) {
+    return;
+  }
+  isSaving.value = true;
+  try {
+    await store.dispatch("updateSong", song.value)
+    await router.back();
+  } finally {
+    isSaving.value = false;
+  }
 }
 
 

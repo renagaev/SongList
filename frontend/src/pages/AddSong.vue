@@ -1,5 +1,5 @@
 <template>
-  <SongForm :song="song" @save="save"></SongForm>
+  <SongForm :song="song" :loading="isSaving" @save="save"></SongForm>
 </template>
 
 <script setup lang="ts">
@@ -17,10 +17,19 @@ const song: Song = ref({
   text: null,
   noteId: null
 })
+const isSaving = ref(false);
 
 const save = async () => {
-  const id = await store.dispatch("addSong", song.value)
-  await router.push({name: "SingleSong", params: {id: id}})
+  if (isSaving.value) {
+    return;
+  }
+  isSaving.value = true;
+  try {
+    const id = await store.dispatch("addSong", song.value)
+    await router.push({name: "SingleSong", params: {id: id}})
+  } finally {
+    isSaving.value = false;
+  }
 }
 
 

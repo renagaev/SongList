@@ -16,7 +16,15 @@
       </template>
     </v-select>
     <v-textarea v-model="song.text" label="Текст" :rules="rules" required auto-grow rounded-sm variant="outlined"></v-textarea>
-    <v-btn class="mt-2" type="submit" block>Сохранить</v-btn>
+    <v-btn
+        class="mt-2"
+        type="submit"
+        block
+        :loading="loading"
+        :disabled="loading"
+    >
+      Сохранить
+    </v-btn>
   </v-form>
 
 </template>
@@ -24,7 +32,7 @@
 <script setup lang="ts">
 import {useStore} from "vuex";
 import type {Song} from "@/client";
-import {PropType} from "vue";
+import {PropType, toRef} from "vue";
 import Piano from "@/services/piano";
 
 const store = useStore()
@@ -34,11 +42,16 @@ const props = defineProps({
     type: Object as PropType<Song>,
     required: true,
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 });
 const notes = store.state.notes
 const emit = defineEmits<{
   (e: "save")
 }>()
+const loading = toRef(props, "loading");
 const playNote = async (id) => {
   const note = notes.find(x=> x.id == id)
   await Piano.play(note.name)
