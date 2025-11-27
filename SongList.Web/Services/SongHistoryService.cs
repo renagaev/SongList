@@ -55,8 +55,7 @@ public class SongHistoryService(AppContext context)
 
     public async Task<SongLastHistoryDto[]> GetLastSongHistory(CancellationToken cancellationToken)
     {
-        var tz = TimeZoneInfo.Local;
-        var border = 16 - tz.GetUtcOffset(DateTime.UtcNow).Hours;
+        var border = TimeSpan.FromHours(16);
         
         var songs = await context.Songs
             .Where(x => !x.IsDeleted)
@@ -69,9 +68,9 @@ public class SongHistoryService(AppContext context)
             .Select(g => new
             {
                 SongId = g.Key,
-                LastMorning = g.Where(x => x.CreatedAt.Hour < border)
+                LastMorning = g.Where(x => x.CreatedAt.TimeOfDay < border)
                     .Max(x => (DateTimeOffset?)x.CreatedAt),
-                LastEvening = g.Where(x => x.CreatedAt.Hour >= border)
+                LastEvening = g.Where(x => x.CreatedAt.TimeOfDay >= border)
                     .Max(x => (DateTimeOffset?)x.CreatedAt)
             })
             .ToDictionaryAsync(x => x.SongId, cancellationToken);
