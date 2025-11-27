@@ -16,7 +16,7 @@
       </template>
     </v-select>
     <v-textarea v-model="song.text" label="Текст" :rules="rules" required auto-grow rounded-sm variant="outlined"></v-textarea>
-    <v-btn class="mt-2"  type="submit" block>Сохранить</v-btn>
+    <v-btn class="mt-2" type="submit" block>Сохранить</v-btn>
   </v-form>
 
 </template>

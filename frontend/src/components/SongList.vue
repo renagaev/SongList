@@ -13,7 +13,7 @@
           :class="'item ' + getClass(item)"
       >
         <v-list-item-title>{{getTitle(item)}}</v-list-item-title>
-        <v-list-item-subtitle>{{item.text}}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{getSubtitle(item)}}</v-list-item-subtitle>
       </v-list-item>
       <v-divider />
     </div>
@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onActivated, onDeactivated } from "vue";
+import type {PropType} from "vue";
 import { useRouter } from "vue-router";
 import { SongModel } from "@/store/models";
 import {useTheme} from 'vuetify'
@@ -32,6 +33,14 @@ const props = defineProps({
     type: Array as () => SongModel[],
     required: true,
   },
+  subtitle: {
+    type: Function as PropType<(song: SongModel) => string>,
+    required: false,
+  },
+  scrollKey: {
+    type: String,
+    required: false,
+  }
 });
 
 // Refs
@@ -44,11 +53,18 @@ const router = useRouter();
 
 // Computed
 const scrollRef = computed(() => scroll.value);
-const scrollKey = computed(() => props.songs?.map(x=> x.id).join(""))
+const computedScrollKey = computed(() => props.scrollKey ?? props.songs?.map(x=> x.id).join(""))
 
 // Methods
 const getTitle = (song: SongModel): string => {
   return song.number ? `${song.title} | ${song.number}` : song.title;
+};
+
+const getSubtitle = (song: SongModel): string => {
+  if (props.subtitle) {
+    return props.subtitle(song);
+  }
+  return song.text;
 };
 
 const getClass = (song: SongModel): string => {
@@ -64,7 +80,7 @@ const open = (id: number) => {
 
 // Lifecycle hooks
 onActivated(() => {
-  if (lastScrollKey.value === scrollKey.value && scrollRef.value) {
+  if (lastScrollKey.value === computedScrollKey.value && scrollRef.value) {
     scrollRef.value.scrollTop = scrollTop.value;
   }
 });
@@ -72,7 +88,7 @@ onActivated(() => {
 onDeactivated(() => {
   if (scrollRef.value) {
     scrollTop.value = scrollRef.value.scrollTop;
-    lastScrollKey.value = scrollKey.value;
+    lastScrollKey.value = computedScrollKey.value;
   }
 });
 </script>

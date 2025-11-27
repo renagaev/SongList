@@ -59,7 +59,7 @@ import {ref, computed, onMounted, onBeforeMount} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant} from "@mdi/js";
 import Piano from "@/services/piano";
-import {daysAgo} from "@/services/DateHelper";
+import {daysAgo, formatDays} from "@/services/DateHelper";
 import {useStore} from "vuex";
 import Attachments from "@/components/Attachments.vue";
 
@@ -95,12 +95,12 @@ const lastSingedText = computed(() => {
   const dates = [];
   if (morning) {
     dates.push(
-        `утром ${morning.toLocaleDateString()} (${daysAgo(morning)} дней)`
+        `утром ${formatDays(daysAgo(morning))}, ${morning.toLocaleDateString()}`
     );
   }
   if (evening) {
     dates.push(
-        `вечером ${evening.toLocaleDateString()} (${daysAgo(evening)} дней)`
+        `вечером ${formatDays(daysAgo(evening))}, ${evening.toLocaleDateString()}`
     );
   }
   return dates.length > 0 ? "Пели " + dates.join(",<br/>") : null;

@@ -10,10 +10,10 @@ import {
     Note,
     AuthService,
     Song,
-    AttachmentsService
+    AttachmentsService, ServiceDto, SongLastHistoryDto
 } from "@/client";
 import fuzzysort from 'fuzzysort'
-import {Settings, SongModel} from './models'
+import {HistoryMode, Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
 import * as signalR from '@microsoft/signalr';
 import {HubConnection} from "@microsoft/signalr";
@@ -23,6 +23,7 @@ export interface State {
     songs: SongModel[],
     notes: Note[],
     favourites: number[],
+    songLastHistory: SongLastHistoryDto[],
     searchText: string,
     showBar: boolean,
     selectedSong?: SongModel,
@@ -80,11 +81,14 @@ export default new Vuex.Store<State>({
             darkTheme: false,
             playNotes: true,
             showHistory: false,
-            fontSize: 16
+            fontSize: 16,
+            historyMode: "both",
+            historyHideDays: 0
         },
         connection: null!,
         isAdmin: false,
-        adminEnabled: false
+        adminEnabled: false,
+        songLastHistory: []
     },
     mutations: {
         setShowBar(state, value: boolean) {
@@ -113,6 +117,15 @@ export default new Vuex.Store<State>({
         },
         setShowHistory(state, value: boolean) {
             state.settings.showHistory = value
+        },
+        setHistoryMode(state, value: HistoryMode) {
+            state.settings.historyMode = value
+        },
+        setHistoryHideDays(state, value: number) {
+            state.settings.historyHideDays = Math.max(0, value)
+        },
+        setSongLastHistory(state, value: SongLastHistoryDto[]) {
+            state.songLastHistory = value ?? []
         },
         toggleFavourite(state, id: number) {
             const index = state.favourites.indexOf(id)
@@ -206,6 +219,11 @@ export default new Vuex.Store<State>({
             const notes = await SongService.getNotes();
             const sorted = notes.sort((a, b) => a.id - b.id)
             actionContext.commit("setNotes", sorted)
+        },
+        async loadSongLastHistory(actionContext) {
+            const history = await HistoryService.getSongsLastHistory()
+            actionContext.commit("setSongLastHistory", history)
+            return history
         },
         async initializeNowOpened(actionContext: ActionContext<State, State>) {
             actionContext.state.connection = new signalR.HubConnectionBuilder()

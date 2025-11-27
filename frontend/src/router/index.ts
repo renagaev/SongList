@@ -7,6 +7,7 @@ import FavouritesList from "@/pages/FavouritesList.vue";
 import EnableAdmin from "@/pages/EnableAdmin.vue";
 import EditSong from "@/pages/EditSong.vue";
 import AddSong from "@/pages/AddSong.vue";
+import History from "@/pages/History.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -46,6 +47,14 @@ const routes: Array<RouteRecordRaw> = [
         component: TagList,
         meta: {
             title: "Категории"
+        }
+    },
+    {
+        path: '/history',
+        name: "History",
+        component: History,
+        meta: {
+            title: "История"
         }
     },
     {
