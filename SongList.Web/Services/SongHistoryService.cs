@@ -39,24 +39,10 @@ public class SongHistoryService(AppContext context)
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
-    {
-        return await context.History
-            .Where(x => x.SongId.HasValue)
-            .GroupBy(x => new
-                { x.CreatedAt.Date, IsMorning = x.CreatedAt.TimeOfDay < TimeSpan.FromHours(16) })
-            .Select(x => new ServiceDto
-            {
-                Date = DateOnly.FromDateTime(x.Key.Date),
-                Type = x.Key.IsMorning ? ServiceType.Morning : ServiceType.Evening,
-                Songs = x.Select(x => x.SongId!.Value).ToArray()
-            }).ToArrayAsync(cancellationToken);
-    }
-
     public async Task<SongLastHistoryDto[]> GetLastSongHistory(CancellationToken cancellationToken)
     {
-        var border = TimeSpan.FromHours(16);
-        
+        var moscowBorderUtc = TimeSpan.FromHours(13);
+
         var songs = await context.Songs
             .Where(x => !x.IsDeleted)
             .Select(x => x.Id)
@@ -68,9 +54,9 @@ public class SongHistoryService(AppContext context)
             .Select(g => new
             {
                 SongId = g.Key,
-                LastMorning = g.Where(x => x.CreatedAt.TimeOfDay < border)
+                LastMorning = g.Where(x => x.CreatedAt.TimeOfDay < moscowBorderUtc)
                     .Max(x => (DateTimeOffset?)x.CreatedAt),
-                LastEvening = g.Where(x => x.CreatedAt.TimeOfDay >= border)
+                LastEvening = g.Where(x => x.CreatedAt.TimeOfDay >= moscowBorderUtc)
                     .Max(x => (DateTimeOffset?)x.CreatedAt)
             })
             .ToDictionaryAsync(x => x.SongId, cancellationToken);
@@ -87,6 +73,22 @@ public class SongHistoryService(AppContext context)
                 };
             })
             .ToArray();
+    }
+
+    public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
+    {
+        var moscowBorderUtc = TimeSpan.FromHours(13);
+
+        return await context.History
+            .Where(x => x.SongId.HasValue)
+            .GroupBy(x => new
+                { x.CreatedAt.Date, IsMorning = x.CreatedAt.TimeOfDay < moscowBorderUtc })
+            .Select(x => new ServiceDto
+            {
+                Date = DateOnly.FromDateTime(x.Key.Date),
+                Type = x.Key.IsMorning ? ServiceType.Morning : ServiceType.Evening,
+                Songs = x.Select(x => x.SongId!.Value).ToArray()
+            }).ToArrayAsync(cancellationToken);
     }
 
     public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
