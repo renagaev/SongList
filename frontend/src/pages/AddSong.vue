@@ -11,11 +11,13 @@ import {ref} from "vue";
 
 const store = useStore()
 const router = useRouter()
-const song: Song = ref({
+const song: Song = ref<Song>({
   number: null,
   title: "",
-  text: null,
-  noteId: null
+  text: "",
+  noteId: null,
+  tags: [],
+  id: 0
 })
 const isSaving = ref(false);
 
