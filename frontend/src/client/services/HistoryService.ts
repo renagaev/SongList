@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ServiceDto } from '../models/ServiceDto';
+import type { SongLastHistoryDto } from '../models/SongLastHistoryDto';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -34,6 +35,17 @@ export class HistoryService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/history/services',
+        });
+    }
+
+    /**
+     * @returns SongLastHistoryDto OK
+     * @throws ApiError
+     */
+    public static getSongsLastHistory(): CancelablePromise<Array<SongLastHistoryDto>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/history/last-songs',
         });
     }
 

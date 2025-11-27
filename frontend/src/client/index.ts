@@ -11,6 +11,7 @@ export { AttachmentType } from './models/AttachmentType';
 export type { Note } from './models/Note';
 export type { ServiceDto } from './models/ServiceDto';
 export { ServiceType } from './models/ServiceType';
+export type { SongLastHistoryDto } from './models/SongLastHistoryDto';
 export type { Song } from './models/Song';
 export type { SongOpeningStats } from './models/SongOpeningStats';
 

@@ -53,6 +53,43 @@ public class SongHistoryService(AppContext context)
             }).ToArrayAsync(cancellationToken);
     }
 
+    public async Task<SongLastHistoryDto[]> GetLastSongHistory(CancellationToken cancellationToken)
+    {
+        var tz = TimeZoneInfo.Local;
+        var border = 16 - tz.GetUtcOffset(DateTime.UtcNow).Hours;
+        
+        var songs = await context.Songs
+            .Where(x => !x.IsDeleted)
+            .Select(x => x.Id)
+            .ToArrayAsync(cancellationToken);
+
+        var history = await context.History
+            .Where(x => x.SongId != null)
+            .GroupBy(x => x.SongId!.Value)
+            .Select(g => new
+            {
+                SongId = g.Key,
+                LastMorning = g.Where(x => x.CreatedAt.Hour < border)
+                    .Max(x => (DateTimeOffset?)x.CreatedAt),
+                LastEvening = g.Where(x => x.CreatedAt.Hour >= border)
+                    .Max(x => (DateTimeOffset?)x.CreatedAt)
+            })
+            .ToDictionaryAsync(x => x.SongId, cancellationToken);
+
+        return songs
+            .Select(id =>
+            {
+                var exists = history.TryGetValue(id, out var last);
+                return new SongLastHistoryDto
+                {
+                    SongId = id,
+                    LastMorning = exists ? last!.LastMorning : null,
+                    LastEvening = exists ? last!.LastEvening : null
+                };
+            })
+            .ToArray();
+    }
+
     public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
     {
         var exists = await context.SlideHistory

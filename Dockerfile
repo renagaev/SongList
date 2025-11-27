@@ -25,5 +25,6 @@ COPY --from=backend app/publish .
 COPY --from=frontend app/dist wwwroot
 
 EXPOSE 80
+ENV TZ="Europe/Moscow"
 ENV ASPNETCORE_URLS http://0.0.0.0:80
 ENTRYPOINT ["dotnet", "SongList.Web.dll"]
