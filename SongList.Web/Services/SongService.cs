@@ -58,7 +58,7 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
             Text = ReplaceLatinWithCyrillic(songDto.Text),
             Title = ReplaceLatinWithCyrillic(songDto.Title),
             OriginalTitle = songDto.Title,
-            Tags = [],
+            Tags = songDto.Tags,
             Number = songDto.Number,
             NoteId = songDto.NoteId
         };
