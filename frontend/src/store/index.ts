@@ -184,8 +184,10 @@ export default new Vuex.Store<State>({
             return state.songs
                 .map(x => ({idx: state.favourites.indexOf(x.id), song: x}))
                 .filter(x => x.idx != -1)
-                .sort((a, b) => a.idx - b.idx)
                 .map(x => x.song)
+                .sort((a, b) => {
+                    return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+                })
         },
         song: (state) => (id: number) => {
             return state.songs.find(x => x.id == id)
