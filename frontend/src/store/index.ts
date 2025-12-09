@@ -155,7 +155,11 @@ export default new Vuex.Store<State>({
     getters: {
         songs: (state: State) => (tag?: string) => {
             if (tag != null) {
-                return state.songs.filter(x => x.tags.indexOf(tag) != -1)
+                return state.songs
+                    .filter(x => x.tags.indexOf(tag) != -1)
+                    .sort((a, b) => {
+                        return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+                    })
             }
             const text = state.searchText.trim().toLowerCase()
             if (!text) {
