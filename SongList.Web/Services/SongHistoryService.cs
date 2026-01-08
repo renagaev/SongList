@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using SongList.ServicePredict;
 using SongList.Web.Dto;
 using SongList.Web.Entities;
 
 namespace SongList.Web.Services;
 
-public class SongHistoryService(AppContext context)
+public class SongHistoryService(AppContext context, IServicePredictor predictor)
 {
     public async Task AddHistoryItem(string holyricsId, DateTimeOffset createdAt, string title,
         CancellationToken cancellationToken)
@@ -47,16 +48,18 @@ public class SongHistoryService(AppContext context)
             .Select(x => x.Id)
             .ToArrayAsync(cancellationToken);
 
-        var history = await context.History
+        var history = await context.SongShows
+            .Where(x => x.IsServiceModel == true || x.IsServiceFix == true)
             .Where(x => x.HolyricsSong.SongId != null)
             .GroupBy(x => x.HolyricsSong.SongId!.Value)
             .Select(g => new
             {
                 SongId = g.Key,
-                LastMorning = g.Where(x => x.CreatedAt.TimeOfDay < moscowBorderUtc)
-                    .Max(x => (DateTimeOffset?)x.CreatedAt),
-                LastEvening = g.Where(x => x.CreatedAt.TimeOfDay >= moscowBorderUtc)
-                    .Max(x => (DateTimeOffset?)x.CreatedAt)
+                LastMorning = g.Where(x => x.ShowedAt.TimeOfDay < moscowBorderUtc)
+                    .Max(x => (DateTimeOffset?)x.ShowedAt),
+                LastEvening = g.Where(x => x.ShowedAt.TimeOfDay >= moscowBorderUtc)
+                    .Max(x => (DateTimeOffset?)x.ShowedAt)
+
             })
             .ToDictionaryAsync(x => x.SongId, cancellationToken);
 
@@ -72,6 +75,15 @@ public class SongHistoryService(AppContext context)
                 };
             })
             .ToArray();
+    }
+
+    public async Task<DateTimeOffset[]> GetSongHistory(int songId, CancellationToken cancellationToken)
+    {
+        return await context.SongShows.Where(x => x.HolyricsSong.SongId == songId)
+            .Where(x => x.IsServiceModel == true || x.IsServiceFix == true)
+            .Select(x => x.ShowedAt)
+            .OrderByDescending(x => x)
+            .ToArrayAsync(cancellationToken);
     }
 
     public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
@@ -113,13 +125,37 @@ public class SongHistoryService(AppContext context)
 
         context.SlideHistory.Add(slideItem);
 
-        await CreateShows(slideItem, cancellationToken);
+        var updatedShows = await CreateShows(slideItem, cancellationToken);
+        foreach (var show in updatedShows)
+        {
+            await UpdatePredictions(show, cancellationToken);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task CreateShows(SongSlideHistoryItem slideItem, CancellationToken cancellationToken)
+    internal async Task UpdatePredictions(SongShow songShow, CancellationToken cancellationToken)
     {
+        var curr = await context.SongShows.AsNoTracking()
+            .Include(x => x.Slides)
+            .FirstAsync(x => x.Id == songShow.Id, cancellationToken);
+        var prevHide = await context.SongShows.Where(x => x.HiddenAt < curr.ShowedAt)
+            .OrderByDescending(x => x.HiddenAt)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        var gapPrev = prevHide == null ? TimeSpan.Zero : curr.ShowedAt - prevHide.HiddenAt;
+
+        var slides = curr.Slides.Select(x => new Slide(x.SlideNumber, x.ShowedAt, x.HiddenAt, x.TotalSlides)).ToArray();
+
+        var prediction = predictor.Predict(slides, gapPrev);
+
+        songShow.IsServiceModel = prediction.Label;
+        songShow.Score = prediction.Probability;
+    }
+
+    internal async Task<SongShow[]> CreateShows(SongSlideHistoryItem slideItem, CancellationToken cancellationToken)
+    {
+        var updated = new List<SongShow>();
         var gap = TimeSpan.FromMinutes(5);
 
         var upperBorder = slideItem.HiddenAt.Add(gap * 2);
@@ -151,6 +187,7 @@ public class SongHistoryService(AppContext context)
         target.Slides.Add(slideItem);
         target.ShowedAt = target.ShowedAt <= slideItem.ShowedAt ? target.ShowedAt : slideItem.ShowedAt;
         target.HiddenAt = target.HiddenAt >= slideItem.HiddenAt ? target.HiddenAt : slideItem.HiddenAt;
+        updated.Add(target);
 
         
         shows = shows.OrderBy(x => x.ShowedAt).ToList();
@@ -171,6 +208,7 @@ public class SongHistoryService(AppContext context)
                     curr.HiddenAt = curr.HiddenAt >= next.HiddenAt ? curr.HiddenAt : next.HiddenAt;
                     curr.Slides.AddRange(next.Slides);
                     shows.RemoveAt(i + 1);
+                    updated.Add(curr);
                     context.SongShows.Remove(next);
                     merged = true;
                     break;
@@ -181,6 +219,8 @@ public class SongHistoryService(AppContext context)
                 break;
             }
         }
+
+        return updated.Distinct().ToArray();
     }
 
     private static TimeSpan DistanceToInterval(DateTimeOffset aStart, DateTimeOffset aEnd, DateTimeOffset bStart,

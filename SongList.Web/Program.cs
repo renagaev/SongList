@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
+using SongList.ServicePredict;
 using SongList.Web.Auth;
 using SongList.Web.Controllers;
 using SongList.Web.Services;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<SongHistoryService>();
 builder.Services.AddScoped<VerseHistoryService>();
 builder.Services.AddSingleton<OpenedSongsManager>();
 builder.Services.AddScoped<SongService>();
+builder.Services.AddSingleton<IServicePredictor, OnnxServicePredictor>();
 
 builder.Services.AddOptions<S3Settings>().BindConfiguration(nameof(S3Settings));
 builder.Services.AddSingleton<IMinioClient>(s =>

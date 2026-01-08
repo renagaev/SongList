@@ -26,4 +26,8 @@
       <Folder Include="Migrations" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SongList.ServicePredict\SongList.ServicePredict.csproj" />
+    </ItemGroup>
+
 </Project>
