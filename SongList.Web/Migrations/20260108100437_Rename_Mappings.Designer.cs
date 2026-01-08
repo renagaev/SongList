@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SongList.Web;
@@ -11,9 +12,11 @@ using SongList.Web;
 namespace SongList.Web.Migrations
 {
     [DbContext(typeof(AppContext))]
-    partial class AppContextModelSnapshot : ModelSnapshot
+    [Migration("20260108100437_Rename_Mappings")]
+    partial class Rename_Mappings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,30 +177,6 @@ namespace SongList.Web.Migrations
                     b.ToTable("History");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("HiddenAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("HolyricsSongId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("ShowedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HolyricsSongId");
-
-                    b.ToTable("SongShows");
-                });
-
             modelBuilder.Entity("SongList.Web.Entities.SongSlideHistoryItem", b =>
                 {
                     b.Property<int>("Id")
@@ -218,21 +197,14 @@ namespace SongList.Web.Migrations
                     b.Property<int>("SlideNumber")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("SongShowId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("TotalSlides")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HiddenAt");
-
                     b.HasIndex("HolyricsSongId");
 
                     b.HasIndex("ShowedAt");
-
-                    b.HasIndex("SongShowId");
 
                     b.ToTable("SlideHistory");
                 });
@@ -311,17 +283,6 @@ namespace SongList.Web.Migrations
                     b.Navigation("HolyricsSong");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
-                {
-                    b.HasOne("SongList.Web.Entities.HolyricsSong", "HolyricsSong")
-                        .WithMany()
-                        .HasForeignKey("HolyricsSongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HolyricsSong");
-                });
-
             modelBuilder.Entity("SongList.Web.Entities.SongSlideHistoryItem", b =>
                 {
                     b.HasOne("SongList.Web.Entities.HolyricsSong", "HolyricsSong")
@@ -329,10 +290,6 @@ namespace SongList.Web.Migrations
                         .HasForeignKey("HolyricsSongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("SongList.Web.Entities.SongShow", null)
-                        .WithMany("Slides")
-                        .HasForeignKey("SongShowId");
 
                     b.Navigation("HolyricsSong");
                 });
@@ -344,11 +301,6 @@ namespace SongList.Web.Migrations
                     b.Navigation("History");
 
                     b.Navigation("HolyricsSongs");
-                });
-
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
-                {
-                    b.Navigation("Slides");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,7 @@ public class Song
     public string OriginalTitle { get; init; }
 
     public List<SongHistoryItem> History { get; init; } = [];
-    public List<SongMapping> Mappings { get; init; } = [];
+    public List<HolyricsSong> HolyricsSongs { get; init; } = [];
     public List<SongAttachment> Attachments { get; init; } = [];
     public Note? Note { get; init; }
     public int? NoteId { get; set; }

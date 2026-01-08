@@ -9,31 +9,30 @@ public class SongHistoryService(AppContext context)
     public async Task AddHistoryItem(string holyricsId, DateTimeOffset createdAt, string title,
         CancellationToken cancellationToken)
     {
-        var mapping = await context.Mappings.FirstOrDefaultAsync(x => x.HolyricsId == holyricsId, cancellationToken);
-        if (mapping == null)
+        var holyricsSong =
+            await context.HolyricsSongs.FirstOrDefaultAsync(x => x.HolyricsId == holyricsId, cancellationToken);
+        if (holyricsSong != null)
         {
-            mapping = new SongMapping
+            var itemExists =
+                await context.History.AnyAsync(x => x.HolyricsSong.Id == holyricsSong.Id && x.CreatedAt == createdAt,
+                    cancellationToken);
+            if (itemExists)
+                return;
+        }
+
+        if (holyricsSong == null)
+        {
+            holyricsSong = new HolyricsSong
             {
                 HolyricsId = holyricsId,
                 Title = title
             };
-            context.Mappings.Add(mapping);
+            context.HolyricsSongs.Add(holyricsSong);
         }
-
-        var itemExists = await (mapping.SongId switch
-        {
-            null => context.History.AnyAsync(x => x.HolyricsId == holyricsId && x.CreatedAt == createdAt,
-                cancellationToken),
-            { } songId => context.History.AnyAsync(x => x.SongId == songId && x.CreatedAt == createdAt,
-                cancellationToken)
-        });
-        if (itemExists)
-            return;
 
         context.History.Add(new SongHistoryItem
         {
-            SongId = mapping.SongId,
-            HolyricsId = holyricsId,
+            HolyricsSong = holyricsSong,
             CreatedAt = createdAt
         });
         await context.SaveChangesAsync(cancellationToken);
@@ -49,8 +48,8 @@ public class SongHistoryService(AppContext context)
             .ToArrayAsync(cancellationToken);
 
         var history = await context.History
-            .Where(x => x.SongId != null)
-            .GroupBy(x => x.SongId!.Value)
+            .Where(x => x.HolyricsSong.SongId != null)
+            .GroupBy(x => x.HolyricsSong.SongId!.Value)
             .Select(g => new
             {
                 SongId = g.Key,
@@ -77,38 +76,120 @@ public class SongHistoryService(AppContext context)
 
     public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
     {
-        var moscowBorderUtc = TimeSpan.FromHours(13);
-
-        return await context.History
-            .Where(x => x.SongId.HasValue)
-            .GroupBy(x => new
-                { x.CreatedAt.Date, IsMorning = x.CreatedAt.TimeOfDay < moscowBorderUtc })
-            .Select(x => new ServiceDto
-            {
-                Date = DateOnly.FromDateTime(x.Key.Date),
-                Type = x.Key.IsMorning ? ServiceType.Morning : ServiceType.Evening,
-                Songs = x.Select(x => x.SongId!.Value).ToArray()
-            }).ToArrayAsync(cancellationToken);
+        return [];
     }
 
     public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
     {
-        var exists = await context.SlideHistory
-            .AnyAsync(x => x.HolyricsId == request.HolyricsId && x.ShowedAt == request.ShowedAt, cancellationToken);
-        if (exists)
+        var holyricsSong =
+            await context.HolyricsSongs.FirstOrDefaultAsync(x => x.HolyricsId == request.HolyricsId, cancellationToken);
+        if (holyricsSong != null)
         {
-            return;
+            var itemExists = await context.SlideHistory.AnyAsync(
+                x => x.HolyricsSong.Id == holyricsSong.Id && x.ShowedAt == request.ShowedAt, cancellationToken);
+            if (itemExists)
+                return;
         }
 
-        context.SlideHistory.Add(new SongSlideHistoryItem
+        if (holyricsSong == null)
         {
-            HolyricsId = request.HolyricsId,
+            holyricsSong = new HolyricsSong
+            {
+                HolyricsId = request.HolyricsId,
+                Title = request.SongName
+            };
+            context.HolyricsSongs.Add(holyricsSong);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        var slideItem = new SongSlideHistoryItem
+        {
+            HolyricsSong = holyricsSong,
             SlideNumber = request.SlideNumber,
             TotalSlides = request.TotalSlides,
-            SongName = request.SongName,
             ShowedAt = request.ShowedAt,
             HiddenAt = request.HiddenAt
-        });
+        };
+
+        context.SlideHistory.Add(slideItem);
+
+        await CreateShows(slideItem, cancellationToken);
+
         await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CreateShows(SongSlideHistoryItem slideItem, CancellationToken cancellationToken)
+    {
+        var gap = TimeSpan.FromMinutes(5);
+
+        var upperBorder = slideItem.HiddenAt.Add(gap * 2);
+        var lowerBorder = slideItem.ShowedAt.Add(-gap * 2);
+
+        var shows = await context.SongShows
+            .Where(x => x.HiddenAt >= lowerBorder && x.ShowedAt <= upperBorder)
+            .Include(songShow => songShow.Slides)
+            .ToListAsync(cancellationToken);
+
+        var target = shows
+            .Where(x => x.HolyricsSongId == slideItem.HolyricsSongId)
+            .Where(x => DistanceToInterval(x.ShowedAt, x.HiddenAt, slideItem.ShowedAt, slideItem.HiddenAt) < gap)
+            .MinBy(x => DistanceToInterval(x.ShowedAt, x.HiddenAt, slideItem.ShowedAt, slideItem.HiddenAt));
+
+        if (target == null)
+        {
+            target = new SongShow
+            {
+                HolyricsSongId = slideItem.HolyricsSongId,
+                Slides = [],
+                ShowedAt = slideItem.ShowedAt,
+                HiddenAt = slideItem.HiddenAt
+            };
+            shows.Add(target);
+            context.SongShows.Add(target);
+        }
+
+        target.Slides.Add(slideItem);
+        target.ShowedAt = target.ShowedAt <= slideItem.ShowedAt ? target.ShowedAt : slideItem.ShowedAt;
+        target.HiddenAt = target.HiddenAt >= slideItem.HiddenAt ? target.HiddenAt : slideItem.HiddenAt;
+
+        
+        shows = shows.OrderBy(x => x.ShowedAt).ToList();
+        while (true)
+        {
+            var merged = false;
+            for (var i = 0; i <= shows.Count - 2; i++)
+            {
+                var curr = shows[i];
+                var next = shows[i + 1];
+                if (curr.HolyricsSongId != next.HolyricsSongId)
+                {
+                    continue;
+                }
+                if (DistanceToInterval(curr.ShowedAt, curr.HiddenAt, next.ShowedAt, next.HiddenAt) < gap)
+                {
+                    curr.ShowedAt = curr.ShowedAt <= next.ShowedAt ? curr.ShowedAt : next.ShowedAt;
+                    curr.HiddenAt = curr.HiddenAt >= next.HiddenAt ? curr.HiddenAt : next.HiddenAt;
+                    curr.Slides.AddRange(next.Slides);
+                    shows.RemoveAt(i + 1);
+                    context.SongShows.Remove(next);
+                    merged = true;
+                    break;
+                }
+            }
+            if (!merged)
+            {
+                break;
+            }
+        }
+    }
+
+    private static TimeSpan DistanceToInterval(DateTimeOffset aStart, DateTimeOffset aEnd, DateTimeOffset bStart,
+        DateTimeOffset bEnd)
+    {
+        // Если пересекаются — 0
+        if (aEnd >= bStart && aStart <= bEnd) return TimeSpan.Zero;
+
+        // Иначе расстояние между ближайшими концами
+        return aEnd < bStart ? (bStart - aEnd) : (aStart - bEnd);
     }
 }
