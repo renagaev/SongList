@@ -48,16 +48,18 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
             .Select(x => x.Id)
             .ToArrayAsync(cancellationToken);
 
-        var history = await context.History
+        var history = await context.SongShows
+            .Where(x => x.IsServiceModel == true || x.IsServiceFix == true)
             .Where(x => x.HolyricsSong.SongId != null)
             .GroupBy(x => x.HolyricsSong.SongId!.Value)
             .Select(g => new
             {
                 SongId = g.Key,
-                LastMorning = g.Where(x => x.CreatedAt.TimeOfDay < moscowBorderUtc)
-                    .Max(x => (DateTimeOffset?)x.CreatedAt),
-                LastEvening = g.Where(x => x.CreatedAt.TimeOfDay >= moscowBorderUtc)
-                    .Max(x => (DateTimeOffset?)x.CreatedAt)
+                LastMorning = g.Where(x => x.ShowedAt.TimeOfDay < moscowBorderUtc)
+                    .Max(x => (DateTimeOffset?)x.ShowedAt),
+                LastEvening = g.Where(x => x.ShowedAt.TimeOfDay >= moscowBorderUtc)
+                    .Max(x => (DateTimeOffset?)x.ShowedAt)
+
             })
             .ToDictionaryAsync(x => x.SongId, cancellationToken);
 
@@ -73,6 +75,15 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
                 };
             })
             .ToArray();
+    }
+
+    public async Task<DateTimeOffset[]> GetSongHistory(int songId, CancellationToken cancellationToken)
+    {
+        return await context.SongShows.Where(x => x.HolyricsSong.SongId == songId)
+            .Where(x => x.IsServiceModel == true || x.IsServiceFix == true)
+            .Select(x => x.ShowedAt)
+            .OrderByDescending(x => x)
+            .ToArrayAsync(cancellationToken);
     }
 
     public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
