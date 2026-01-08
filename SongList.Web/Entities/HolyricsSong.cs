@@ -1,6 +1,6 @@
 namespace SongList.Web.Entities;
 
-public class SongMapping
+public class HolyricsSong
 {
     public int Id { get; init; }
     public string HolyricsId { get; init; }

@@ -28,7 +28,7 @@ public class HistoryController(SongHistoryService service, AppContext dbContext)
     
     [HttpGet("{songId:int}", Name = "getSongHistory")]
     public Task<DateTimeOffset[]> GetSongHistory(int songId, CancellationToken cancellationToken) => dbContext.History
-        .Where(x => x.SongId == songId)
+        .Where(x => x.HolyricsSong.SongId == songId)
         .Select(x => x.CreatedAt)
         .OrderByDescending(x=> x)
         .ToArrayAsync(cancellationToken);

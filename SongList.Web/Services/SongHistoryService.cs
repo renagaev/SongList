@@ -6,34 +6,28 @@ namespace SongList.Web.Services;
 
 public class SongHistoryService(AppContext context)
 {
-    public async Task AddHistoryItem(string holyricsId, DateTimeOffset createdAt, string title,
-        CancellationToken cancellationToken)
+    public async Task AddHistoryItem(string holyricsId, DateTimeOffset createdAt, string title, CancellationToken cancellationToken)
     {
-        var mapping = await context.Mappings.FirstOrDefaultAsync(x => x.HolyricsId == holyricsId, cancellationToken);
-        if (mapping == null)
+        var holyricsSong = await context.HolyricsSongs.FirstOrDefaultAsync(x => x.HolyricsId == holyricsId, cancellationToken);
+        if (holyricsSong != null)
         {
-            mapping = new SongMapping
+            var itemExists = await context.History.AnyAsync(x => x.HolyricsSong.Id == holyricsSong.Id && x.CreatedAt == createdAt, cancellationToken);
+            if (itemExists)
+                return;
+        }
+        if (holyricsSong == null)
+        {
+            holyricsSong = new HolyricsSong
             {
                 HolyricsId = holyricsId,
                 Title = title
             };
-            context.Mappings.Add(mapping);
+            context.HolyricsSongs.Add(holyricsSong);
         }
-
-        var itemExists = await (mapping.SongId switch
-        {
-            null => context.History.AnyAsync(x => x.HolyricsId == holyricsId && x.CreatedAt == createdAt,
-                cancellationToken),
-            { } songId => context.History.AnyAsync(x => x.SongId == songId && x.CreatedAt == createdAt,
-                cancellationToken)
-        });
-        if (itemExists)
-            return;
 
         context.History.Add(new SongHistoryItem
         {
-            SongId = mapping.SongId,
-            HolyricsId = holyricsId,
+            HolyricsSong = holyricsSong,
             CreatedAt = createdAt
         });
         await context.SaveChangesAsync(cancellationToken);
@@ -49,8 +43,8 @@ public class SongHistoryService(AppContext context)
             .ToArrayAsync(cancellationToken);
 
         var history = await context.History
-            .Where(x => x.SongId != null)
-            .GroupBy(x => x.SongId!.Value)
+            .Where(x => x.HolyricsSong.SongId != null)
+            .GroupBy(x => x.HolyricsSong.SongId!.Value)
             .Select(g => new
             {
                 SongId = g.Key,
@@ -77,35 +71,35 @@ public class SongHistoryService(AppContext context)
 
     public async Task<ServiceDto[]> GetServices(CancellationToken cancellationToken)
     {
-        var moscowBorderUtc = TimeSpan.FromHours(13);
-
-        return await context.History
-            .Where(x => x.SongId.HasValue)
-            .GroupBy(x => new
-                { x.CreatedAt.Date, IsMorning = x.CreatedAt.TimeOfDay < moscowBorderUtc })
-            .Select(x => new ServiceDto
-            {
-                Date = DateOnly.FromDateTime(x.Key.Date),
-                Type = x.Key.IsMorning ? ServiceType.Morning : ServiceType.Evening,
-                Songs = x.Select(x => x.SongId!.Value).ToArray()
-            }).ToArrayAsync(cancellationToken);
+        return [];
     }
 
     public async Task AddSlideHistoryItem(AddSlideHistoryItemRequest request, CancellationToken cancellationToken)
     {
-        var exists = await context.SlideHistory
-            .AnyAsync(x => x.HolyricsId == request.HolyricsId && x.ShowedAt == request.ShowedAt, cancellationToken);
-        if (exists)
+        
+        var holyricsSong = await context.HolyricsSongs.FirstOrDefaultAsync(x => x.HolyricsId == request.HolyricsId, cancellationToken);
+        if (holyricsSong != null)
         {
-            return;
+            var itemExists = await context.SlideHistory.AnyAsync(x => x.HolyricsSong.Id == holyricsSong.Id && x.ShowedAt == request.ShowedAt, cancellationToken);
+            if (itemExists)
+                return;
         }
+        if (holyricsSong == null)
+        {
+            holyricsSong = new HolyricsSong
+            {
+                HolyricsId = request.HolyricsId,
+                Title = request.SongName
+            };
+            context.HolyricsSongs.Add(holyricsSong);
+        }
+
 
         context.SlideHistory.Add(new SongSlideHistoryItem
         {
-            HolyricsId = request.HolyricsId,
+            HolyricsSong = holyricsSong,
             SlideNumber = request.SlideNumber,
             TotalSlides = request.TotalSlides,
-            SongName = request.SongName,
             ShowedAt = request.ShowedAt,
             HiddenAt = request.HiddenAt
         });
