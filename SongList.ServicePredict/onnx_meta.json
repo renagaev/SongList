@@ -1,0 +1,43 @@
+{
+  "feature_order": [
+    "dow_pg",
+    "hour",
+    "length_sec",
+    "n_slides",
+    "unique_slides",
+    "total_time",
+    "total_over_length",
+    "mean_dur",
+    "median_dur",
+    "std_dur",
+    "min_dur",
+    "max_dur",
+    "span",
+    "cv_dur",
+    "repeat_ratio",
+    "unique_ratio",
+    "shown_ratio",
+    "first_dur",
+    "last_dur",
+    "max_pos",
+    "max_pos_norm",
+    "long_tail_mean",
+    "long_tail_ratio",
+    "gap_prev",
+    "delta_to_11m",
+    "delta_to_19m",
+    "is_sunday",
+    "is_saturday",
+    "dist_to_service_min",
+    "dist_to_rehearsal_min"
+  ],
+  "postprocess": {
+    "force_false_if_unique_slides_le_2": true,
+    "note": "Set prediction to False if unique_slides<=2 before/after ONNX inference."
+  },
+  "input_name": "input",
+  "output_names": [
+    "probabilities",
+    "label"
+  ]
+}

@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongList.Web", "SongList.We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolyricsCompanion", "HolyricsCompanion\HolyricsCompanion.csproj", "{303CFBF5-9ECA-426B-B4B0-B5F393F8EE28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongList.ServicePredict", "SongList.ServicePredict\SongList.ServicePredict.csproj", "{F41CF606-41F0-4EB2-8B01-F2B99BCC1591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{303CFBF5-9ECA-426B-B4B0-B5F393F8EE28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{303CFBF5-9ECA-426B-B4B0-B5F393F8EE28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{303CFBF5-9ECA-426B-B4B0-B5F393F8EE28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F41CF606-41F0-4EB2-8B01-F2B99BCC1591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F41CF606-41F0-4EB2-8B01-F2B99BCC1591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F41CF606-41F0-4EB2-8B01-F2B99BCC1591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F41CF606-41F0-4EB2-8B01-F2B99BCC1591}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
