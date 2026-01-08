@@ -1,12 +1,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 as backend
 
-WORKDIR app
+WORKDIR src
 
-COPY SongList.Web/SongList.Web.csproj .
-RUN dotnet restore SongList.Web.csproj
+COPY src/*.sln ./
+COPY src/**/*.csproj ./
 
-COPY SongList.Web .
-RUN dotnet publish SongList.Web.csproj --output ./publish
+RUN for f in *.csproj; do \
+        filename=$(basename $f) && \
+        dirname=${filename%.*} && \
+        mkdir $dirname && \
+        mv $filename ./$dirname/; \
+    done
+RUN dotnet restore SongList.Web/SongList.Web.csproj
+
+COPY src ./
+RUN dotnet publish SongList.Web/SongList.Web.csproj --output ./publish
 
 FROM node:lts-alpine as frontend 
 ARG BOT_USERNAME
@@ -21,7 +29,7 @@ RUN npm run build
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final 
 WORKDIR app 
-COPY --from=backend app/publish .
+COPY --from=backend src/publish .
 COPY --from=frontend app/dist wwwroot
 
 EXPOSE 80
