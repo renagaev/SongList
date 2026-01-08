@@ -13,7 +13,7 @@ RUN for f in *.csproj; do \
     done
 RUN dotnet restore SongList.Web/SongList.Web.csproj
 
-COPY src ./
+COPY ./ ./
 RUN dotnet publish SongList.Web/SongList.Web.csproj --output ./publish
 
 FROM node:lts-alpine as frontend 
