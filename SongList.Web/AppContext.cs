@@ -14,6 +14,8 @@ public class AppContext(DbContextOptions options) : DbContext(options)
     public DbSet<SongSlideHistoryItem> SlideHistory { get; init; }
     public DbSet<VerseHistoryItem> VerseHistory { get; init; }
 
+    public DbSet<SongShow> SongShows { get; init; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var jsonSerializerOptions = new JsonSerializerOptions();
@@ -44,9 +46,14 @@ public class AppContext(DbContextOptions options) : DbContext(options)
 
         modelBuilder.Entity<SongSlideHistoryItem>()
             .HasIndex(x => x.ShowedAt);
+        
+        modelBuilder.Entity<SongSlideHistoryItem>()
+            .HasIndex(x => x.HiddenAt);
 
         modelBuilder.Entity<VerseHistoryItem>()
             .HasIndex(x => x.ShowedAt);
+
+        modelBuilder.Entity<SongShow>().HasIndex(x => x.HolyricsSongId);
 
         base.OnModelCreating(modelBuilder);
     }
