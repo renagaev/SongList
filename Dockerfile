@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 as backend
 
 WORKDIR src
 
-COPY src/*.sln ./
-COPY src/**/*.csproj ./
+COPY ./*.sln ./
+COPY ./**/*.csproj ./
 
 RUN for f in *.csproj; do \
         filename=$(basename $f) && \
