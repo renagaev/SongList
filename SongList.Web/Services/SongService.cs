@@ -1,15 +1,12 @@
 using System.Linq.Expressions;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using SongList.Web.Auth;
 using SongList.Web.Dto;
 using SongList.Web.Entities;
-using Telegram.Bot;
 
 namespace SongList.Web.Services;
 
-public class SongService(AppContext dbContext, ITelegramBotClient telegramBotClient, IOptions<TgOptions> options)
+public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
 {
     private static Expression<Func<Song, SongDto>> projection = x => new SongDto
     {
@@ -32,22 +29,24 @@ public class SongService(AppContext dbContext, ITelegramBotClient telegramBotCli
 
     public async Task<SongDto> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)
     {
+        songDto.Text = ReplaceLatinWithCyrillic(songDto.Text);
+        songDto.Title = ReplaceLatinWithCyrillic(songDto.Title);
+        
         var song = await dbContext.Songs.FirstAsync(x => x.Id == id, cancellationToken);
-        var oldNoteId = song.NoteId;
-        song.Text = ReplaceLatinWithCyrillic(songDto.Text);
-        song.Title = ReplaceLatinWithCyrillic(songDto.Title);
+
+        var old = new SongDto
+        {
+            Text = song.Text,
+            Title = song.Title,
+            Tags = song.Tags,
+            NoteId = song.NoteId,
+            Number = song.Number
+        };
         song.NoteId = songDto.NoteId;
         song.Tags = songDto.Tags;
         song.Number = songDto.Number;
         await dbContext.SaveChangesAsync(cancellationToken);
-        if (oldNoteId != songDto.NoteId && oldNoteId != null)
-        {
-            var oldNote = await dbContext.Notes.FirstAsync(x => x.Id == oldNoteId, cancellationToken: cancellationToken);
-            var newNote = await dbContext.Notes.FirstAsync(x => x.Id == song.NoteId, cancellationToken: cancellationToken);
-            await telegramBotClient.SendMessage(options.Value.ChatId,
-                $"{userName} обновил ноту у песни \"{song.Title}\" c {oldNote.DetailedName} на {newNote.DetailedName}",
-                cancellationToken: cancellationToken);
-        }
+        await notifier.NofifyUpdate(old, songDto, userName, cancellationToken);
         return await dbContext.Songs.Select(projection).FirstAsync(x => x.Id == id, cancellationToken);
     }
 

@@ -6,11 +6,11 @@ namespace SongList.Web.Dto;
 [DisplayName("Song")]
 public record SongDto
 {
-    [Required] public int Id { get; init; }
-    [Required] public string Title { get; init; }
-    [Required] public string[] Tags { get; init; } = [];
-    [Required] public string Text { get; init; }
-    public int? Number { get; init; }
-    public string? Note { get; init; }
-    public int? NoteId { get; init; }
+    [Required] public int Id { get; set; }
+    [Required] public string Title { get; set; }
+    [Required] public string[] Tags { get; set; } = [];
+    [Required] public string Text { get; set; }
+    public int? Number { get; set; }
+    public string? Note { get; set; }
+    public int? NoteId { get; set; }
 };
