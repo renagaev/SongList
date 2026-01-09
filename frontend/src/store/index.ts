@@ -314,6 +314,7 @@ export default new Vuex.Store<State>({
             existingSong.tags = model.tags
             existingSong.number = model.number
             existingSong.noteId = model.noteId
+            existingSong.note = model.note
         },
         async addSong(actionContext: ActionContext<State, State>, newSong: Song) {
             const model = await SongService.addSong(newSong) as SongModel
