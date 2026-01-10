@@ -136,16 +136,13 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
 
     internal async Task UpdatePredictions(SongShow songShow, CancellationToken cancellationToken)
     {
-        var curr = await context.SongShows.AsNoTracking()
-            .Include(x => x.Slides)
-            .FirstAsync(x => x.Id == songShow.Id, cancellationToken);
-        var prevHide = await context.SongShows.Where(x => x.HiddenAt < curr.ShowedAt)
+        var prevHide = await context.SongShows.Where(x => x.HiddenAt < songShow.ShowedAt)
             .OrderByDescending(x => x.HiddenAt)
             .FirstOrDefaultAsync(cancellationToken);
         
-        var gapPrev = prevHide == null ? TimeSpan.Zero : curr.ShowedAt - prevHide.HiddenAt;
+        var gapPrev = prevHide == null ? TimeSpan.Zero : songShow.ShowedAt - prevHide.HiddenAt;
 
-        var slides = curr.Slides.Select(x => new Slide(x.SlideNumber, x.ShowedAt, x.HiddenAt, x.TotalSlides)).ToArray();
+        var slides = songShow.Slides.Select(x => new Slide(x.SlideNumber, x.ShowedAt, x.HiddenAt, x.TotalSlides)).ToArray();
 
         var prediction = predictor.Predict(slides, gapPrev);
 
