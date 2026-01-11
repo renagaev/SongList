@@ -45,6 +45,8 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
         song.NoteId = songDto.NoteId;
         song.Tags = songDto.Tags;
         song.Number = songDto.Number;
+        song.Text = songDto.Text;
+        song.Title = songDto.Title;
         await dbContext.SaveChangesAsync(cancellationToken);
         await notifier.NofifyUpdate(old, songDto, userName, cancellationToken);
         return await dbContext.Songs.Select(projection).FirstAsync(x => x.Id == id, cancellationToken);
