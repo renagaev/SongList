@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using SongList.Web.Entities;
+using SongList.Domain;
 
 namespace SongList.Web.Dto;
 

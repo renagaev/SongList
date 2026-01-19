@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using SongList.Domain;
 using SongList.Web.Dto;
-using SongList.Web.Entities;
 
 namespace SongList.Web.Services;
 
@@ -46,13 +46,10 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
         var extension = Path.GetExtension(originalName);
         var type = extension switch
         {
-            ".mp3" => AttachmentType.Audio,
-            ".wav" => AttachmentType.Audio,
-            ".ogg" => AttachmentType.Audio,
-            ".flac" => AttachmentType.Audio,
+            ".mp3" or ".wav" or ".ogg" or ".flac" => AttachmentType.Audio,
             _ => AttachmentType.Document
         };
-        var attachment = new SongAttachment()
+        var attachment = new SongAttachment
         {
             SongId = songId,
             Name = title + extension,

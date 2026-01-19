@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using SongList.Web.Entities;
+using SongList.Domain;
 
 namespace SongList.Web;
 
@@ -15,6 +15,7 @@ public class AppContext(DbContextOptions options) : DbContext(options)
     public DbSet<VerseHistoryItem> VerseHistory { get; init; }
 
     public DbSet<SongShow> SongShows { get; init; }
+    public DbSet<HolyricsToken> HolyricsToken { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +55,8 @@ public class AppContext(DbContextOptions options) : DbContext(options)
             .HasIndex(x => x.ShowedAt);
 
         modelBuilder.Entity<SongShow>().HasIndex(x => x.HolyricsSongId);
+
+        modelBuilder.Entity<HolyricsToken>();
 
         base.OnModelCreating(modelBuilder);
     }

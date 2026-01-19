@@ -22,12 +22,10 @@
         <PackageReference Include="Telegram.Bot" Version="22.4.4" />
         <PackageReference Include="Telegram.Bot.Extensions.LoginWidget" Version="1.2.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Folder Include="Migrations" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\SongList.Domain\SongList.Domain.csproj" />
+      <ProjectReference Include="..\SongList.Holyrics\SongList.Holyrics.csproj" />
       <ProjectReference Include="..\SongList.ServicePredict\SongList.ServicePredict.csproj" />
     </ItemGroup>
 

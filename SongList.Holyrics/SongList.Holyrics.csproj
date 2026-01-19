@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <JavaHelperSrcDir>$(MSBuildProjectDirectory)/JavaHelper/src</JavaHelperSrcDir>
+        <JavaHelperBuildDir>$(MSBuildProjectDirectory)/holyrics-sync-helper/build</JavaHelperBuildDir>
+        <JavaHelperStampFile>$(JavaHelperBuildDir)/.java-helper.stamp</JavaHelperStampFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.3996" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <JavaHelperSources Include="$(JavaHelperSrcDir)/**/*.java" />
+      <JavaHelperSources Remove="$(JavaHelperSrcDir)/com/holyrics/sync/HolyricsTokenHelper.java" />
+    </ItemGroup>
+
+    <Target Name="BuildJavaHelpers"
+            BeforeTargets="Build"
+            Inputs="@(JavaHelperSources)"
+            Outputs="$(JavaHelperStampFile)">
+      <MakeDir Directories="$(JavaHelperBuildDir)" />
+      <Exec Command="javac -d &quot;$(JavaHelperBuildDir)&quot; @(JavaHelperSources->'&quot;%(FullPath)&quot;', ' ')" />
+      <Touch Files="$(JavaHelperStampFile)" AlwaysCreate="true" />
+    </Target>
+
+</Project>

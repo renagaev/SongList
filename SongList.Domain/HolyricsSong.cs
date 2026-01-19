@@ -1,4 +1,4 @@
-namespace SongList.Web.Entities;
+namespace SongList.Domain;
 
 public class HolyricsSong
 {
@@ -7,4 +7,6 @@ public class HolyricsSong
     public int? SongId { get; init; }
     public Song Song { get; init; }
     public string Title { get; init; }
+    public string? Lyrics { get; set; }
+    public string? Formatting { get; set; }
 }

@@ -1,4 +1,4 @@
-namespace SongList.Web.Entities;
+namespace SongList.Domain;
 
 public class SongHistoryItem
 {

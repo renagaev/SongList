@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using SongList.Domain;
 using SongList.ServicePredict;
 using SongList.Web.Dto;
-using SongList.Web.Entities;
 
 namespace SongList.Web.Services;
 

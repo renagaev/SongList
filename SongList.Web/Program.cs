@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Minio;
+using SongList.Holyrics;
+using SongList.Holyrics.Interfaces;
 using SongList.ServicePredict;
 using SongList.Web.Auth;
 using SongList.Web.Controllers;
@@ -57,6 +59,9 @@ builder.Services.AddSingleton<OpenedSongsManager>();
 builder.Services.AddScoped<SongService>();
 builder.Services.AddScoped<SongUpdateNotifier>();
 builder.Services.AddSingleton<IServicePredictor, OnnxServicePredictor>();
+
+builder.Services.AddSingleton<IHolyricsTokenStorage, HolyricsTokenStorage>();
+builder.Services.AddHolyricsSync();
 
 builder.Services.AddOptions<S3Settings>().BindConfiguration(nameof(S3Settings));
 builder.Services.AddSingleton<IMinioClient>(s =>
