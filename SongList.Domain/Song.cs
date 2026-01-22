@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SongList.Web.Entities;
+﻿namespace SongList.Domain;
 
 public class Song
 {
@@ -17,11 +15,4 @@ public class Song
     public Note? Note { get; init; }
     public int? NoteId { get; set; }
     public bool IsDeleted { get; set; }
-}
-
-public class SongOpeningStats
-{
-    [Required] public int Id { get; set; }
-
-    [Required] public int Count { get; set; }
 }

@@ -2,6 +2,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 as backend
 
 WORKDIR src
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY ./*.sln ./
 COPY ./**/*.csproj ./
 
@@ -14,7 +18,7 @@ RUN for f in *.csproj; do \
 RUN dotnet restore SongList.Web/SongList.Web.csproj
 
 COPY ./ ./
-RUN dotnet publish SongList.Web/SongList.Web.csproj --output ./publish
+RUN dotnet publish -c Release SongList.Web/SongList.Web.csproj --output ./publish
 
 FROM node:lts-alpine as frontend 
 ARG BOT_USERNAME
@@ -29,6 +33,9 @@ RUN npm run build
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as final 
 WORKDIR app 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=backend src/publish .
 COPY --from=frontend app/dist wwwroot
 

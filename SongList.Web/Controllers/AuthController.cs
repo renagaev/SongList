@@ -8,13 +8,13 @@ namespace SongList.Web.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController(AuthService authService) : ControllerBase
+public class AuthController(TgAuthService tgAuthService) : ControllerBase
 {
     [HttpPost("tg-admin", Name = "getTgAdminToken")]
     [AllowAnonymous]
     public async Task<string> TgAdmin([FromBody] Dictionary<string, object> fields)
     {
-        return await authService.GetToken(fields.ToDictionary(x => x.Key, x => x.Value.ToString()));
+        return await tgAuthService.GetToken(fields.ToDictionary(x => x.Key, x => x.Value.ToString()));
     }
 
     [HttpGet("user", Name = "getUser")]

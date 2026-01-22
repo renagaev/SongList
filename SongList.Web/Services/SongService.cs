@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using SongList.Domain;
 using SongList.Web.Dto;
-using SongList.Web.Entities;
 
 namespace SongList.Web.Services;
 

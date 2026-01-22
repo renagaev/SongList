@@ -22,7 +22,21 @@ namespace SongList.Web.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SongList.Web.Entities.HolyricsSong", b =>
+            modelBuilder.Entity("SongList.Domain.HolyricsPartition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Md5")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HolyricsPartitions");
+                });
+
+            modelBuilder.Entity("SongList.Domain.HolyricsSong", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,8 +44,14 @@ namespace SongList.Web.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Formatting")
+                        .HasColumnType("text");
+
                     b.Property<string>("HolyricsId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Lyrics")
                         .HasColumnType("text");
 
                     b.Property<int?>("SongId")
@@ -51,7 +71,34 @@ namespace SongList.Web.Migrations
                     b.ToTable("HolyricsSongs");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.Note", b =>
+            modelBuilder.Entity("SongList.Domain.HolyricsToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ExpiresIn")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HolyricsToken");
+                });
+
+            modelBuilder.Entity("SongList.Domain.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,7 +123,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("Notes");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.Song", b =>
+            modelBuilder.Entity("SongList.Domain.Song", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +163,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("Song", (string)null);
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongAttachment", b =>
+            modelBuilder.Entity("SongList.Domain.SongAttachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,7 +195,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("Attachments");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongHistoryItem", b =>
+            modelBuilder.Entity("SongList.Domain.SongHistoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +221,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("History");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
+            modelBuilder.Entity("SongList.Domain.SongShow", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,7 +257,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("SongShows");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongSlideHistoryItem", b =>
+            modelBuilder.Entity("SongList.Domain.SongSlideHistoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,7 +296,7 @@ namespace SongList.Web.Migrations
                     b.ToTable("SlideHistory");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.VerseHistoryItem", b =>
+            modelBuilder.Entity("SongList.Domain.VerseHistoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -279,27 +326,27 @@ namespace SongList.Web.Migrations
                     b.ToTable("VerseHistory");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.HolyricsSong", b =>
+            modelBuilder.Entity("SongList.Domain.HolyricsSong", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.Song", "Song")
+                    b.HasOne("SongList.Domain.Song", "Song")
                         .WithMany("HolyricsSongs")
                         .HasForeignKey("SongId");
 
                     b.Navigation("Song");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.Song", b =>
+            modelBuilder.Entity("SongList.Domain.Song", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.Note", "Note")
+                    b.HasOne("SongList.Domain.Note", "Note")
                         .WithMany()
                         .HasForeignKey("NoteId");
 
                     b.Navigation("Note");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongAttachment", b =>
+            modelBuilder.Entity("SongList.Domain.SongAttachment", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.Song", "Song")
+                    b.HasOne("SongList.Domain.Song", "Song")
                         .WithMany("Attachments")
                         .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -308,24 +355,24 @@ namespace SongList.Web.Migrations
                     b.Navigation("Song");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongHistoryItem", b =>
+            modelBuilder.Entity("SongList.Domain.SongHistoryItem", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.HolyricsSong", "HolyricsSong")
+                    b.HasOne("SongList.Domain.HolyricsSong", "HolyricsSong")
                         .WithMany()
                         .HasForeignKey("HolyricsSongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SongList.Web.Entities.Song", null)
+                    b.HasOne("SongList.Domain.Song", null)
                         .WithMany("History")
                         .HasForeignKey("SongId");
 
                     b.Navigation("HolyricsSong");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
+            modelBuilder.Entity("SongList.Domain.SongShow", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.HolyricsSong", "HolyricsSong")
+                    b.HasOne("SongList.Domain.HolyricsSong", "HolyricsSong")
                         .WithMany()
                         .HasForeignKey("HolyricsSongId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -334,22 +381,22 @@ namespace SongList.Web.Migrations
                     b.Navigation("HolyricsSong");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongSlideHistoryItem", b =>
+            modelBuilder.Entity("SongList.Domain.SongSlideHistoryItem", b =>
                 {
-                    b.HasOne("SongList.Web.Entities.HolyricsSong", "HolyricsSong")
+                    b.HasOne("SongList.Domain.HolyricsSong", "HolyricsSong")
                         .WithMany()
                         .HasForeignKey("HolyricsSongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SongList.Web.Entities.SongShow", null)
+                    b.HasOne("SongList.Domain.SongShow", null)
                         .WithMany("Slides")
                         .HasForeignKey("SongShowId");
 
                     b.Navigation("HolyricsSong");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.Song", b =>
+            modelBuilder.Entity("SongList.Domain.Song", b =>
                 {
                     b.Navigation("Attachments");
 
@@ -358,7 +405,7 @@ namespace SongList.Web.Migrations
                     b.Navigation("HolyricsSongs");
                 });
 
-            modelBuilder.Entity("SongList.Web.Entities.SongShow", b =>
+            modelBuilder.Entity("SongList.Domain.SongShow", b =>
                 {
                     b.Navigation("Slides");
                 });
