@@ -11,6 +11,7 @@ internal sealed class JavaSyncHelperApplier()
     private readonly string _javaCommand = "java";
     private readonly string _classPath = JavaHelperPathResolver.ResolveClassPath();
     private readonly string _mainClass = "com.holyrics.sync.HolyricsSyncHelper";
+    private const string _javaEncodingOption = "-Dfile.encoding=UTF-8";
 
     public async Task<HolyricsApplyResult> ApplyUpdatesAsync(
         byte[] bytes,
@@ -24,6 +25,7 @@ internal sealed class JavaSyncHelperApplier()
 
         var args = new List<string>
         {
+            _javaEncodingOption,
             "-cp",
             _classPath,
             _mainClass,
@@ -38,6 +40,8 @@ internal sealed class JavaSyncHelperApplier()
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             RedirectStandardInput = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
             UseShellExecute = false
         };
 

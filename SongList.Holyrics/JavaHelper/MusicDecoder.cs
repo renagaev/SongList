@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace SongList.Holyrics.JavaHelper;
@@ -13,11 +14,13 @@ public sealed class MusicDecoder
     private const string _javaCommand = "java";
     private readonly string _classPath = JavaHelperPathResolver.ResolveClassPath();
     private const string _mainClass = "com.holyrics.sync.HolyricsSyncHelper";
+    private const string _javaEncodingOption = "-Dfile.encoding=UTF-8";
 
     public async Task<ICollection<HolyricsSyncSong>> DecodeAsync(byte[] bytes, CancellationToken cancellationToken)
     {
         var args = new List<string>
         {
+            _javaEncodingOption,
             "-cp",
             _classPath,
             _mainClass,
@@ -31,6 +34,8 @@ public sealed class MusicDecoder
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             RedirectStandardInput = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
             UseShellExecute = false
         };
 
@@ -61,6 +66,7 @@ public sealed class MusicDecoder
     {
         var args = new List<string>
         {
+            _javaEncodingOption,
             "-cp",
             _classPath,
             _mainClass,
@@ -75,6 +81,8 @@ public sealed class MusicDecoder
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             RedirectStandardInput = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
             UseShellExecute = false
         };
 
