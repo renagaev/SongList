@@ -104,7 +104,7 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
         {
             if (currentState.TryGetValue(dto.Id, out var existing))
             {
-                if (existing.Md5 != dto.Md5 && dto.UpdatedAt > DateTimeOffset.Now.AddMinutes(5))
+                if (existing.Md5 != dto.Md5 && dto.UpdatedAt < DateTimeOffset.Now.AddMinutes(-5))
                 {
                     res.Add((dto, existing));
                 }
