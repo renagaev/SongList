@@ -68,7 +68,8 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
                         Text = existingSong.Lyrics,
                         Number = parsed.Number,
                         Tags = ["Новые"],
-                        NoteId = note?.Id
+                        NoteId = note?.Id,
+                        OriginalTitle = existingSong.Title
                     };
                     existingSong.Song = newSong;
                     context.Songs.Add(newSong);
