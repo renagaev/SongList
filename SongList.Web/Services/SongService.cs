@@ -67,6 +67,19 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
         await dbContext.SaveChangesAsync(cancellationToken);
         return await dbContext.Songs.Select(projection).FirstAsync(x => x.Id == song.Id, cancellationToken);
     }
+
+    public async Task DeleteSong(int id, string userName, CancellationToken cancellationToken)
+    {
+        var song = await dbContext.Songs.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (song is null || song.IsDeleted)
+        {
+            return;
+        }
+
+        song.IsDeleted = true;
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await notifier.NotifySongDeleted(song.Title, userName, cancellationToken);
+    }
     
     private static readonly Dictionary<char, char> Map = new()
     {

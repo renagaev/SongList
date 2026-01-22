@@ -66,6 +66,19 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
         );
     }
 
+    public async Task NotifySongDeleted(string title, string userName, CancellationToken cancellationToken)
+    {
+        var message =
+            $"<b>{EscapeHtml(userName)}</b> удалил песню “<b>{EscapeHtml(title ?? "")}</b>”";
+
+        await botClient.SendMessage(
+            chatId: options.Value.ChatId,
+            text: message,
+            parseMode: ParseMode.Html,
+            cancellationToken: cancellationToken
+        );
+    }
+
     private static string EscapeHtml(string value) =>
         WebUtility.HtmlEncode(value ?? "");
 

@@ -150,6 +150,16 @@ export default new Vuex.Store<State>({
         },
         addSong(state, song: SongModel) {
             state.songs.push(song)
+        },
+        removeSong(state, id: number) {
+            const index = state.songs.findIndex(x => x.id == id)
+            if (index != -1) {
+                state.songs.splice(index, 1)
+            }
+            const favIndex = state.favourites.indexOf(id)
+            if (favIndex != -1) {
+                state.favourites.splice(favIndex, 1)
+            }
         }
     },
     getters: {
@@ -267,10 +277,13 @@ export default new Vuex.Store<State>({
             await actionContext.state.connection.invoke("openSong", id)
         },
         async songClosed(actionContext: ActionContext<State, State>, id: number) {
-            actionContext.commit("updateOpenedCounter", {
-                id,
-                value: Math.max(actionContext.getters.song(id).opened - 1, 0)
-            })
+            const song = actionContext.state.songs.find(x => x.id == id)
+            if (song) {
+                actionContext.commit("updateOpenedCounter", {
+                    id,
+                    value: Math.max(song.opened - 1, 0)
+                })
+            }
             while (actionContext.state.connection.state != 'Connected') {
                 await new Promise(r => setTimeout(r, 100));
             }
@@ -280,10 +293,10 @@ export default new Vuex.Store<State>({
             const res = await HistoryService.getSongHistory(id)
             return res.map(d => new Date(d))
         },
-        async getSongAttachments(actionContext: ActionContext<State, State>, id: number){
+        async getSongAttachments(actionContext: ActionContext<State, State>, id: number) {
             return AttachmentsService.getAttachments(id);
         },
-        async removeSongAttachment(actionContext: ActionContext<State, State>, id: number){
+        async removeSongAttachment(actionContext: ActionContext<State, State>, id: number) {
             return AttachmentsService.deleteAttachment(id)
         },
         async login(actionContext: ActionContext<State, State>, user: object) {
@@ -320,6 +333,10 @@ export default new Vuex.Store<State>({
             const model = await SongService.addSong(newSong) as SongModel
             actionContext.commit("addSong", model)
             return model.id
+        },
+        async deleteSong(actionContext: ActionContext<State, State>, id: number) {
+            await SongService.deleteSong(id)
+            actionContext.commit("removeSong", id)
         }
     },
     modules: {},

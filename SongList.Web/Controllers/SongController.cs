@@ -40,6 +40,15 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
     public async Task<SongDto> AddSong([FromBody] SongDto songDto, CancellationToken cancellationToken) =>
         await songService.AddSong(songDto, cancellationToken);
 
+    [HttpDelete("{id:int}", Name = "deleteSong")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> DeleteSong(int id, CancellationToken cancellationToken)
+    {
+        var userName = User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
+        await songService.DeleteSong(id, userName, cancellationToken);
+        return Ok();
+    }
+
     [HttpGet("opened", Name = "getOpenedSongs")]
     public SongOpeningStats[] GetOpenedSongs() => openedSongsManager
         .GetOpenSongs()

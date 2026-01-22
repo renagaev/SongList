@@ -47,7 +47,25 @@
           v-if="isAdmin">
         <v-icon>{{ editIcon }}</v-icon>
       </v-btn>
+
+      <v-btn
+          class="mb-3 mr-2"
+          rounded
+          @click="openDeleteDialog"
+          v-if="isAdmin">
+        <v-icon>{{ deleteIcon }}</v-icon>
+      </v-btn>
     </div>
+    <v-dialog v-model="deleteDialog" max-width="420">
+      <v-card class="pa-2">
+        <v-card-title class="px-4 pt-4 pb-2">Удаление песни</v-card-title>
+        <v-card-text class="px-4 pb-2">Удалить песню «{{ song.title }}»?</v-card-text>
+        <v-card-actions class="justify-end ga-2 px-4 pb-4">
+          <v-btn variant="text" @click="deleteDialog = false">Отмена</v-btn>
+          <v-btn color="red" @click="confirmDelete">Удалить</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
     <v-divider style="margin: 10px 0"></v-divider>
     <div v-text="song.text" class="words" :style="fontStyle"></div>
@@ -57,7 +75,7 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, onBeforeMount} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
-import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant} from "@mdi/js";
+import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant, mdiDelete} from "@mdi/js";
 import Piano from "@/services/piano";
 import {daysAgo, formatDays} from "@/services/DateHelper";
 import {useStore} from "vuex";
@@ -78,12 +96,14 @@ const favouriteIcon = mdiStar;
 const unFavouriteIcon = mdiStarOutline;
 const editIcon = mdiPencil
 const shareIcon = mdiShareVariant
+const deleteIcon = mdiDelete
 
 
 // Refs and route
 const route = useRoute();
 const router = useRouter();
 const history = ref<Date[]>([]);
+const deleteDialog = ref(false);
 
 const isFavourite = computed(() => store.state.favourites.includes(props.id));
 const isAdmin = computed(() => store.state.isAdmin);
@@ -133,6 +153,17 @@ const goToTag = (tag: string) => {
 };
 const goToEdit = () => {
   router.push({name: "EditSong", params: {id: props.id}})
+}
+
+const openDeleteDialog = () => {
+  deleteDialog.value = true
+}
+
+const confirmDelete = async () => {
+  await store.dispatch("deleteSong", props.id)
+  deleteDialog.value = false
+  router.back()
+
 }
 
 const share = () => {

@@ -71,6 +71,23 @@ export class SongService {
     }
 
     /**
+     * @param id
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static deleteSong(
+        id: number,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/Song/{id}',
+            path: {
+                'id': id,
+            },
+        });
+    }
+
+    /**
      * @returns SongOpeningStats OK
      * @throws ApiError
      */

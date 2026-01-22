@@ -7,3 +7,4 @@ export type SongLastHistoryDto = {
     lastMorning?: string | null;
     lastEvening?: string | null;
 };
+

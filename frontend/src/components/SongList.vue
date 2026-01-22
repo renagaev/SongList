@@ -2,20 +2,20 @@
   <recycle-scroller
       class="scroller"
       :items="songs"
-      :item-size="64"
+      :item-size="72"
       key-field="id"
       v-slot="{ item }"
   >
-    <div class="item">
+    <div class="item-wrapper">
       <v-list-item
           two-line
           @click="open(item.id)"
-          :class="'item ' + getClass(item)"
+          class="item-entry"
+          :class="getClass(item)"
       >
         <v-list-item-title>{{getTitle(item)}}</v-list-item-title>
         <v-list-item-subtitle>{{getSubtitle(item)}}</v-list-item-subtitle>
       </v-list-item>
-      <v-divider />
     </div>
   </recycle-scroller>
 </template>
@@ -105,8 +105,14 @@ onDeactivated(() => {
   height: calc(100vh - 64px);
 }
 
-.item {
-  height: 64px;
+.item-wrapper {
+  height: 72px;
+}
+
+.item-entry {
+  height: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
 }
 
 .opened-dark {
