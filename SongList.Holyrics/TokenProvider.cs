@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using SongList.Holyrics.Interfaces;
@@ -15,7 +14,7 @@ internal class TokenProvider(IOptions<HolyricsSyncOptions> options, HttpClient h
 
         if (_token.IsExpired())
         {
-            _token = await RefreshAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
             await tokenStorage.SaveTokenAsync(_token, cancellationToken);
         }
 
@@ -28,7 +27,7 @@ internal class TokenProvider(IOptions<HolyricsSyncOptions> options, HttpClient h
         "https://cgdzfezcbpp24soebe3w4ubps40gysrz.lambda-url.us-east-2.on.aws/authRefresh"
     ];
 
-    private async Task<HolyricsAuthToken> RefreshAsync(CancellationToken cancellationToken)
+    private async Task RefreshAsync(CancellationToken cancellationToken)
     {
         var form = new Dictionary<string, string>
         {
@@ -37,7 +36,10 @@ internal class TokenProvider(IOptions<HolyricsSyncOptions> options, HttpClient h
         };
 
         var response = await PostFormWithFallbackAsync(AuthRefreshUrls, form, cancellationToken);
-        return DeserializeToken(response);
+        var updated = DeserializeToken(response);
+        _token.AccessToken = updated.AccessToken;
+        _token.CreatedAt = updated.CreatedAt;
+        _token.ExpiresIn = updated.ExpiresIn;
     }
 
     private async Task<string> PostFormWithFallbackAsync(

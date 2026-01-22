@@ -80,15 +80,15 @@ PATH_FULL = абсолютный путь рабочей директории п
   - `JavaSyncHelperApplier` (применение обновлений в партицию)
   - `HolyricsSyncWriter` (обновление/добавление песен)
   - `HolyricsSyncState` (хранение последнего custom_md5)
-- `tools/holyrics-sync-helper/`
+- `tools/holyrics-java-decoder/`
   - `HolyricsSyncHelper` (декодирование `music_*.db` в JSON)
   - `HolyricsTokenHelper` (декодирование `google_drive_auth_token-*.dat`)
 
 ## Java helper: сборка и запуск
 Сборка helper:
 ```bash
-mkdir -p holyrics-sync-helper/build
-javac -d holyrics-sync-helper/build $(rg --files JavaHelper/src)
+mkdir -p holyrics-java-decoder/build
+javac -d holyrics-java-decoder/build $(rg --files JavaHelper/src)
 ```
 
 Декодирование из stdin (использует C#; helper читает только stdin):
@@ -99,7 +99,7 @@ data bytes
 ```
 Запуск:
 ```bash
-java -cp holyrics-sync-helper/build \
+java -cp holyrics-java-decoder/build \
   com.holyrics.sync.HolyricsSyncHelper \
   --stdin
 ```
@@ -112,7 +112,7 @@ data bytes
 ```
 Запуск:
 ```bash
-java -cp holyrics-sync-helper/build \
+java -cp holyrics-java-decoder/build \
   com.holyrics.sync.HolyricsSyncHelper \
   --deleted --stdin
 ```
@@ -143,7 +143,7 @@ repeat updateCount:
 ```
 Запуск:
 ```bash
-java -cp holyrics-sync-helper/build \
+java -cp holyrics-java-decoder/build \
   com.holyrics.sync.HolyricsSyncHelper \
   --apply --stdin
 ```
@@ -161,7 +161,7 @@ var http = new HttpClient();
 
 var drive = new HolyricsDriveClient(http, _ => Task.FromResult(token.AccessToken));
 var state = await HolyricsSyncState.LoadAsync("sync-state.json", ct);
-var decoder = new JavaSyncHelperDecoder("holyrics-sync-helper/build");
+var decoder = new JavaSyncHelperDecoder("holyrics-java-decoder/build");
 var engine = new HolyricsSyncEngine(drive, state, decoder);
 
 var result = await engine.SyncMusicAsync(ct);
@@ -174,7 +174,7 @@ using HolyricsSync;
 
 var http = new HttpClient();
 var drive = new HolyricsDriveClient(http, _ => Task.FromResult(token.AccessToken));
-var applier = new JavaSyncHelperApplier("holyrics-sync-helper/build");
+var applier = new JavaSyncHelperApplier("holyrics-java-decoder/build");
 var writer = new HolyricsSyncWriter(drive, applier);
 
 var updates = new[]
@@ -201,18 +201,18 @@ await writer.ApplySongUpdatesAsync(updates, ct);
 Десериализация токена через Java helper:
 Сначала собери Java классы:
 ```bash
-javac -d holyrics-sync-helper/build $(find JavaHelper/src -type f -name "*.java")
+javac -d holyrics-java-decoder/build $(find JavaHelper/src -type f -name "*.java")
 ```
 Запуск:
 ```bash
-java -cp holyrics-sync-helper/build \
+java -cp holyrics-java-decoder/build \
   com.holyrics.sync.HolyricsTokenHelper \
   --file ~/.holyrics/google_drive_auth_token-XXXX.dat
 ```
 
 Если путь неизвестен, можно указать только папку:
 ```bash
-java -cp holyrics-sync-helper/build \
+java -cp holyrics-java-decoder/build \
   com.holyrics.sync.HolyricsTokenHelper \
   --holyrics-home ~/.holyrics
 ```

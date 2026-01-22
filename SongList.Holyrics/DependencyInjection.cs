@@ -6,7 +6,7 @@ namespace SongList.Holyrics;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddHolyricsSync(this IServiceCollection services)
+    public static IServiceCollection AddHolyricsSyncClient(this IServiceCollection services)
     {
         services.AddSingleton<TokenProvider>();
         services.AddSingleton<MusicDecoder>();

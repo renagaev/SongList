@@ -18,9 +18,7 @@ RUN for f in *.csproj; do \
 RUN dotnet restore SongList.Web/SongList.Web.csproj
 
 COPY ./ ./
-RUN dotnet publish SongList.Web/SongList.Web.csproj --output ./publish
-RUN mkdir -p ./publish/holyrics-sync-helper/build \
-    && cp -r ./SongList.Holyrics/holyrics-sync-helper/build/* ./publish/holyrics-sync-helper/build/
+RUN dotnet publish -c Release SongList.Web/SongList.Web.csproj --output ./publish
 
 FROM node:lts-alpine as frontend 
 ARG BOT_USERNAME

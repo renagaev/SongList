@@ -7,6 +7,7 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <RootNamespace>SongList.Holyrics.UnitTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -28,6 +29,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SongList.Holyrics\SongList.Holyrics.csproj" />
+      <ProjectReference Include="..\SongList.Web\SongList.Web.csproj" />
     </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@ namespace SongList.Holyrics.JavaHelper;
 
 internal static class JavaHelperPathResolver
 {
-    internal const string DefaultClassPath = "holyrics-sync-helper/build";
+    internal const string DefaultClassPath = "java-decoder";
 
     public static string ResolveClassPath()
     {

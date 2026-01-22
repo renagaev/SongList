@@ -125,10 +125,8 @@ internal sealed class HolyricsDriveClient(TokenProvider tokenProvider)
             Id = f.Id,
             Name = f.Name,
             MimeType = f.MimeType,
-            ModifiedTime = f.ModifiedTime,
-            ModifiedByMeTime = f.ModifiedByMeTime,
+            ModifiedAt = f.ModifiedTimeDateTimeOffset,
             Size = f.Size,
-            Md5Checksum = f.Md5Checksum,
             AppProperties = f.AppProperties
         };
 

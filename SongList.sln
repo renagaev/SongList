@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongList.Domain", "SongList
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2BC34A9B-D309-4423-9FBC-CCB9B4AE13B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongList.Holyrics.UnitTests", "SongList.Holyrics.UnitTests\SongList.Holyrics.UnitTests.csproj", "{73E91594-64F5-4390-AF86-00C39F903DF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SongList.UnitTests", "SongList.UnitTests\SongList.UnitTests.csproj", "{73E91594-64F5-4390-AF86-00C39F903DF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

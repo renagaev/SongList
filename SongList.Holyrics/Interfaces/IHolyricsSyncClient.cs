@@ -1,10 +1,10 @@
 namespace SongList.Holyrics.Interfaces;
 
-public record HolyricsPartition(string Id, string Md5);
+public record HolyricsPartitionDto(string Id, string Md5, DateTimeOffset? UpdatedAt);
 
 public interface IHolyricsSyncClient
 {
-    Task<List<HolyricsPartition>> GetPartitions(CancellationToken cancellationToken);
+    Task<List<HolyricsPartitionDto>> GetPartitions(CancellationToken cancellationToken);
 
     Task<ICollection<HolyricsSyncSong>> GetSongs(string partitionId, CancellationToken cancellationToken);
 }

@@ -19,7 +19,7 @@ public sealed class HolyricsAuthToken
     public bool IsExpired(DateTimeOffset? now = null)
     {
         var current = now ?? DateTimeOffset.UtcNow;
-        var currentSeconds = current.ToUnixTimeSeconds() - 300;
+        var currentSeconds = current.ToUnixTimeSeconds();
         return CreatedAt + ExpiresIn <= currentSeconds;
     }
 }

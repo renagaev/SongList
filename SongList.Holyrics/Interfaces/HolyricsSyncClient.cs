@@ -8,12 +8,12 @@ internal class HolyricsSyncClient(
     MusicDecoder decoder,
     IOptions<HolyricsSyncOptions> options) : IHolyricsSyncClient
 {
-    public async Task<List<HolyricsPartition>> GetPartitions(CancellationToken cancellationToken)
+    public async Task<List<HolyricsPartitionDto>> GetPartitions(CancellationToken cancellationToken)
     {
         var files = await driveClient.ListFilesAsync(options.Value.DriveFolder, cancellationToken);
         return files
             .Where(x => HolyricsSyncUtils.IsMusicDbFileName(x.Name))
-            .Select(x => new HolyricsPartition(x.Id, GetMd5(x.AppProperties) ?? ""))
+            .Select(x => new HolyricsPartitionDto(x.Id, GetMd5(x.AppProperties) ?? "", x.ModifiedAt))
             .ToList();
     }
 

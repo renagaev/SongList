@@ -16,6 +16,7 @@ public class AppContext(DbContextOptions options) : DbContext(options)
 
     public DbSet<SongShow> SongShows { get; init; }
     public DbSet<HolyricsToken> HolyricsToken { get; init; }
+    public DbSet<HolyricsPartition> HolyricsPartitions { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

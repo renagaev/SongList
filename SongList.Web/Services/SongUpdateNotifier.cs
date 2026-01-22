@@ -55,6 +55,17 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
         }
     }
 
+    public async Task NotifyNewSongsImported(ICollection<string> titles, CancellationToken cancellationToken)
+    {
+        var message = $"Добавлены новые песни из Holyrics\n\n{string.Join("\n", titles)}";
+        await botClient.SendMessage(
+            chatId: options.Value.ChatId,
+            text: message,
+            parseMode: ParseMode.Html,
+            cancellationToken: cancellationToken
+        );
+    }
+
     private static string EscapeHtml(string value) =>
         WebUtility.HtmlEncode(value ?? "");
 

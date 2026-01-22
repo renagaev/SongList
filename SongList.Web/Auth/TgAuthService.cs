@@ -8,7 +8,7 @@ using Telegram.Bot.Extensions.LoginWidget;
 
 namespace SongList.Web.Auth;
 
-public class AuthService(LoginWidget loginWidget, ITelegramBotClient bot, IOptions<TgOptions> options, IOptions<JwtOptions> jwtOptions)
+public class TgAuthService(LoginWidget loginWidget, ITelegramBotClient bot, IOptions<TgOptions> options, IOptions<JwtOptions> jwtOptions)
 {
     public async Task<string> GetToken(Dictionary<string, string> fields)
     {

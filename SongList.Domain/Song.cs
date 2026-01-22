@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SongList.Domain;
+﻿namespace SongList.Domain;
 
 public class Song
 {

@@ -4,29 +4,41 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <JavaHelperSrcDir>$(MSBuildProjectDirectory)/JavaHelper/src</JavaHelperSrcDir>
-        <JavaHelperBuildDir>$(MSBuildProjectDirectory)/holyrics-sync-helper/build</JavaHelperBuildDir>
-        <JavaHelperStampFile>$(JavaHelperBuildDir)/.java-helper.stamp</JavaHelperStampFile>
+        
+        <JavaHelperSrcDir>$(MSBuildProjectDirectory)\JavaHelper\src</JavaHelperSrcDir>
+        
+        <JavaHelperOutDir>$(IntermediateOutputPath)java-decoder</JavaHelperOutDir>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.3996" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+        <PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.3996" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <JavaHelperSources Include="$(JavaHelperSrcDir)/**/*.java" />
-      <JavaHelperSources Remove="$(JavaHelperSrcDir)/com/holyrics/sync/HolyricsTokenHelper.java" />
+        <JavaHelperSources Include="$(JavaHelperSrcDir)\**\*.java" />
     </ItemGroup>
 
     <Target Name="BuildJavaHelpers"
-            BeforeTargets="Build"
+            BeforeTargets="GetCopyToOutputDirectoryItems;GetCopyToPublishDirectoryItems"
             Inputs="@(JavaHelperSources)"
-            Outputs="$(JavaHelperStampFile)">
-      <MakeDir Directories="$(JavaHelperBuildDir)" />
-      <Exec Command="javac -d &quot;$(JavaHelperBuildDir)&quot; @(JavaHelperSources->'&quot;%(FullPath)&quot;', ' ')" />
-      <Touch Files="$(JavaHelperStampFile)" AlwaysCreate="true" />
+            Outputs="$(IntermediateOutputPath)java-decoder\com\holyrics\sync\HolyricsSyncHelper.class">
+
+        <MakeDir Directories="$(IntermediateOutputPath)java-decoder" />
+
+        <Exec Command="javac -d &quot;$(IntermediateOutputPath)java-decoder&quot; @(JavaHelperSources->'&quot;%(FullPath)&quot;', ' ')" />
+
+        <ItemGroup>
+            <_JavaHelperCompiled Include="$(IntermediateOutputPath)java-decoder\**\*.*" />
+
+            <ContentWithTargetPath Include="@(_JavaHelperCompiled)">
+                <TargetPath>java-decoder\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            </ContentWithTargetPath>
+        </ItemGroup>
+
     </Target>
 
 </Project>
