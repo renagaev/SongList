@@ -79,7 +79,10 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
         }
 
         await context.SaveChangesAsync(cancellationToken);
-        await tgNotifier.NotifyNewSongsImported(imported.Select(x => x.Title).ToList(), cancellationToken);
+        if (imported.Count > 0)
+        {
+            await tgNotifier.NotifyNewSongsImported(imported.Select(x => x.Title).ToList(), cancellationToken);
+        }
     }
 
     private string ClearTitle(string title)
