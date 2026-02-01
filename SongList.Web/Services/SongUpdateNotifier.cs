@@ -48,6 +48,7 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
 
             await botClient.SendMessage(
                 chatId: options.Value.ChatId,
+                messageThreadId: options.Value.UpdatesThreadId,
                 text: message,
                 parseMode: ParseMode.Html,
                 cancellationToken: cancellationToken
@@ -61,6 +62,7 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
         await botClient.SendMessage(
             chatId: options.Value.ChatId,
             text: message,
+            messageThreadId: options.Value.UpdatesThreadId,
             parseMode: ParseMode.Html,
             cancellationToken: cancellationToken
         );
@@ -73,6 +75,7 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
 
         await botClient.SendMessage(
             chatId: options.Value.ChatId,
+            messageThreadId: options.Value.UpdatesThreadId,
             text: message,
             parseMode: ParseMode.Html,
             cancellationToken: cancellationToken
