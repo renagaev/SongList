@@ -164,6 +164,7 @@ export default new Vuex.Store<State>({
     },
     getters: {
         songs: (state: State) => (tag?: string) => {
+            let clear = (text: string) => text.trim().toLowerCase().replace("ё", "e")
             if (tag != null) {
                 return state.songs
                     .filter(x => x.tags.indexOf(tag) != -1)
@@ -171,7 +172,7 @@ export default new Vuex.Store<State>({
                         return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
                     })
             }
-            const text = state.searchText.trim().toLowerCase()
+            const text = clear(state.searchText)
             if (!text) {
                 return state.songs.sort((a, b) => {
                     return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
@@ -184,9 +185,9 @@ export default new Vuex.Store<State>({
             }
             let search = state.songs.flatMap(song => Array.from(new Set(song.text.split("\n").filter(x => x != ""))).map(x => ({
                 obj: song,
-                value: x.toLowerCase(),
+                value: clear(x),
                 isTitle: false
-            })).concat([{obj: song, value: song.title.toLowerCase(), isTitle: true}]))
+            })).concat([{obj: song, value: clear(song.title), isTitle: true}]))
             const searchRes = fuzzysort.go<SongModel>(state.searchText, search, {
                 key: "value",
                 limit: 50,
