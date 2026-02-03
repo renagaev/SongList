@@ -49,6 +49,34 @@ const requestIdleCallback = window.requestIdleCallback || (cb => {
     }, 1)
 })
 
+const clear = (text: string) => text
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replaceAll("ё", "е")
+    .replace(/[^\p{L}\p{N}]/gu, "")  // Удалить ВСЁ кроме букв и цифр (включая пробелы)
+
+let searchIndexCache: { songs: SongModel[], index: any[] } | null = null
+
+const buildSearchIndex = (songs: SongModel[]) => {
+    if (searchIndexCache?.songs === songs) {
+        return searchIndexCache.index
+    }
+
+    const index = songs.flatMap(song => {
+        const lines = new Set(song.text.split("\n").filter(Boolean))
+        return [...lines].map(x => ({
+            obj: song,
+            value: clear(x),
+            isTitle: false
+        })).concat([{ obj: song, value: clear(song.title), isTitle: true }])
+    })
+
+    searchIndexCache = { songs, index }
+    return index
+}
+
 const vuexLocal = new VuexPersistence<State>({
     filter: (mutation) => mutation.type != "setSongs" && mutation.type != "setSearchText" && mutation.type != 'updateOpenedCounter',
     reducer: (state) => {
@@ -164,7 +192,7 @@ export default new Vuex.Store<State>({
     },
     getters: {
         songs: (state: State) => (tag?: string) => {
-            let clear = (text: string) => text.trim().toLowerCase().replace("ё", "e")
+            let clear = (text: string) => text.trim().toLowerCase().replaceAll("ё", "е")
             if (tag != null) {
                 return state.songs
                     .filter(x => x.tags.indexOf(tag) != -1)
@@ -183,16 +211,13 @@ export default new Vuex.Store<State>({
             if (/^-?\d+$/.test(text)) {
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
-            let search = state.songs.flatMap(song => Array.from(new Set(song.text.split("\n").filter(x => x != ""))).map(x => ({
-                obj: song,
-                value: clear(x),
-                isTitle: false
-            })).concat([{obj: song, value: clear(song.title), isTitle: true}]))
-            const searchRes = fuzzysort.go<SongModel>(state.searchText, search, {
+            const searchIndex = buildSearchIndex(state.songs)
+            const searchRes = fuzzysort.go(state.searchText, searchIndex, {
                 key: "value",
                 limit: 50,
                 scoreFn: res => res.score * (res.obj.isTitle ? 3 : 1),
             })
+
             return Array.from(new Set(searchRes.map(x => x.obj.obj)))
         },
         favourites: (state) => {
