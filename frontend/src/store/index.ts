@@ -52,10 +52,9 @@ const requestIdleCallback = window.requestIdleCallback || (cb => {
 const clear = (text: string) => text
     .trim()
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
     .replaceAll("ё", "е")
-    .replace(/[^\p{L}\p{N}]/gu, "")  // Удалить ВСЁ кроме букв и цифр (включая пробелы)
+    .replace(/[^\p{L}\p{N}\s]/gu, "")  // Убрать пунктуацию, оставить буквы/цифры/пробелы
+    .replace(/\s+/g, " ")
 
 let searchIndexCache: { songs: SongModel[], index: any[] } | null = null
 
@@ -212,7 +211,7 @@ export default new Vuex.Store<State>({
                 return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
             }
             const searchIndex = buildSearchIndex(state.songs)
-            const searchRes = fuzzysort.go(state.searchText, searchIndex, {
+            const searchRes = fuzzysort.go(clear(state.searchText), searchIndex, {
                 key: "value",
                 limit: 50,
                 scoreFn: res => res.score * (res.obj.isTitle ? 3 : 1),
