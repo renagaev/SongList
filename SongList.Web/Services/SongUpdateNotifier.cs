@@ -7,6 +7,7 @@ using System.Net;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 using Microsoft.EntityFrameworkCore;
+using SongList.Web.UseCases.SyncHolyricsSongs;
 using Telegram.Bot.Types.Enums;
 
 namespace SongList.Web.Services;
@@ -66,6 +67,45 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
             parseMode: ParseMode.Html,
             cancellationToken: cancellationToken
         );
+    }
+
+    public async Task NotifyHolyricsUpdate(SyncSong before, SyncSong after, CancellationToken cancellationToken)
+    {
+        var changes = new List<string>();
+
+        if (!string.Equals(before.Title, after.Title, StringComparison.Ordinal))
+            changes.Add($"• Название: {DiffInlineHtml(before.Title ?? "", after.Title ?? "")}");
+
+        if (before.Number != after.Number)
+            changes.Add(
+                $"• Номер: <b>{EscapeHtml(before.Number?.ToString() ?? "—")}</b> → <b>{EscapeHtml(after.Number?.ToString() ?? "—")}</b>");
+        
+
+        if (before.Note == after.Note)
+        {
+            changes.Add($"• Нота: <b>{EscapeHtml(before.Note ?? "-")}</b> → <b>{EscapeHtml(after.Note ?? "-")}</b>");
+        }
+
+        if (!string.Equals(before.Text, after.Text, StringComparison.Ordinal))
+        {
+            var diff = DiffInlineHtml(before.Text ?? "", after.Text ?? "");
+            changes.Add($"• Текст:\n<blockquote expandable>{diff}</blockquote>");
+        }
+
+        if (changes.Count > 0)
+        {
+            var header =
+                $"<b>Обновлена песня Holyrics</b>“<b>{EscapeHtml(after.Title ?? "")}</b>”";
+            var message = header + "\n" + string.Join("\n", changes);
+
+            await botClient.SendMessage(
+                chatId: options.Value.ChatId,
+                messageThreadId: options.Value.HolyricsUpdatesThreadId,
+                text: message,
+                parseMode: ParseMode.Html,
+                cancellationToken: cancellationToken
+            );
+        }
     }
 
     public async Task NotifySongDeleted(string title, string userName, CancellationToken cancellationToken)

@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SongList.Domain;
 using SongList.Web.Dto;
+using SongList.Web.Extensions;
 
 namespace SongList.Web.Services;
 
@@ -29,8 +29,8 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
 
     public async Task<SongDto> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)
     {
-        songDto.Text = ReplaceLatinWithCyrillic(songDto.Text);
-        songDto.Title = ReplaceLatinWithCyrillic(songDto.Title);
+        songDto.Text = songDto.Text.ReplaceLatin();
+        songDto.Title = songDto.Title.ReplaceLatin();
         
         var song = await dbContext.Songs.FirstAsync(x => x.Id == id, cancellationToken);
 
@@ -56,8 +56,8 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
     {
         var song = new Song
         {
-            Text = ReplaceLatinWithCyrillic(songDto.Text),
-            Title = ReplaceLatinWithCyrillic(songDto.Title),
+            Text = songDto.Text.ReplaceLatin(),
+            Title = songDto.Title.ReplaceLatin(),
             OriginalTitle = songDto.Title,
             Tags = songDto.Tags,
             Number = songDto.Number,
@@ -81,48 +81,5 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
         await notifier.NotifySongDeleted(song.Title, userName, cancellationToken);
     }
     
-    private static readonly Dictionary<char, char> Map = new()
-    {
-        // Заглавные
-        ['A'] = 'А',
-        ['B'] = 'В',
-        ['C'] = 'С',
-        ['E'] = 'Е',
-        ['H'] = 'Н',
-        ['K'] = 'К',
-        ['M'] = 'М',
-        ['O'] = 'О',
-        ['P'] = 'Р',
-        ['T'] = 'Т',
-        ['X'] = 'Х',
-        ['Y'] = 'У',
 
-        // Строчные
-        ['a'] = 'а',
-        ['c'] = 'с',
-        ['e'] = 'е',
-        ['o'] = 'о',
-        ['p'] = 'р',
-        ['x'] = 'х',
-        ['y'] = 'у',
-        ['k'] = 'к',
-        ['m'] = 'м',
-        ['h'] = 'һ', // похожее, но реже нужно — можно убрать
-        ['b'] = 'Ь'  // иногда используют так, тоже опционально
-    };
-
-    public static string ReplaceLatinWithCyrillic(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
-
-        var sb = new StringBuilder(input.Length);
-
-        foreach (var ch in input)
-        {
-            sb.Append(Map.GetValueOrDefault(ch, ch));
-        }
-
-        return sb.ToString();
-    }
 }

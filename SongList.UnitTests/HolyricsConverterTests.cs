@@ -2,7 +2,7 @@ using SongList.Web.UseCases.SyncHolyricsSongs;
 
 namespace SongList.Holyrics.UnitTests;
 
-public class FormattingParserTests
+public class HolyricsConverterTests
 {
     [Theory]
     [InlineData("", null, null)]
@@ -15,7 +15,7 @@ public class FormattingParserTests
     [InlineData("##(Песнь Возрождения №22 соль♭)", 22, "соль♭")]
     public void ShouldParse(string firstSlide, int? expectedNumber, string? expectedNote)
     {
-        var res = new FormattingParser().Parse(firstSlide);
+        var res = new HolyricsConverter().Parse(firstSlide);
         
         Assert.Equal(expectedNote, res.Note);
         Assert.Equal(expectedNumber, res.Number);

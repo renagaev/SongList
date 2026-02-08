@@ -1,13 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using SongList.Domain;
 using SongList.Holyrics.Interfaces;
+using SongList.Web.Extensions;
 using SongList.Web.Services;
 
 namespace SongList.Web.UseCases.SyncHolyricsSongs;
 
-public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient syncClient, SongUpdateNotifier tgNotifier)
+public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient syncClient, SongUpdateNotifier tgNotifier, SongUpdateNotifier notifier)
 {
-    private FormattingParser _parser = new FormattingParser();
+    private HolyricsConverter _parser = new HolyricsConverter();
 
     public async Task Handle(CancellationToken cancellationToken)
     {
@@ -47,18 +48,24 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
             foreach (var holyricsSyncSong in songs)
             {
                 var existingSong = existingSongs.GetValueOrDefault(holyricsSyncSong.Id.ToString(), null);
-                if (existingSong == null)
+                bool exists = existingSong != null;
+                SyncSong? before = null;
+                if (!exists)
                 {
                     existingSong = new HolyricsSong { HolyricsId = holyricsSyncSong.Id.ToString() };
                     context.HolyricsSongs.Add(existingSong);
                 }
+                else
+                {
+                    before = _parser.Convert(existingSong);
+                }
+                var parsed = _parser.Convert(holyricsSyncSong);
 
-                existingSong.Title = ClearTitle(SongService.ReplaceLatinWithCyrillic(holyricsSyncSong.Title));
-                existingSong.Lyrics = SongService.ReplaceLatinWithCyrillic(holyricsSyncSong.Lyrics);
-                existingSong.Formatting = SongService.ReplaceLatinWithCyrillic(holyricsSyncSong.Formatting);
+                existingSong.Title = parsed.Title;
+                existingSong.Lyrics = parsed.Text;
+                existingSong.Formatting = holyricsSyncSong.Formatting.ReplaceLatin();
                 if (existingSong.SongId == null)
                 {
-                    var parsed = _parser.Parse(existingSong.Formatting);
                     var note = notes.FirstOrDefault(x =>
                         x.SimpleName.Equals(parsed.Note?.ToLower(), StringComparison.CurrentCultureIgnoreCase));
 
@@ -75,6 +82,12 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
                     context.Songs.Add(newSong);
                     imported.Add(newSong);
                 }
+
+                if (!exists)
+                {
+                    await notifier.NotifyHolyricsUpdate(before, parsed, cancellationToken);
+                }
+                
             }
         }
 
@@ -84,18 +97,6 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
             await tgNotifier.NotifyNewSongsImported(imported.Select(x => x.Title).ToList(), cancellationToken);
         }
     }
-
-    private string ClearTitle(string title)
-    {
-        var cleared = title.Replace("»", "").Replace("«", "").Trim();
-        if (title.Length != 0)
-        {
-            cleared = cleared[0].ToString().ToUpper() + cleared[1..];
-        }
-
-        return cleared;
-    }
-
 
     private async Task<List<(HolyricsPartitionDto modified, HolyricsPartition? existing)>> GetModifiedPartitions(
         CancellationToken cancellationToken)
