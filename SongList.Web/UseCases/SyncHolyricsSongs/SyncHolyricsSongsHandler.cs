@@ -6,7 +6,7 @@ using SongList.Web.Services;
 
 namespace SongList.Web.UseCases.SyncHolyricsSongs;
 
-public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient syncClient, SongUpdateNotifier tgNotifier, SongUpdateNotifier notifier)
+public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient syncClient, SongUpdateNotifier tgNotifier)
 {
     private HolyricsConverter _parser = new HolyricsConverter();
 
@@ -83,9 +83,9 @@ public class SyncHolyricsSongsHandler(AppContext context, IHolyricsSyncClient sy
                     imported.Add(newSong);
                 }
 
-                if (!exists)
+                if (exists)
                 {
-                    await notifier.NotifyHolyricsUpdate(before, parsed, cancellationToken);
+                    await tgNotifier.NotifyHolyricsUpdate(before, parsed, cancellationToken);
                 }
                 
             }
