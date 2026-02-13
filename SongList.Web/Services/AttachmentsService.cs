@@ -46,7 +46,7 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
         var extension = Path.GetExtension(originalName);
         var type = extension switch
         {
-            ".mp3" or ".wav" or ".ogg" or ".flac" => AttachmentType.Audio,
+            ".mp3" or ".wav" or ".ogg" or ".flac" or ".opus" => AttachmentType.Audio,
             _ => AttachmentType.Document
         };
         var attachment = new SongAttachment
