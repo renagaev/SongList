@@ -81,7 +81,7 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
                 $"• Номер: <b>{EscapeHtml(before.Number?.ToString() ?? "—")}</b> → <b>{EscapeHtml(after.Number?.ToString() ?? "—")}</b>");
         
 
-        if (before.Note == after.Note)
+        if (before.Note != after.Note)
         {
             changes.Add($"• Нота: <b>{EscapeHtml(before.Note ?? "-")}</b> → <b>{EscapeHtml(after.Note ?? "-")}</b>");
         }
