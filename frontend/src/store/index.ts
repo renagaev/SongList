@@ -214,7 +214,7 @@ export default new Vuex.Store<State>({
             const searchRes = fuzzysort.go(clear(state.searchText), searchIndex, {
                 key: "value",
                 limit: 50,
-                scoreFn: res => res.score * (res.obj.isTitle ? 3 : 1),
+                scoreFn: res => res.score / (res.obj.isTitle ? 3 : 1),
             })
 
             return Array.from(new Set(searchRes.map(x => x.obj.obj)))
