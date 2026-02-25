@@ -18,6 +18,7 @@ export default defineConfig({
             output: {
                 manualChunks: {
                     tone: ['tone', 'standardized-audio-context'],
+                    // signalr: ['@microsoft/signalr'],
                 }
             }
         },
@@ -30,6 +31,8 @@ export default defineConfig({
             registerType: 'autoUpdate',
             workbox: {
                 skipWaiting: true,
+                clientsClaim: true,
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                 navigateFallbackDenylist: [/^\/attachments*/]
             },
             manifest: {

@@ -15,8 +15,7 @@ import {
 import fuzzysort from 'fuzzysort'
 import {HistoryMode, Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
-import * as signalR from '@microsoft/signalr';
-import {HubConnection} from "@microsoft/signalr";
+type HubConnection = import('@microsoft/signalr').HubConnection;
 
 export interface State {
     tags: string[],
@@ -243,18 +242,16 @@ export default new Vuex.Store<State>({
                 songs.forEach(x => x.opened = 0)
                 actionContext.commit("setSongs", songs)
             }
-            try {
-                const res = await SongService.getAllSongs();
-                const songs = res.map(x => x as SongModel)
-                songs.forEach(song => {
-                    song.opened = 0
-                })
-                actionContext.commit("setSongs", songs)
-                localStorage.setItem("songs", JSON.stringify(actionContext.state.songs))
-            } catch (e) {
-                console.log("failed to load songs. seems we are offline")
-                console.log(e)
-            }
+            requestIdleCallback(async () => {
+                try {
+                    const res = await SongService.getAllSongs();
+                    const songs = res.map(x => ({ ...x, opened: 0 } as SongModel));
+                    actionContext.commit("setSongs", songs);
+                    localStorage.setItem("songs", JSON.stringify(songs));
+                } catch (e) {
+                    console.log("offline, using cached songs");
+                }
+            });
         },
         async loadNotes(actionContext) {
             const notes = await SongService.getNotes();
@@ -267,6 +264,7 @@ export default new Vuex.Store<State>({
             return history
         },
         async initializeNowOpened(actionContext: ActionContext<State, State>) {
+            const signalR = await import('@microsoft/signalr');
             actionContext.state.connection = new signalR.HubConnectionBuilder()
                 .withUrl(`${OpenAPI.BASE}/songsHub`, {
                     skipNegotiation: true,

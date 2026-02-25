@@ -45,17 +45,14 @@ const showBar = computed({
   },
 });
 
-// Methods
-const initializeApp = () => {
-  store.dispatch("loadSongs");
-  store.dispatch("initializeNowOpened");
-  store.dispatch("loadNotes")
-  store.dispatch("checkLogin")
-  theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
-};
-
 // Lifecycle hooks
 onMounted(() => {
-  initializeApp();
+  theme.global.name.value = store.state.settings.darkTheme ? "dark" : "light";
+  store.dispatch("loadSongs");
+  requestIdleCallback(() => {
+    store.dispatch("loadNotes");
+    store.dispatch("checkLogin");
+    store.dispatch("initializeNowOpened");
+  });
 });
 </script>
