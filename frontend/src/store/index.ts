@@ -207,7 +207,9 @@ export default new Vuex.Store<State>({
 
             // contains only digits
             if (/^-?\d+$/.test(text)) {
-                return state.songs.filter(x => x.number != null && x.number.toString().startsWith(text))
+                return state.songs
+                    .filter(x => x.number?.toString().startsWith(text))
+                    .sort((a, b) => a.number! - b.number!)
             }
             const searchIndex = buildSearchIndex(state.songs)
             const boostTitle = (x: Fuzzysort.Result) => x.score * (x.obj.isTitle ? 3 : 1)
