@@ -22,7 +22,7 @@ public class HolyricsConverter
     {
         var title = ClearTitle(holyricsSong.Title.ReplaceLatin());
         var lyrics = holyricsSong.Lyrics.ReplaceLatin();
-        var (number, note) = Parse(holyricsSong.Formatting.ReplaceLatin());
+        var (number, note) = Parse(holyricsSong.Formatting?.ReplaceLatin());
 
         return new SyncSong(title, lyrics, number, note);
     }
@@ -41,9 +41,9 @@ public class HolyricsConverter
     private static Regex Regex =
         new Regex(@"##\((?:Песнь [В|в]озрождения №(?<number>\d+))?\s*\-*\s*(?<note>\w+\#?♭?)?\)");
 
-    public (int? Number, string? Note) Parse(string formatting)
+    public (int? Number, string? Note) Parse(string? formatting)
     {
-        var firstSlide = formatting.Split("\n").FirstOrDefault();
+        var firstSlide = formatting?.Split("\n").FirstOrDefault();
         if (firstSlide == null)
         {
             return (null, null);
