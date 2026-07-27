@@ -80,15 +80,20 @@ const open = (id: number) => {
 
 // Lifecycle hooks
 onActivated(() => {
-  if (lastScrollKey.value === computedScrollKey.value && scrollRef.value) {
-    scrollRef.value.scrollTop = scrollTop.value;
+  if (scroll.value && scrollTop.value > 0) {
+    // Ждём следующего тика + небольшая задержка для recycle-scroller
+    setTimeout(() => {
+      if (scroll.value) {
+        scroll.value.scrollTop = scrollTop.value;
+        console.log("scroll restored to", scrollTop.value);
+      }
+    }, 50);
   }
 });
 
 onDeactivated(() => {
-  if (scrollRef.value) {
-    scrollTop.value = scrollRef.value.scrollTop;
-    lastScrollKey.value = computedScrollKey.value;
+  if (scroll.value) {
+    scrollTop.value = scroll.value.scrollTop;
   }
 });
 </script>
