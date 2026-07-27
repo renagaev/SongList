@@ -7,6 +7,9 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import SongList from "@/components/SongList.vue";
 
+defineOptions({
+  name: 'MainList'
+});
 // Props
 const props = defineProps({
   tag: {

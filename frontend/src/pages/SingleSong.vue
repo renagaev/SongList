@@ -68,20 +68,59 @@
     </v-dialog>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
     <v-divider style="margin: 10px 0"></v-divider>
-    <div v-text="song.text" class="words" :style="fontStyle"></div>
+    <div ref="textContainer" v-text="song.text" class="words" :style="fontStyle" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd"></div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onBeforeMount} from "vue";
+import {ref, computed, onMounted, onBeforeMount, onUnmounted} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant, mdiDelete} from "@mdi/js";
 import Piano from "@/services/piano";
 import {daysAgo, formatDays} from "@/services/DateHelper";
 import {useStore} from "vuex";
 import Attachments from "@/components/Attachments.vue";
-
+defineOptions({
+  name: 'SingleSong'
+});
 const store = useStore()
+
+// Pinch-to-zoom state
+const initialPinchDistance = ref<number | null>(null);
+const initialFontSize = ref(0);
+const textContainer = ref<HTMLElement | null>(null);
+
+const getPinchDistance = (e: TouchEvent): number => {
+  if (e.touches.length < 2) return 0;
+  const dx = e.touches[0].clientX - e.touches[1].clientX;
+  const dy = e.touches[0].clientY - e.touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+const handleTouchStart = (e: TouchEvent) => {
+  if (e.touches.length === 2) {
+    initialPinchDistance.value = getPinchDistance(e);
+    initialFontSize.value = store.state.settings.fontSize;
+  }
+};
+
+const handleTouchMove = (e: TouchEvent) => {
+  if (e.touches.length === 2 && initialPinchDistance.value !== null) {
+    e.preventDefault();
+    const currentDistance = getPinchDistance(e);
+    const scale = currentDistance / initialPinchDistance.value;
+    const newFontSize = Math.max(10, Math.min(48, Math.round(initialFontSize.value * scale)));
+    store.commit("setFontSize", newFontSize);
+  }
+};
+
+const handleTouchEnd = () => {
+  initialPinchDistance.value = null;
+};
+
+onUnmounted(() => {
+  initialPinchDistance.value = null;
+});
 // Props
 const props = defineProps({
   id: {

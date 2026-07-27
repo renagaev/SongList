@@ -71,7 +71,9 @@ import SongList from "@/components/SongList.vue";
 import {daysAgo, formatDays} from "@/services/DateHelper";
 import {HistoryMode, SongModel} from "@/store/models";
 import {mdiClockTimeFourOutline, mdiWeatherNight, mdiWeatherSunny, mdiFilterOutline} from "@mdi/js"
-
+defineOptions({
+  name: 'History'
+});
 const store = useStore();
 
 const isLoading = ref(false);

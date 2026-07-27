@@ -8,6 +8,10 @@ import { useStore } from "vuex";
 import SongList from "@/components/SongList.vue";
 import { SongModel } from "@/store/models";
 
+defineOptions({
+  name: 'FavouritesList'
+});
+
 // Store
 const store = useStore();
 
