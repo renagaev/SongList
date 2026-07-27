@@ -9,6 +9,10 @@ import SongForm from "@/components/SongForm.vue";
 import {Song} from "@/client";
 import {ref} from "vue";
 
+defineOptions({
+  name: 'AddSong'
+});
+
 const store = useStore()
 const router = useRouter()
 const song: Song = ref<Song>({

@@ -66,6 +66,10 @@ import {useStore} from "vuex";
 import {useTheme} from "vuetify";
 import {useRouter} from "vue-router";
 
+defineOptions({
+  name: 'Settings'
+});
+
 const botUsername = import.meta.env.VITE_BOT_USERNAME
 
 // Store

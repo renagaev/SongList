@@ -14,6 +14,10 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+defineOptions({
+  name: 'TagList'
+});
+
 // Vuex Store и Router
 const store = useStore();
 const router = useRouter();

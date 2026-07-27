@@ -8,6 +8,10 @@ import {useRouter} from "vue-router";
 import SongForm from "@/components/SongForm.vue";
 import {ref, toRaw} from "vue";
 
+defineOptions({
+  name: 'EditSong'
+});
+
 const store = useStore()
 const router = useRouter()
 const props = defineProps({
