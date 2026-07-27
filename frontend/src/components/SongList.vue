@@ -79,18 +79,18 @@ const open = (id: number) => {
 };
 
 // Lifecycle hooks
-onActivated(() => {
-  if (lastScrollKey.value === computedScrollKey.value && scrollRef.value) {
-    scrollRef.value.scrollTop = scrollTop.value;
-  }
-});
-
-onDeactivated(() => {
-  if (scrollRef.value) {
-    scrollTop.value = scrollRef.value.scrollTop;
-    lastScrollKey.value = computedScrollKey.value;
-  }
-});
+// onActivated(() => {
+//   if (lastScrollKey.value === computedScrollKey.value && scrollRef.value) {
+//     scrollRef.value.scrollTop = scrollTop.value;
+//   }
+// });
+//
+// onDeactivated(() => {
+//   if (scrollRef.value) {
+//     scrollTop.value = scrollRef.value.scrollTop;
+//     lastScrollKey.value = computedScrollKey.value;
+//   }
+// });
 </script>
 
 <style scoped>
