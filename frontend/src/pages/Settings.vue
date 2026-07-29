@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onUnmounted} from "vue";
+import {computed} from "vue";
 import {telegramLoginTemp} from 'vue3-telegram-login'
 import {useStore} from "vuex";
 import {useTheme} from "vuetify";
@@ -76,11 +76,14 @@ const botUsername = import.meta.env.VITE_BOT_USERNAME
 const store = useStore();
 const theme = useTheme();
 
-// Reactive variables
-const fontSize = ref(0);
-const userName = computed(() => store.state.userName)
-const isAdmin = computed(() => store.state.adminEnabled)
 // Computed properties
+const fontSize = computed({
+  get: () => store.state.settings.fontSize,
+  set: (value: number) => {
+    store.commit("setFontSize", value);
+  },
+});
+
 const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
 
 const settings = computed(() => store.state.settings);
@@ -108,11 +111,6 @@ const darkTheme = computed({
   },
 });
 
-// Methods
-const saveFontSize = () => {
-  store.commit("setFontSize", fontSize.value);
-};
-
 const tgLoginCallback = async (user) => {
   await store.dispatch("login", user)
 }
@@ -120,14 +118,6 @@ const tgLoginCallback = async (user) => {
 const goToAddSong = () => {
   router.push({name: "AddSong"})
 }
-// Lifecycle hooks
-onMounted(() => {
-  fontSize.value = store.state.settings.fontSize;
-});
-
-onUnmounted(() => {
-  saveFontSize();
-});
 </script>
 
 <style scoped>

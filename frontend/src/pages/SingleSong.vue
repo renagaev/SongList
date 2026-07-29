@@ -68,7 +68,7 @@
     </v-dialog>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
     <v-divider style="margin: 10px 0"></v-divider>
-    <div ref="textContainer" v-text="song.text" class="words" :style="fontStyle" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd"></div>
+    <div ref="textContainer" class="words" :style="fontStyle" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd" v-html="formattedText"></div>
   </v-container>
 </template>
 
@@ -167,6 +167,18 @@ const lastSingedText = computed(() => {
 
 const fontStyle = computed(() => `font-size: ${store.state.settings.fontSize}px`);
 
+const formattedText = computed(() => {
+  if (!song.value?.text) return '';
+  // Заменяем пробел перед тире на неразрывный пробел
+  return song.value.text
+    .replace(/ - /g, ' \u2014 ')
+    .replace(/ — /g, ' \u2014 ')
+    .replace(/ – /g, ' \u2013 ')
+    .replace(/([^ \u00A0]) \u2014/g, '$1\u00A0\u2014')
+    .replace(/([^ \u00A0]) \u2013/g, '$1\u00A0\u2013')
+    .replace(/([^ \u00A0]) - /g, '$1\u00A0- ');
+});
+
 const showHistory = computed(() => store.state.settings.showHistory);
 
 const song = computed(() => store.state.selectedSong);
@@ -231,6 +243,8 @@ onBeforeRouteLeave((to, from, next) => {
 
 <style scoped>
 .words {
-  white-space: pre-line;
+  white-space: pre-wrap;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 </style>

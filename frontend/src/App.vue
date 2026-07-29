@@ -14,7 +14,7 @@
     <app-bar></app-bar>
     <v-main>
       <router-view v-slot="{ Component }">
-        <keep-alive :include="['MainList', 'FavouritesList', 'TagList', 'History', 'Settings', 'AddSong', 'EditSong', 'EnableAdmin']">
+        <keep-alive :include="['MainList', 'FavouritesList', 'TagList', 'History']">
           <component :is="Component"/>
         </keep-alive>
       </router-view>
