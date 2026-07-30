@@ -5,6 +5,8 @@
       :item-size="72"
       key-field="id"
       v-slot="{ item }"
+      ref="scroll"
+      @scroll="handleScroll"
   >
     <div class="item-wrapper">
       <v-list-item
@@ -13,18 +15,18 @@
           class="item-entry"
           :class="getClass(item)"
       >
-        <v-list-item-title>{{getTitle(item)}}</v-list-item-title>
-        <v-list-item-subtitle>{{getSubtitle(item)}}</v-list-item-subtitle>
+        <v-list-item-title>{{ getTitle(item) }}</v-list-item-title>
+        <v-list-item-subtitle>{{ getSubtitle(item) }}</v-list-item-subtitle>
       </v-list-item>
     </div>
   </recycle-scroller>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onActivated, onDeactivated } from "vue";
+import {ref, computed, onActivated, onDeactivated, onUnmounted, useTemplateRef} from "vue";
 import type {PropType} from "vue";
-import { useRouter } from "vue-router";
-import { SongModel } from "@/store/models";
+import {useRouter} from "vue-router";
+import {SongModel} from "@/store/models";
 import {useTheme} from 'vuetify'
 
 // Props
@@ -45,15 +47,10 @@ const props = defineProps({
 
 // Refs
 const scrollTop = ref(0);
-const lastScrollKey = ref<string | undefined>(undefined);
-const scroll = ref<HTMLElement | null>(null);
+const scroll = useTemplateRef("scroll")
 const theme = useTheme();
 // Router
 const router = useRouter();
-
-// Computed
-const scrollRef = computed(() => scroll.value);
-const computedScrollKey = computed(() => props.scrollKey ?? props.songs?.map(x=> x.id).join(""))
 
 // Methods
 const getTitle = (song: SongModel): string => {
@@ -78,22 +75,15 @@ const open = (id: number) => {
   router.push(`/song/${id}`);
 };
 
+const handleScroll = (e) => {
+  scrollTop.value = e.target.scrollTop
+}
+
 // Lifecycle hooks
 onActivated(() => {
+  console.log("scroll restored to", scrollTop.value);
   if (scroll.value && scrollTop.value > 0) {
-    // Ждём следующего тика + небольшая задержка для recycle-scroller
-    setTimeout(() => {
-      if (scroll.value) {
-        scroll.value.scrollTop = scrollTop.value;
-        console.log("scroll restored to", scrollTop.value);
-      }
-    }, 50);
-  }
-});
-
-onDeactivated(() => {
-  if (scroll.value) {
-    scrollTop.value = scroll.value.scrollTop;
+    scroll.value.scrollToPosition(scrollTop.value);
   }
 });
 </script>
@@ -106,6 +96,7 @@ onDeactivated(() => {
   text-overflow: ellipsis;
   overflow-wrap: break-word;
 }
+
 .scroller {
   height: calc(100vh - 64px);
 }
