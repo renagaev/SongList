@@ -16,9 +16,10 @@ export default defineConfig({
         target: 'es2020',
         rollupOptions: {
             output: {
-                manualChunks: {
-                    tone: ['tone', 'standardized-audio-context'],
-                    // signalr: ['@microsoft/signalr'],
+                manualChunks: (id) => {
+                    if (id.includes('node_modules/tone') || id.includes('node_modules/standardized-audio-context')) {
+                        return 'tone'
+                    }
                 }
             }
         },
