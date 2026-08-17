@@ -85,6 +85,8 @@ const fontSize = computed({
 });
 
 const fontStyle = computed(() => `font-size: ${fontSize.value}px`);
+const userName = computed(() => store.state.userName)
+const isAdmin = computed(() => store.state.adminEnabled)
 
 const settings = computed(() => store.state.settings);
 const router = useRouter()
