@@ -20,8 +20,10 @@ const vuetify = createVuetify({
     },
   }
 })
-
-OpenAPI.BASE = import.meta.env.VITE_API_BASE
+const base =  import.meta.env.VITE_API_BASE
+console.log("base url:", base !== undefined, base)
+OpenAPI.BASE = base
+// OpenAPI.BASE = "https://songs.russia-church.com"
 const app = createApp(App, {
   vuetify,
 })
