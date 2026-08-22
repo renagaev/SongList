@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onActivated, onDeactivated, onUnmounted, useTemplateRef} from "vue";
+import {ref, computed, nextTick, onActivated, onDeactivated, onUnmounted, useTemplateRef} from "vue";
 import type {PropType} from "vue";
 import {useRouter} from "vue-router";
 import {SongModel} from "@/store/models";
@@ -81,10 +81,19 @@ const handleScroll = (e) => {
 
 // Lifecycle hooks
 onActivated(() => {
-  console.log("scroll restored to", scrollTop.value);
-  if (scroll.value && scrollTop.value > 0) {
-    scroll.value.scrollToPosition(scrollTop.value);
+  if (!scroll.value || scrollTop.value <= 0) {
+    return;
   }
+  // RecycleScroller recalculates its real height on the next animation frame
+  // after becoming visible again (see handleVisibilityChange in vue-virtual-scroller).
+  // Restoring the scroll position before that happens gets clamped back to 0.
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scroll.value?.scrollToPosition(scrollTop.value);
+      });
+    });
+  });
 });
 </script>
 
