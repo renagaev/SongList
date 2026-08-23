@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onBeforeMount, onUnmounted} from "vue";
+import {ref, computed, onMounted, onBeforeMount, onUnmounted, onActivated} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant, mdiDelete} from "@mdi/js";
 import Piano from "@/services/piano";
@@ -181,8 +181,8 @@ const formattedText = computed(() => {
 
 const showHistory = computed(() => store.state.settings.showHistory);
 
-const song = computed(() => store.state.selectedSong);
-const tags = computed(() => store.state.selectedSong.tags.sort((a, b) => {
+const song = computed(() => store.state.songs.find(x => x.id == props.id));
+const tags = computed(() => song.value.tags.sort((a, b) => {
   return a.toLowerCase().localeCompare(b.toLowerCase())
 }));
 const showNote = computed(() =>
@@ -224,7 +224,11 @@ const share = () => {
   });
 }
 
-store.commit("selectSong", props.id);
+onActivated(async () => {
+  if (showHistory.value) {
+    history.value = await store.dispatch("getSongHistory", props.id);
+  }
+})
 onBeforeMount(async () => {
   if (showHistory.value) {
     history.value = await store.dispatch("getSongHistory", props.id);
