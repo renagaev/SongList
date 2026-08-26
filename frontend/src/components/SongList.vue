@@ -54,7 +54,7 @@ const router = useRouter();
 
 // Methods
 const getTitle = (song: SongModel): string => {
-  return song.number ? `${song.title} | ${song.number}` : song.title;
+  return song.number ? `${song.number}. ${song.title}` : song.title;
 };
 
 const getSubtitle = (song: SongModel): string => {
