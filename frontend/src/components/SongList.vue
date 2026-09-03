@@ -15,8 +15,16 @@
           class="item-entry"
           :class="getClass(item)"
       >
-        <v-list-item-title>{{ getTitle(item) }}</v-list-item-title>
-        <v-list-item-subtitle>{{ getSubtitle(item) }}</v-list-item-subtitle>
+        <div class="item-content">
+          <div class="title-row">
+            <v-list-item-title>{{ getTitle(item) }}</v-list-item-title>
+            <span
+                v-if="item.number != null"
+                class="song-number"
+            >| {{ item.number }}</span>
+          </div>
+          <v-list-item-subtitle>{{ getSubtitle(item) }}</v-list-item-subtitle>
+        </div>
       </v-list-item>
     </div>
   </recycle-scroller>
@@ -54,7 +62,7 @@ const router = useRouter();
 
 // Methods
 const getTitle = (song: SongModel): string => {
-  return song.number ? `${song.number}. ${song.title}` : song.title;
+  return song.title;
 };
 
 const getSubtitle = (song: SongModel): string => {
@@ -99,11 +107,37 @@ onActivated(() => {
 
 <style scoped>
 
+.v-list-item-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .v-list-item-subtitle {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   overflow-wrap: break-word;
+}
+
+.item-content {
+  width: 100%;
+  height: 100%;
+}
+
+.title-row {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.title-row .v-list-item-title {
+  min-width: 0;
+}
+
+.song-number {
+  flex-shrink: 0;
+  margin-left: 4px;
 }
 
 .scroller {
