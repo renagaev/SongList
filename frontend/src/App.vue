@@ -56,3 +56,10 @@ onMounted(() => {
   });
 });
 </script>
+
+<style>
+html, body {
+  touch-action: pan-x pan-y;
+  overscroll-behavior: none;
+}
+</style>
