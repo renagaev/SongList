@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using SongList.Web.Controllers;
 using SongList.Web.Extensions;
 using AppContext = SongList.Web.AppContext;
@@ -38,7 +39,20 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseResponseCompression();
-app.UseFileServer();
+app.UseFileServer(new FileServerOptions
+{
+    StaticFileOptions =
+    {
+        OnPrepareResponse = ctx =>
+        {
+            var path = ctx.Context.Request.Path.Value ?? "";
+            var headers = ctx.Context.Response.GetTypedHeaders();
+            headers.CacheControl = path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase)
+                ? new CacheControlHeaderValue { Public = true, MaxAge = TimeSpan.FromDays(365), Extensions = { new NameValueHeaderValue("immutable") } }
+                : new CacheControlHeaderValue { NoCache = true, MustRevalidate = true };
+        }
+    }
+});
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
