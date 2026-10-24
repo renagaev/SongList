@@ -41,16 +41,27 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
 
     public async Task<SongLastHistoryDto[]> GetLastSongHistory(CancellationToken cancellationToken)
     {
-        var moscowBorderUtc = TimeSpan.FromHours(13);
-
         var songs = await context.Songs
             .Where(x => !x.IsDeleted)
             .Select(x => x.Id)
             .ToArrayAsync(cancellationToken);
 
+        var map = await GetLastHistoryMap(songs, cancellationToken);
+
+        return songs
+            .Select(id => map.TryGetValue(id, out var last) ? last : new SongLastHistoryDto { SongId = id })
+            .ToArray();
+    }
+
+    public async Task<Dictionary<int, SongLastHistoryDto>> GetLastHistoryMap(IEnumerable<int> songIds,
+        CancellationToken cancellationToken)
+    {
+        var moscowBorderUtc = TimeSpan.FromHours(13);
+        var ids = songIds.ToArray();
+
         var history = await context.SongShows
             .Where(x => x.IsServiceModel == true || x.IsServiceFix == true)
-            .Where(x => x.HolyricsSong.SongId != null)
+            .Where(x => x.HolyricsSong.SongId != null && ids.Contains(x.HolyricsSong.SongId!.Value))
             .GroupBy(x => x.HolyricsSong.SongId!.Value)
             .Select(g => new
             {
@@ -59,22 +70,15 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
                     .Max(x => (DateTimeOffset?)x.ShowedAt),
                 LastEvening = g.Where(x => x.ShowedAt.TimeOfDay >= moscowBorderUtc)
                     .Max(x => (DateTimeOffset?)x.ShowedAt)
-
             })
             .ToDictionaryAsync(x => x.SongId, cancellationToken);
 
-        return songs
-            .Select(id =>
-            {
-                var exists = history.TryGetValue(id, out var last);
-                return new SongLastHistoryDto
-                {
-                    SongId = id,
-                    LastMorning = exists ? last!.LastMorning : null,
-                    LastEvening = exists ? last!.LastEvening : null
-                };
-            })
-            .ToArray();
+        return history.ToDictionary(x => x.Key, x => new SongLastHistoryDto
+        {
+            SongId = x.Key,
+            LastMorning = x.Value.LastMorning,
+            LastEvening = x.Value.LastEvening
+        });
     }
 
     public async Task<DateTimeOffset[]> GetSongHistory(int songId, CancellationToken cancellationToken)

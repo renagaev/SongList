@@ -13,4 +13,7 @@ public record SongDto
     public int? Number { get; set; }
     public string? Note { get; set; }
     public int? NoteId { get; set; }
+    public SongAttachmentDto[] Attachments { get; set; } = [];
+    public DateTimeOffset? LastMorning { get; set; }
+    public DateTimeOffset? LastEvening { get; set; }
 };

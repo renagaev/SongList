@@ -254,6 +254,9 @@ namespace SongList.Web.Migrations
 
                     b.HasIndex("HolyricsSongId");
 
+                    b.HasIndex("HolyricsSongId", "ShowedAt")
+                        .HasFilter("\"IsServiceModel\" IS TRUE OR \"IsServiceFix\" IS TRUE");
+
                     b.ToTable("SongShows");
                 });
 

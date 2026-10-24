@@ -12,13 +12,19 @@ import { request as __request } from '../core/request';
 export class SongService {
 
     /**
+     * @param includeHistory
      * @returns Song OK
      * @throws ApiError
      */
-    public static getAllSongs(): CancelablePromise<Array<Song>> {
+    public static getAllSongs(
+        includeHistory?: boolean,
+    ): CancelablePromise<Array<Song>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/Song',
+            query: {
+                'includeHistory': includeHistory,
+            },
         });
     }
 

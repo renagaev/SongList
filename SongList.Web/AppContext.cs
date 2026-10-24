@@ -57,6 +57,10 @@ public class AppContext(DbContextOptions options) : DbContext(options)
 
         modelBuilder.Entity<SongShow>().HasIndex(x => x.HolyricsSongId);
 
+        modelBuilder.Entity<SongShow>()
+            .HasIndex(x => new { x.HolyricsSongId, x.ShowedAt })
+            .HasFilter("\"IsServiceModel\" IS TRUE OR \"IsServiceFix\" IS TRUE");
+
         modelBuilder.Entity<HolyricsToken>();
 
         base.OnModelCreating(modelBuilder);

@@ -4,13 +4,12 @@ import {ActionContext} from "vuex";
 import VuexPersistence from 'vuex-persist'
 import {
     SongService,
-    HistoryService,
     SongOpeningStats,
     OpenAPI,
     Note,
     AuthService,
     Song,
-    AttachmentsService, ServiceDto, SongLastHistoryDto
+    AttachmentsService, ServiceDto, SongLastHistoryDto, Attachment
 } from "@/client";
 import fuzzysort from 'fuzzysort'
 import {HistoryMode, HistorySortOrder, Settings, SongModel} from './models'
@@ -194,6 +193,10 @@ export default new Vuex.Store<State>({
             if (favIndex != -1) {
                 state.favourites.splice(favIndex, 1)
             }
+        },
+        setSongAttachments(state, {id, attachments}: {id: number, attachments: Attachment[]}) {
+            const song = state.songs.find(x => x.id == id)
+            if (song) song.attachments = attachments
         }
     },
     getters: {
@@ -255,7 +258,7 @@ export default new Vuex.Store<State>({
             }
             requestIdleCallback(async () => {
                 try {
-                    const res = await SongService.getAllSongs();
+                    const res = await SongService.getAllSongs(actionContext.state.settings.showHistory);
                     const songs = res.map(x => ({ ...x, opened: 0 } as SongModel));
                     actionContext.commit("setSongs", songs);
                     localStorage.setItem("songs", JSON.stringify(songs));
@@ -270,7 +273,11 @@ export default new Vuex.Store<State>({
             actionContext.commit("setNotes", sorted)
         },
         async loadSongLastHistory(actionContext) {
-            const history = await HistoryService.getSongsLastHistory()
+            const history = actionContext.state.songs.map(song => ({
+                songId: song.id,
+                lastMorning: song.lastMorning ?? null,
+                lastEvening: song.lastEvening ?? null
+            }))
             actionContext.commit("setSongLastHistory", history)
             return history
         },
@@ -323,15 +330,12 @@ export default new Vuex.Store<State>({
             }
             await actionContext.state.connection.invoke("closeSong", id)
         },
-        async getSongHistory(actionContext: ActionContext<State, State>, id: number) {
-            const res = await HistoryService.getSongHistory(id)
-            return res.map(d => new Date(d))
-        },
-        async getSongAttachments(actionContext: ActionContext<State, State>, id: number) {
-            return AttachmentsService.getAttachments(id);
+        async refreshSongAttachments(actionContext: ActionContext<State, State>, id: number) {
+            const attachments = await AttachmentsService.getAttachments(id);
+            actionContext.commit("setSongAttachments", {id, attachments});
         },
         async removeSongAttachment(actionContext: ActionContext<State, State>, id: number) {
-            return AttachmentsService.deleteAttachment(id)
+            await AttachmentsService.deleteAttachment(id)
         },
         async login(actionContext: ActionContext<State, State>, user: object) {
             const res = await AuthService.getTgAdminToken(user)

@@ -47,7 +47,7 @@
 
 import {useStore} from "vuex";
 import {mdiPaperclip} from "@mdi/js";
-import {Attachment, AttachmentsService} from "@/client";
+import {AttachmentsService} from "@/client";
 import {computed, ref} from "vue";
 import AttachmentsList from "@/components/AttachmentsList.vue";
 
@@ -60,15 +60,13 @@ const props = defineProps({
   },
 });
 
-let attachments = ref(Array.of<Attachment>())
+const song = computed(() => store.state.songs.find(x => x.id == props.id));
+let attachments = computed(() => song.value?.attachments ?? [])
 let attachmentsCount = computed(() => attachments.value.length)
 
 async function loadAttachments() {
-  const res = await store.dispatch("getSongAttachments", props.id)
-  attachments.value = res
+  await store.dispatch("refreshSongAttachments", props.id)
 }
-
-loadAttachments()
 
 const isAdmin = computed(() => store.state.isAdmin);
 

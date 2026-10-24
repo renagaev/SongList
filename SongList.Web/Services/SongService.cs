@@ -6,7 +6,7 @@ using SongList.Web.Extensions;
 
 namespace SongList.Web.Services;
 
-public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
+public class SongService(AppContext dbContext, SongUpdateNotifier notifier, SongHistoryService historyService)
 {
     private static Expression<Func<Song, SongDto>> projection = x => new SongDto
     {
@@ -16,15 +16,40 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier)
         Note = x.Note != null ? x.Note.SimpleName : null,
         Number = x.Number,
         Tags = x.Tags,
-        Text = x.Text
+        Text = x.Text,
+        Attachments = x.Attachments
+            .Select(a => new SongAttachmentDto
+            {
+                Id = a.Id,
+                SongId = a.SongId,
+                Name = a.Name,
+                Type = a.Type
+            })
+            .ToArray()
     };
 
-    public async Task<SongDto[]> GetAllSongs(CancellationToken cancellationToken)
+    public async Task<SongDto[]> GetAllSongs(bool includeHistory, CancellationToken cancellationToken)
     {
-        return await dbContext.Songs
-            .Where(x=> !x.IsDeleted)
+        var songs = await dbContext.Songs
+            .Where(x => !x.IsDeleted)
             .Select(projection)
             .ToArrayAsync(cancellationToken);
+
+        if (includeHistory)
+        {
+            var songIds = songs.Select(x => x.Id).ToArray();
+            var lastHistory = await historyService.GetLastHistoryMap(songIds, cancellationToken);
+            foreach (var song in songs)
+            {
+                if (lastHistory.TryGetValue(song.Id, out var last))
+                {
+                    song.LastMorning = last.LastMorning;
+                    song.LastEvening = last.LastEvening;
+                }
+            }
+        }
+
+        return songs;
     }
 
     public async Task<SongDto> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)

@@ -102,6 +102,7 @@ const showHistory = computed({
   get: () => settings.value.showHistory,
   set: (value: boolean) => {
     store.commit("setShowHistory", value);
+    store.dispatch("loadSongs");
   },
 });
 

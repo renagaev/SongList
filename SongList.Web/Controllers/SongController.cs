@@ -13,8 +13,8 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
     : ControllerBase
 {
     [HttpGet(Name = "getAllSongs")]
-    public async Task<SongDto[]> GetAllSongs(CancellationToken cancellationToken) =>
-        await songService.GetAllSongs(cancellationToken);
+    public async Task<SongDto[]> GetAllSongs(bool includeHistory, CancellationToken cancellationToken) =>
+        await songService.GetAllSongs(includeHistory, cancellationToken);
 
     [HttpGet("notes", Name = "getNotes")]
     public Task<NoteDto[]> GetNotes(CancellationToken cancellationToken) => dbContext.Notes

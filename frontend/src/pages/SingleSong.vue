@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onBeforeMount, onUnmounted, onActivated} from "vue";
+import {ref, computed, onMounted, onUnmounted} from "vue";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import {mdiMusicNote, mdiStar, mdiStarOutline, mdiPencil, mdiShareVariant, mdiDelete} from "@mdi/js";
 import Piano from "@/services/piano";
@@ -141,15 +141,14 @@ const deleteIcon = mdiDelete
 // Refs and route
 const route = useRoute();
 const router = useRouter();
-const history = ref<Date[]>([]);
 const deleteDialog = ref(false);
 
 const isFavourite = computed(() => store.state.favourites.includes(props.id));
 const isAdmin = computed(() => store.state.isAdmin);
 
 const lastSingedText = computed(() => {
-  const morning = history.value.find((x) => x.getHours() < 16);
-  const evening = history.value.find((x) => x.getHours() > 16);
+  const morning = song.value?.lastMorning ? new Date(song.value.lastMorning) : null;
+  const evening = song.value?.lastEvening ? new Date(song.value.lastEvening) : null;
 
   const dates = [];
   if (morning) {
@@ -224,16 +223,6 @@ const share = () => {
   });
 }
 
-onActivated(async () => {
-  if (showHistory.value) {
-    history.value = await store.dispatch("getSongHistory", props.id);
-  }
-})
-onBeforeMount(async () => {
-  if (showHistory.value) {
-    history.value = await store.dispatch("getSongHistory", props.id);
-  }
-})
 // Lifecycle hooks
 onMounted(async () => {
   await store.dispatch("songOpened", props.id);
