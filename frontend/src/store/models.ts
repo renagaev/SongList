@@ -3,6 +3,7 @@ import Fuzzysort from "fuzzysort"
 
 export type SongModel = Song & { opened: number }
 export type HistoryMode = 'morning' | 'evening' | 'both'
+export type HistorySortOrder = 'newest' | 'oldest'
 export type Settings = {
     darkTheme: boolean
     playNotes: boolean
@@ -10,4 +11,6 @@ export type Settings = {
     fontSize: number
     historyMode: HistoryMode
     historyHideDays: number
+    historySortOrder: HistorySortOrder
+    historyTag: string | null
 }

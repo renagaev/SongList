@@ -13,7 +13,7 @@ import {
     AttachmentsService, ServiceDto, SongLastHistoryDto
 } from "@/client";
 import fuzzysort from 'fuzzysort'
-import {HistoryMode, Settings, SongModel} from './models'
+import {HistoryMode, HistorySortOrder, Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
 type HubConnection = import('@microsoft/signalr').HubConnection;
 
@@ -109,7 +109,9 @@ export default new Vuex.Store<State>({
             showHistory: false,
             fontSize: 16,
             historyMode: "both",
-            historyHideDays: 0
+            historyHideDays: 0,
+            historySortOrder: "newest",
+            historyTag: null
         },
         connection: null!,
         isAdmin: false,
@@ -149,6 +151,12 @@ export default new Vuex.Store<State>({
         },
         setHistoryHideDays(state, value: number) {
             state.settings.historyHideDays = Math.max(0, value)
+        },
+        setHistorySortOrder(state, value: HistorySortOrder) {
+            state.settings.historySortOrder = value
+        },
+        setHistoryTag(state, value: string | null) {
+            state.settings.historyTag = value
         },
         setSongLastHistory(state, value: SongLastHistoryDto[]) {
             state.songLastHistory = value ?? []

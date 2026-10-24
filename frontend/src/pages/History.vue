@@ -44,6 +44,37 @@
                   :prepend-inner-icon="mdiFilterOutline"
               ></v-text-field>
             </div>
+
+            <div>
+              <div class="text-subtitle mb-2">Сортировка</div>
+              <v-select
+                  v-model="sortOrder"
+                  :items="sortOptions"
+                  item-title="label"
+                  item-value="value"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details="auto"
+                  class="mt-1"
+                  :prepend-inner-icon="mdiSort"
+              ></v-select>
+            </div>
+
+            <div>
+              <div class="text-subtitle mb-2">Категория</div>
+              <v-select
+                  v-model="historyTag"
+                  :items="tagOptions"
+                  item-title="label"
+                  item-value="value"
+                  variant="solo-filled"
+                  density="comfortable"
+                  hide-details="auto"
+                  clearable
+                  class="mt-1"
+                  :prepend-inner-icon="mdiTagOutline"
+              ></v-select>
+            </div>
           </div>
         </template>
       </v-expansion-panel>
@@ -69,11 +100,9 @@ import {computed, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import SongList from "@/components/SongList.vue";
 import {daysAgo, formatDays} from "@/services/DateHelper";
-import {HistoryMode, SongModel} from "@/store/models";
-import {mdiClockTimeFourOutline, mdiWeatherNight, mdiWeatherSunny, mdiFilterOutline} from "@mdi/js"
-defineOptions({
-  name: 'History'
-});
+import {HistoryMode, HistorySortOrder, SongModel} from "@/store/models";
+import {mdiClockTimeFourOutline, mdiWeatherNight, mdiWeatherSunny, mdiFilterOutline, mdiSort, mdiTagOutline} from "@mdi/js"
+
 const store = useStore();
 
 const isLoading = ref(false);
@@ -94,6 +123,28 @@ const hideDays = computed<number>({
     store.commit("setHistoryHideDays", normalized);
   },
 });
+
+const sortOrder = computed<HistorySortOrder>({
+  get: () => store.state.settings.historySortOrder ?? "newest",
+  set: (value) => store.commit("setHistorySortOrder", value),
+});
+
+const historyTag = computed<string | null>({
+  get: () => store.state.settings.historyTag ?? null,
+  set: (value) => store.commit("setHistoryTag", value ?? null),
+});
+
+const tags = computed(() => store.getters["tags"] as string[]);
+
+const sortOptions = [
+  {value: "newest", label: "Сначала недавние"},
+  {value: "oldest", label: "Сначала старые"},
+];
+
+const tagOptions = computed(() => [
+  {value: null, label: "Все"},
+  ...tags.value.map((tag) => ({value: tag, label: tag})),
+]);
 
 const modeOptions = [
   {value: "both", label: "Все", icon: mdiClockTimeFourOutline},
@@ -128,6 +179,8 @@ const historyData = computed<{
 }>(() => {
   const mode = historyMode.value;
   const minDays = hideDays.value;
+  const tag = historyTag.value;
+  const ascending = sortOrder.value === "oldest";
 
   const entries: HistoryEntry[] = songs.value.map((song) => {
     const songHistory = historyMap.value.get(song.id);
@@ -170,6 +223,9 @@ const historyData = computed<{
   });
 
   const filtered = entries.filter((entry) => {
+    if (tag != null && entry.song.tags.indexOf(tag) == -1) {
+      return false;
+    }
     if (!entry.lastDate) {
       return true;
     }
@@ -177,15 +233,21 @@ const historyData = computed<{
   });
 
   filtered.sort((a, b) => {
-    if (a.lastDate && b.lastDate) {
-      return b.lastDate.getTime() - a.lastDate.getTime();
+    const aHasDate = !!a.lastDate;
+    const bHasDate = !!b.lastDate;
+
+    // У "сначала новые" певшиеся идут перед не певшимися,
+    // у "сначала старые" — наоборот.
+    if (aHasDate !== bHasDate) {
+      return ascending ? (aHasDate ? 1 : -1) : (aHasDate ? -1 : 1);
     }
-    if (a.lastDate) {
-      return -1;
+
+    if (aHasDate && bHasDate) {
+      return ascending
+          ? a.lastDate.getTime() - b.lastDate.getTime()
+          : b.lastDate.getTime() - a.lastDate.getTime();
     }
-    if (b.lastDate) {
-      return 1;
-    }
+
     return a.song.title.toLowerCase().localeCompare(b.song.title.toLowerCase());
   });
 
