@@ -13,6 +13,9 @@ public sealed class OnnxServicePredictor : IDisposable, IServicePredictor
     private const string _inputName = "input"; // from onnx_meta.json
     private readonly int _nFeatures = FeatureOrder.Length;
 
+    // Since 2026-08-27 the Sunday morning service (and its rehearsal) start one hour earlier.
+    private static readonly DateTimeOffset SundayMorningChangeDate = new(2026, 8, 27, 0, 0, 0, TimeSpan.Zero);
+
     // Feature order (matches onnx_meta.json) without future-only columns.
     private static readonly string[] FeatureOrder =
     [
@@ -112,16 +115,19 @@ public sealed class OnnxServicePredictor : IDisposable, IServicePredictor
         double delta11 = Math.Abs(startAt.Hour * 60 + startAt.Minute - 11 * 60);
         double delta19 = Math.Abs(startAt.Hour * 60 + startAt.Minute - 19 * 60);
 
-        // Soft distances to schedule anchors
+        // Soft distances to schedule anchors. After 2026-08-27 the Sunday morning
+        // service starts at 10:00 instead of 11:00, and its rehearsal at 08:30 instead of 09:30.
+        var (sunServiceH, sunServiceM) = startAt >= SundayMorningChangeDate ? (10, 0) : (11, 0);
+        var (sunRehearsalH, sunRehearsalM) = startAt >= SundayMorningChangeDate ? (8, 30) : (9, 30);
         var distService = MinDistToAnchors(startAt, [
             (DayOfWeek.Wednesday, 19, 0),
             (DayOfWeek.Friday, 19, 0),
-            (DayOfWeek.Sunday, 11, 0),
+            (DayOfWeek.Sunday, sunServiceH, sunServiceM),
             (DayOfWeek.Sunday, 19, 0)
         ]);
         var distRehearsal = MinDistToAnchors(startAt, [
             (DayOfWeek.Saturday, 20, 0),
-            (DayOfWeek.Sunday, 9, 30),
+            (DayOfWeek.Sunday, sunRehearsalH, sunRehearsalM),
             (DayOfWeek.Sunday, 20, 30)
         ]);
 
