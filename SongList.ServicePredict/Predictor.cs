@@ -107,13 +107,22 @@ public sealed class OnnxServicePredictor : IDisposable, IServicePredictor
         var longTailRatio = totalTime > 0 ? top3.Sum() / totalTime : 0;
         var totalOverLength = totalTime / lengthSec;
 
-        // Time features
-        var hour = startAt.Hour;
+        // Time features are fed to the model in UTC (ShowedAt is stored as UTC).
+        // The Sunday morning service moved from 11:00 to 10:00 (MSK) on 2026-08-27,
+        // i.e. one hour earlier. To keep model inputs on the distribution it was
+        // trained on (no retraining), shift Sunday-morning shows one hour forward
+        // so the model sees the old schedule. Evening (>=15:00 UTC) is untouched.
+        var hourOffset = startAt >= SundayMorningChangeDate
+                         && startAt is { DayOfWeek: DayOfWeek.Sunday, Hour: < 15 }
+            ? 1
+            : 0;
+        var featsAt = startAt.AddHours(hourOffset);
+        var hour = featsAt.Hour;
         var dowPg = ((int)startAt.DayOfWeek + 6) % 7; // Sunday=0
         var isSunday = dowPg == 0;
         var isSaturday = dowPg == 6;
-        double delta11 = Math.Abs(startAt.Hour * 60 + startAt.Minute - 11 * 60);
-        double delta19 = Math.Abs(startAt.Hour * 60 + startAt.Minute - 19 * 60);
+        double delta11 = Math.Abs(featsAt.Hour * 60 + featsAt.Minute - 11 * 60);
+        double delta19 = Math.Abs(featsAt.Hour * 60 + featsAt.Minute - 19 * 60);
 
         // Soft distances to schedule anchors. After 2026-08-27 the Sunday morning
         // service starts at 10:00 instead of 11:00, and its rehearsal at 08:30 instead of 09:30.

@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SongList.Web.Dto;
@@ -18,8 +20,17 @@ public class HistoryController(SongHistoryService service, AppContext dbContext)
     [Authorize(AuthenticationSchemes = "Token")]
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPost("slides")]
-    public async Task AddSlideHistoryItem([FromBody] AddSlideHistoryItemRequest request, CancellationToken cancellationToken) => 
+    public async Task AddSlideHistoryItem([FromBody] AddSlideHistoryItemRequest request, CancellationToken cancellationToken) =>
         await service.AddSlideHistoryItem(request, cancellationToken);
+
+    [Authorize(AuthenticationSchemes = "Token")]
+    [HttpPost("recompute-predictions", Name = "recomputePredictions")]
+    public async Task<IActionResult> RecomputePredictions([FromBody] RecomputePredictionsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var count = await service.RecomputePredictions(request.From, request.To, cancellationToken);
+        return Ok(new { count });
+    }
 
     [HttpGet("{songId:int}", Name = "getSongHistory")]
     public Task<DateTimeOffset[]> GetSongHistory(int songId, CancellationToken cancellationToken) =>

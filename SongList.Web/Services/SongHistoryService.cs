@@ -134,6 +134,22 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<int> RecomputePredictions(DateTimeOffset from, DateTimeOffset to, CancellationToken cancellationToken)
+    {
+        var shows = await context.SongShows
+            .Where(x => x.ShowedAt >= from && x.ShowedAt <= to)
+            .Include(x => x.Slides)
+            .ToListAsync(cancellationToken);
+
+        foreach (var show in shows)
+        {
+            await UpdatePredictions(show, cancellationToken);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        return shows.Count;
+    }
+
     internal async Task UpdatePredictions(SongShow songShow, CancellationToken cancellationToken)
     {
         var prevHide = await context.SongShows.Where(x => x.HiddenAt < songShow.ShowedAt)
