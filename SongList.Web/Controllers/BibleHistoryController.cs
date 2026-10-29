@@ -5,6 +5,7 @@ using SongList.Web.Services;
 
 namespace SongList.Web.Controllers;
 
+[ApiController]
 [Route("bible-history")]
 public class BibleHistoryController(VerseHistoryService service): ControllerBase
 {

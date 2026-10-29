@@ -9,19 +9,30 @@ using AppContext = SongList.Web.AppContext;
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+ValidateRequiredSecrets(config);
+
 // Add services to the container.
 builder.Services.AddDbContext<AppContext>(o => o.UseNpgsql(config["DbConnectionString"]));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddProblemDetails();
+
 builder.Services.AddSwaggerGen(c =>
     c.CustomSchemaIds(x => x.GetCustomAttributes<DisplayNameAttribute>().SingleOrDefault()?.DisplayName ?? x.Name));
-builder.Services.AddCors(x => x.AddDefaultPolicy(x =>
-    x.SetIsOriginAllowed(_ => true)
+
+var corsOrigins = new List<string>(config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>());
+if (builder.Environment.IsDevelopment())
+{
+    corsOrigins.Add("http://localhost:5173");
+}
+
+builder.Services.AddCors(o => o.AddPolicy("DefaultCors", p =>
+    p.WithOrigins(corsOrigins.ToArray())
         .AllowCredentials()
         .AllowAnyHeader()
-        .AllowAnyMethod()
-));
+        .AllowAnyMethod()));
+
 builder.Services.AddResponseCompression();
 builder.Services.AddSignalR();
 
@@ -31,6 +42,8 @@ builder.Services.AddApplicationServices();
 
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -59,7 +72,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors();
+app.UseCors("DefaultCors");
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -68,3 +81,25 @@ app.MapControllers();
 
 
 app.Run();
+
+// Не стартуем с пустыми/дефолтными секретами (аудит P0-2): провал на старте понятнее, чем дыра в проде.
+static void ValidateRequiredSecrets(IConfiguration config)
+{
+    var required = new (string Key, string Description)[]
+    {
+        ("DbConnectionString", "строка подключения к БД (DbConnectionString)"),
+        ("Auth:Token", "токен схемы Token (Auth__Token)"),
+        ("Jwt:Key", "ключ подписи JWT (Jwt__Key)")
+    };
+
+    foreach (var (key, description) in required)
+    {
+        var value = config[key];
+        if (string.IsNullOrWhiteSpace(value) || value == "token")
+        {
+            throw new InvalidOperationException(
+                $"Конфигурация {key} ({description}) не задана или содержит значение по умолчанию. " +
+                "Задайте её через переменную окружения (см. .env.example / user-secrets).");
+        }
+    }
+}

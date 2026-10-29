@@ -10,6 +10,34 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# IDE
 .idea
+.vscode/
+*.DotSettings.user
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Tooling
 .aider*
-postgres
+.nessy/
+.claude/
+
+# Local database
+/postgres/
+
+# Frontend
+frontend/node_modules
+frontend/dist
+frontend/.vite

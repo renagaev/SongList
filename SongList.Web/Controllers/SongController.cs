@@ -8,6 +8,7 @@ using SongList.Web.Services;
 
 namespace SongList.Web.Controllers;
 
+[ApiController]
 [Route("[controller]")]
 public class SongController(AppContext dbContext, OpenedSongsManager openedSongsManager, SongService songService)
     : ControllerBase

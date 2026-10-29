@@ -8,6 +8,7 @@ using SongList.Web.Services;
 
 namespace SongList.Web.Controllers;
 
+[ApiController]
 [Route("attachments")]
 public class AttachmentsController(AttachmentsService service) : ControllerBase
 {

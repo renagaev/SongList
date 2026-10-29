@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SongList.Web.Dto;
@@ -7,6 +5,7 @@ using SongList.Web.Services;
 
 namespace SongList.Web.Controllers;
 
+[ApiController]
 [Route("history")]
 public class HistoryController(SongHistoryService service, AppContext dbContext) : ControllerBase
 {
