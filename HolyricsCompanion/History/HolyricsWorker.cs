@@ -23,7 +23,7 @@ public class HolyricsWorker(IOptionsMonitor<WorkersSettings> optionsMonitor, ISe
                 {
                     var recordedLastTime = storage.GetSongLastTime(historyItem.MusicId);
                     var newTimes = historyItem.History.Where(x => x > recordedLastTime).ToList();
-                    if (newTimes.Count < 0)
+                    if (newTimes.Count == 0)
                     {
                         continue;
                     }

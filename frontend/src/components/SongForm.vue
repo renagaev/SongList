@@ -32,11 +32,11 @@
 <script setup lang="ts">
 import {useStore} from "vuex";
 import type {Song} from "@/client";
-import {PropType, toRef} from "vue";
+import {computed, PropType, toRef} from "vue";
 import Piano from "@/services/piano";
 
 const store = useStore()
-const tags = store.getters["tags"]
+const tags = computed(() => store.getters["tags"])
 const props = defineProps({
   song: {
     type: Object as PropType<Song>,
@@ -47,14 +47,16 @@ const props = defineProps({
     default: false,
   },
 });
-const notes = store.state.notes
+const notes = computed(() => store.state.notes)
 const emit = defineEmits<{
   (e: "save")
 }>()
 const loading = toRef(props, "loading");
 const playNote = async (id) => {
-  const note = notes.find(x=> x.id == id)
-  await Piano.play(note.name)
+  const note = notes.value.find(x => x.id == id)
+  if (note) {
+    await Piano.play(note.name)
+  }
 }
 const song = props.song!;
 const rules = [value => {

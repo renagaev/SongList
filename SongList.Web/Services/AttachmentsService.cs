@@ -23,10 +23,14 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task<(string name, Stream content)> GetContent(int id, CancellationToken cancellationToken)
+    public async Task<(string name, Stream content)?> GetContent(int id, CancellationToken cancellationToken)
     {
         var attachment = await dbContext.Attachments
-            .FirstAsync(x => x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (attachment is null)
+        {
+            return null;
+        }
 
         var ms = new MemoryStream();
 
@@ -40,11 +44,16 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
         return (attachment.Name, ms);
     }
 
-    public async Task CreateAttachment(int songId, Stream stream, string title, string originalName,
+    public async Task<bool> CreateAttachment(int songId, Stream stream, string title, string originalName,
         CancellationToken cancellationToken)
     {
+        if (!await dbContext.Songs.AnyAsync(x => x.Id == songId && !x.IsDeleted, cancellationToken))
+        {
+            return false;
+        }
+
         var extension = Path.GetExtension(originalName);
-        var type = extension switch
+        var type = extension.ToLowerInvariant() switch
         {
             ".mp3" or ".wav" or ".ogg" or ".flac" or ".opus" or ".aac" or ".m4a" => AttachmentType.Audio,
             _ => AttachmentType.Document
@@ -64,14 +73,41 @@ public class AttachmentsService(AppContext dbContext, IMinioClient minioClient, 
             .WithObjectSize(stream.Length)
             .WithStreamData(stream);
         await minioClient.PutObjectAsync(args, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Не оставляем сиротский объект в S3, если запись в БД не удалась.
+            try
+            {
+                await minioClient.RemoveObjectAsync(
+                    new RemoveObjectArgs().WithBucket(s3Settings.Value.BucketName).WithObject(attachment.S3Path),
+                    CancellationToken.None);
+            }
+            catch
+            {
+                // Не маскируем исходную ошибку БД ошибкой очистки.
+            }
+
+            throw;
+        }
+
+        return true;
     }
 
-    public async Task DeleteAttachment(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAttachment(int id, CancellationToken cancellationToken)
     {
         var attachment = await dbContext.Attachments
-            .FirstAsync(x => x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (attachment is null)
+        {
+            return false;
+        }
+
         attachment.IsDeleted = true;
         await dbContext.SaveChangesAsync(cancellationToken);
+        return true;
     }
 }

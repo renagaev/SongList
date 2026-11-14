@@ -74,7 +74,7 @@ const getSubtitle = (song: SongModel): string => {
 
 const getClass = (song: SongModel): string => {
   if (song.opened) {
-    return theme.isDark ? "opened-dark" : "opened";
+    return theme.global.current.value.dark ? "opened-dark" : "opened";
   }
   return "";
 };

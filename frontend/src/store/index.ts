@@ -14,6 +14,7 @@ import {
 import fuzzysort from 'fuzzysort'
 import {HistoryMode, HistorySortOrder, Settings, SongModel} from './models'
 import deepmerge from "deepmerge"
+import {requestIdleCallback} from "@/services/idle"
 type HubConnection = import('@microsoft/signalr').HubConnection;
 
 export interface State {
@@ -33,19 +34,6 @@ export interface State {
     connection: HubConnection
 }
 
-// https://github.com/championswimmer/vuex-persist/issues/17#issuecomment-350825480
-const requestIdleCallback = window.requestIdleCallback || (cb => {
-    const start = Date.now()
-    return setTimeout(() => {
-        const data = {
-            didTimeout: false,
-            timeRemaining() {
-                return Math.max(0, 50 - (Date.now() - start))
-            }
-        }
-        cb(data)
-    }, 1)
-})
 
 const clear = (text: string) => text
     .trim()

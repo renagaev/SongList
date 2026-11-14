@@ -331,6 +331,6 @@ public class SongUpdateNotifier(AppContext appContext, ITelegramBotClient botCli
         if (noteId is null) return "—";
 
         var note = await appContext.Notes.FirstOrDefaultAsync(x => x.Id == noteId.Value, ct);
-        return note.DetailedName;
+        return note?.DetailedName ?? "—";
     }
 }

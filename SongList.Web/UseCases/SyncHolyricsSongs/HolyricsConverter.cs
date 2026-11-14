@@ -30,7 +30,7 @@ public class HolyricsConverter
     private string ClearTitle(string title)
     {
         var cleared = title.Replace("»", "").Replace("«", "").Trim();
-        if (title.Length != 0)
+        if (cleared.Length != 0)
         {
             cleared = cleared[0].ToString().ToUpper() + cleared[1..];
         }

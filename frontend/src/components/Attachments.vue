@@ -27,7 +27,9 @@
           <div v-if="isAdmin">
             <v-divider></v-divider>
             <v-form class="pa-2" @submit="uploadAttachment" @submit.prevent>
-              <v-file-input :label="'Файл'"
+              <v-alert v-if="error" type="error" density="compact" class="mb-3">{{ error }}</v-alert>
+              <v-file-input :key="formKey"
+                            :label="'Файл'"
                             @change="setFile"
                             :prepend-icon="null"
                             variant="outlined"
@@ -71,27 +73,41 @@ async function loadAttachments() {
 const isAdmin = computed(() => store.state.isAdmin);
 
 let file: Blob | null = null
-let title: string | null = null
-let loading = ref(false)
+const title = ref("")
+const loading = ref(false)
+const error = ref<string | null>(null)
+// Смена key пересоздаёт v-file-input и сбрасывает выбранный файл.
+const formKey = ref(0)
 
 function setFile(e: Event) {
   const target = e.target as HTMLInputElement;
-  file = (target.files as FileList)[0];
+  file = target.files?.[0] ?? null;
 }
 function clearForm() {
   file = null
-  title = null
+  title.value = ""
+  error.value = null
+  formKey.value++
   loading.value = false
 }
 
 async function uploadAttachment() {
-  if (file == null || !(!!title)) {
+  if (loading.value) {
+    return
+  }
+  if (file == null || !title.value.trim()) {
+    error.value = "Выбери файл и введи название"
     return
   }
   loading.value = true
+  error.value = null
   try {
-    await AttachmentsService.uploadAttachment(props.id, {file: file!, displayName: title!})
+    await AttachmentsService.uploadAttachment(props.id, {file: file, displayName: title.value.trim()})
     await loadAttachments()
+    clearForm()
+  } catch (e) {
+    console.error(e)
+    error.value = "Не удалось загрузить файл"
   } finally {
     loading.value = false
   }

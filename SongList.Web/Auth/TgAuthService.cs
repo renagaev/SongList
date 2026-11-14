@@ -15,16 +15,20 @@ public class TgAuthService(LoginWidget loginWidget, ITelegramBotClient bot, IOpt
         var auth = loginWidget.CheckAuthorization(fields);
         if (auth != Authorization.Valid)
         {
-            throw new Exception("Invalid auth");
+            throw new UnauthorizedAccessException("Invalid auth");
         }
 
-        var id = long.Parse(fields["id"]);
+        if (!fields.TryGetValue("id", out var idValue) || !long.TryParse(idValue, out var id))
+        {
+            throw new UnauthorizedAccessException("Invalid auth");
+        }
+
         var member = await bot.GetChatMember(options.Value.ChatId, id);
         if (!member.IsInChat)
         {
-            throw new Exception("User is not in admin group");
+            throw new UnauthorizedAccessException("User is not in admin group");
         }
-        var userName = member.User.FirstName + " " + member.User.LastName;
+        var userName = $"{member.User.FirstName} {member.User.LastName}".Trim();
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -35,7 +39,7 @@ public class TgAuthService(LoginWidget loginWidget, ITelegramBotClient bot, IOpt
         var token = new JwtSecurityToken(jwtOptions.Value.Issuer,
             jwtOptions.Value.Issuer,
             claims,
-            expires: DateTime.Now.Add(jwtOptions.Value.Expiration),
+            expires: DateTime.UtcNow.Add(jwtOptions.Value.Expiration),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

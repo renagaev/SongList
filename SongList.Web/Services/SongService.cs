@@ -52,12 +52,16 @@ public class SongService(AppContext dbContext, SongUpdateNotifier notifier, Song
         return songs;
     }
 
-    public async Task<SongDto> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)
+    public async Task<SongDto?> UpdateSong(int id, SongDto songDto, string userName, CancellationToken cancellationToken)
     {
         songDto.Text = songDto.Text.ReplaceLatin();
         songDto.Title = songDto.Title.ReplaceLatin();
-        
-        var song = await dbContext.Songs.FirstAsync(x => x.Id == id, cancellationToken);
+
+        var song = await dbContext.Songs.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, cancellationToken);
+        if (song is null)
+        {
+            return null;
+        }
 
         var old = new SongDto
         {

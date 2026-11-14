@@ -12,9 +12,18 @@ public class AuthController(TgAuthService tgAuthService) : ControllerBase
 {
     [HttpPost("tg-admin", Name = "getTgAdminToken")]
     [AllowAnonymous]
-    public async Task<string> TgAdmin([FromBody] Dictionary<string, object> fields)
+    public async Task<ActionResult<string>> TgAdmin([FromBody] Dictionary<string, object?> fields)
     {
-        return await tgAuthService.GetToken(fields.ToDictionary(x => x.Key, x => x.Value.ToString()));
+        try
+        {
+            return await tgAuthService.GetToken(
+                fields.ToDictionary(x => x.Key, x => x.Value?.ToString() ?? string.Empty));
+        }
+        catch (Exception e) when (e is UnauthorizedAccessException or Telegram.Bot.Exceptions.ApiRequestException)
+        {
+            // ApiRequestException: Telegram не нашёл пользователя/чат (например, админ не писал боту).
+            return Unauthorized();
+        }
     }
 
     [HttpGet("user", Name = "getUser")]

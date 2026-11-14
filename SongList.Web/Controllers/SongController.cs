@@ -30,10 +30,17 @@ public class SongController(AppContext dbContext, OpenedSongsManager openedSongs
 
     [HttpPost("{id}/edit", Name = "updateSong")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<SongDto> UpdateSong(int id, [FromBody] SongDto songDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<SongDto>> UpdateSong(int id, [FromBody] SongDto songDto,
+        CancellationToken cancellationToken)
     {
         var userName = User.Claims.First(x => x.Type == JwtRegisteredClaimNames.Sub).Value;
-        return await songService.UpdateSong(id, songDto, userName, cancellationToken);
+        var result = await songService.UpdateSong(id, songDto, userName, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        return result;
     }
 
     [HttpPost("add", Name = "addSong")]

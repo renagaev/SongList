@@ -68,7 +68,7 @@
     </v-dialog>
     <p v-if="showHistory && lastSingedText" v-html="lastSingedText"></p>
     <v-divider style="margin: 10px 0"></v-divider>
-    <div ref="textContainer" class="words" :style="fontStyle" v-html="formattedText"></div>
+    <div ref="textContainer" class="words" :style="fontStyle">{{ formattedText }}</div>
   </v-container>
 </template>
 

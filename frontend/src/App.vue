@@ -29,6 +29,7 @@ import {useTheme} from "vuetify";
 import NavigationBar from "@/components/NavigationBar.vue";
 import AppBar from "@/components/AppBar.vue";
 import {PWAPrompt} from "vue-ios-pwa-prompt";
+import {requestIdleCallback} from "@/services/idle";
 
 // Store
 const store = useStore();

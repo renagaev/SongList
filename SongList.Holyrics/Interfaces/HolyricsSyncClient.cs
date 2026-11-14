@@ -27,8 +27,14 @@ internal class HolyricsSyncClient(
     {
         if (appProperties.TryGetValue("s1", out var value))
         {
-            return value.Split("\n").ToDictionary(x => x.Split("=")[0], x => x.Split("=")[1])
-                .GetValueOrDefault("custom_md5", null);
+            foreach (var line in value.Split('\n'))
+            {
+                var parts = line.Trim().Split('=', 2);
+                if (parts.Length == 2 && parts[0] == "custom_md5")
+                {
+                    return parts[1];
+                }
+            }
         }
 
         return null;

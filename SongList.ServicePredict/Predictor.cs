@@ -118,7 +118,7 @@ public sealed class OnnxServicePredictor : IDisposable, IServicePredictor
             : 0;
         var featsAt = startAt.AddHours(hourOffset);
         var hour = featsAt.Hour;
-        var dowPg = ((int)startAt.DayOfWeek + 6) % 7; // Sunday=0
+        var dowPg = (int)startAt.DayOfWeek; // Sunday=0, matches training: (pandas dayofweek + 1) % 7
         var isSunday = dowPg == 0;
         var isSaturday = dowPg == 6;
         double delta11 = Math.Abs(featsAt.Hour * 60 + featsAt.Minute - 11 * 60);

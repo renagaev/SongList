@@ -70,13 +70,13 @@ public class HolyricsClient
         if (data.Type == "song")
         {
             var slide = GetSongSlide(data);
-            return new CurrentSlideDto(SlideType.Song, null, slide);
+            return slide == null ? null : new CurrentSlideDto(SlideType.Song, null, slide);
         }
 
         if (data.Type == "verse")
         {
             var verse = GetVerse(data);
-            return new CurrentSlideDto(SlideType.Bible, verse, null);
+            return verse == null ? null : new CurrentSlideDto(SlideType.Bible, verse, null);
         }
 
         return null;
@@ -84,7 +84,7 @@ public class HolyricsClient
 
     private static BibleVerse? GetVerse(CurrentSlideResponse response)
     {
-        var match = Regex.Match(response.Id, @"(\d\d)(\d\d\d)(\d\d\d)");
+        var match = Regex.Match(response.Id ?? string.Empty, @"(\d\d)(\d\d\d)(\d\d\d)");
         if (!match.Success)
         {
             return null;
@@ -99,7 +99,7 @@ public class HolyricsClient
 
     private static SongSlide? GetSongSlide(CurrentSlideResponse response)
     {
-        if (string.IsNullOrEmpty(response.SongId))
+        if (string.IsNullOrEmpty(response.SongId) || response.SlideNumber is null || response.TotalSlides is null)
         {
             return null;
         }

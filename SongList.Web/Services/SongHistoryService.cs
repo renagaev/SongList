@@ -237,7 +237,7 @@ public class SongHistoryService(AppContext context, IServicePredictor predictor)
             }
         }
 
-        return updated.Distinct().ToArray();
+        return updated.Distinct().Where(shows.Contains).ToArray();
     }
 
     private static TimeSpan DistanceToInterval(DateTimeOffset aStart, DateTimeOffset aEnd, DateTimeOffset bStart,

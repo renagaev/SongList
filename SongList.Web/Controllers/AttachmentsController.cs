@@ -1,4 +1,4 @@
-using System.Web;
+using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +21,18 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
     [HttpGet("{id:int}/download", Name = "getAttachment")]
     public async Task<IActionResult> GetAttachment(int id, CancellationToken cancellationToken)
     {
-        var attachment = await service.GetContent(id, cancellationToken);
-        string contentType;
-        new FileExtensionContentTypeProvider().TryGetContentType(attachment.name, out contentType);
+        var result = await service.GetContent(id, cancellationToken);
+        if (result is null)
+        {
+            return NotFound();
+        }
+
+        var attachment = result.Value;
+        new FileExtensionContentTypeProvider().TryGetContentType(attachment.name, out var contentType);
         contentType ??= "application/octet-stream";
-        Response.Headers.ContentDisposition = "inline; filename=" + HttpUtility.UrlEncode(attachment.name);
+        var disposition = new ContentDispositionHeaderValue("inline");
+        disposition.SetHttpFileName(attachment.name);
+        Response.Headers.ContentDisposition = disposition.ToString();
         return new FileStreamResult(attachment.content, contentType)
         {
             EnableRangeProcessing = true
@@ -34,17 +41,18 @@ public class AttachmentsController(AttachmentsService service) : ControllerBase
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("song/{songId:int}", Name = "uploadAttachment")]
-    public async Task UploadAttachment(int songId, IFormFile file, [FromForm] string displayName,
+    public async Task<IActionResult> UploadAttachment(int songId, IFormFile file, [FromForm] string displayName,
         CancellationToken cancellationToken)
     {
-        var stream = file.OpenReadStream();
-        await service.CreateAttachment(songId, stream, displayName, file.FileName, cancellationToken);
+        await using var stream = file.OpenReadStream();
+        var created = await service.CreateAttachment(songId, stream, displayName, file.FileName, cancellationToken);
+        return created ? Ok() : NotFound();
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id:int}", Name = "deleteAttachment")]
-    public async Task DeleteAttachment(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAttachment(int id, CancellationToken cancellationToken)
     {
-        await service.DeleteAttachment(id, cancellationToken);
+        return await service.DeleteAttachment(id, cancellationToken) ? Ok() : NotFound();
     }
 }

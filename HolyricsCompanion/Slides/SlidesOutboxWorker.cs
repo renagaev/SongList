@@ -11,9 +11,16 @@ public class SlidesOutboxWorker(IOptionsMonitor<WorkersSettings> optionsMonitor,
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(optionsMonitor.CurrentValue.OutboxInterval, stoppingToken);
-            using var scope = scopeFactory.CreateScope();
-            await FlushVerses(scope, stoppingToken);
-            await FlushSongs(scope, stoppingToken);
+            try
+            {
+                using var scope = scopeFactory.CreateScope();
+                await FlushVerses(scope, stoppingToken);
+                await FlushSongs(scope, stoppingToken);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                logger.LogError(e, "failed to flush slides outbox");
+            }
         }
     }
 
