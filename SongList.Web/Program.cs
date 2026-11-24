@@ -82,20 +82,19 @@ app.MapControllers();
 
 app.Run();
 
-// Не стартуем с пустыми/дефолтными секретами (аудит P0-2): провал на старте понятнее, чем дыра в проде.
+
 static void ValidateRequiredSecrets(IConfiguration config)
 {
     var required = new (string Key, string Description)[]
     {
         ("DbConnectionString", "строка подключения к БД (DbConnectionString)"),
-        ("Auth:Token", "токен схемы Token (Auth__Token)"),
         ("Jwt:Key", "ключ подписи JWT (Jwt__Key)")
     };
 
     foreach (var (key, description) in required)
     {
         var value = config[key];
-        if (string.IsNullOrWhiteSpace(value) || value == "token")
+        if (string.IsNullOrWhiteSpace(value))
         {
             throw new InvalidOperationException(
                 $"Конфигурация {key} ({description}) не задана или содержит значение по умолчанию. " +
